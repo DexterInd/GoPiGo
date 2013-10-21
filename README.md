@@ -1,7 +1,7 @@
 GoPiGo
 ===================
 
-GoPiGo is a mobile robotic platform for the Raspberry Pi originally developed by [Dexter Industries.](http://www.dexterindustries.com)
+GoPiGo is a mobile robotic platform for the Raspberry Pi originally developed by [Dexter Industries.](http://www.dexterindustries.com/GoPiGo)
 
 Developed by Karan Nayan, Oct. 2013
 
