@@ -3,12 +3,13 @@ import pyttsx
  
 # main() function
 def main():
-  # use sys.argv if needed
+  # use sys.argv if needed 
   print 'running speech-test.py...'
   engine = pyttsx.init()
   str = "I speak. Therefore. I am.  "
   engine.say(str)
-  engine.runAndWait()
+  engine.runAndWait() 
+
  
 # call main
 if __name__ == '__main__':
