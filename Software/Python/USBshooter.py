@@ -17,6 +17,7 @@
 
 ############################################################################
 # SETUP USB ON RPI:
+# http://itr8r.tumblr.com/
 # git clone https://github.com/walac/pyusb
 # cd pyusb
 # sudo python setup.py install
