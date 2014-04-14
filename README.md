@@ -7,7 +7,8 @@ The GoPiGo is a delightful and complete robot for the Raspberry Pi that turns yo
 
 This repository contains source code, firmware and design materials for the GoPiGo.
 
-![GoPiGo](https://github.com/DexterInd/GoPiGo/GPG_PARTS.gif)
+![GoPiGo](https://github.com/DexterInd/GoPiGo/blob/master/GPG_PARTS.gif)
+![GoPiGo](https://github.com/DexterInd/GoPiGo/blob/master/GoPiGo_Chassis-300.jpg)
 
 #License
 ===================
