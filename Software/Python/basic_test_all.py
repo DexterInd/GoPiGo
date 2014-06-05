@@ -1,4 +1,5 @@
 from gopigo import *
+import sys
 while True:
 	a=raw_input()
 	if a=='w':
@@ -16,11 +17,13 @@ while True:
 	elif a=='g':
 		decrease_speed()
 	elif a=='v':
-		print volt(),'V'
+		print volt(),"V"
 	elif a=='u':
 		print us_dist(17)
 	elif a=='b': #servo test
 		for i in range(180):
 			servo(i)
 			time.sleep(.02)
+	elif a=='z':
+		sys.exit()
 	time.sleep(.1)
