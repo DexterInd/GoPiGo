@@ -22,6 +22,11 @@ stop_cmd=[120]
 ispd_cmd=[116]
 dspd_cmd=[103]
 volt_cmd=[118]
+us_cmd=[117]
+led_cmd=[108]
+
+LED_L=1
+LED_R=0
 #Write I2C block
 def write_i2c_block(address,block):
 	try:
@@ -70,6 +75,31 @@ def volt():
 	v=number[0]*256+number[1]
 	v=(5*float(v)/1024)/.4
 	return v
+def us_dist(pin):
+	write_i2c_block(address,us_cmd+[pin,0,0])
+	time.sleep(.1)
+	#bus.read_byte(address)
+	number = bus.read_i2c_block_data(address,1)
+	dist=number[0]*256+number[1]
+	return dist
+def led(l_id,power):
+	if l_id==LED_L or l_id==LED_R:
+		write_i2c_block(address,led_cmd+[l_id,power,0])
+		return 1
+	else:
+		return -1
+def led_on(l_id):
+	if l_id==LED_L or l_id==LED_R:
+		write_i2c_block(address,led_cmd+[l_id,255,0])
+		return 1
+	else:
+		return -1
+def led_off(l_id):
+	if l_id==LED_L or l_id==LED_R:
+		write_i2c_block(address,led_cmd+[l_id,0,0])
+		return 1
+	else:
+		return -1
 '''
 ser = serial.Serial('/dev/ttyAMA0',  9600, timeout = 0)
 def fwd():

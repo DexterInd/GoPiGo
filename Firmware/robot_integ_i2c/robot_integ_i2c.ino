@@ -4,6 +4,7 @@
 SoftwareServo servo1;
 
 #define SLAVE_ADDRESS 0x08
+#define debug 0
 int number = 5;
 
 //Motor inputs on arduino
@@ -25,7 +26,7 @@ volatile int s=0;
 volatile int f1=0,f2=0;
 
 int cmd[5],index=0,flag=0;
-char payload[2];
+byte payload[2];
 void forward()
 {
 	digitalWrite(i11, LOW);                
@@ -61,16 +62,30 @@ void stp()
 	digitalWrite(i21, HIGH);                
  	digitalWrite(i22, HIGH); 
 }
-
+void led_light(int pin,int pow)
+{
+  if(pin==0)//right
+  {
+    analogWrite(5,pow);
+  }
+  else//left
+  {
+    analogWrite(10,pow);
+  }
+}
 void setup() 
 {
-  //Serial.begin(9600);
+  if (debug)
+  {
+  Serial.begin(9600);
+  Serial.print("Ready");
+  }
   attachInterrupt(0, step1, RISING);
   attachInterrupt(1, step2, RISING);
-    pinMode(i11, OUTPUT);     
-    pinMode(i12, OUTPUT);  
-    pinMode(i21, OUTPUT);     
-    pinMode(i22, OUTPUT);           
+  pinMode(i11, OUTPUT);     
+  pinMode(i12, OUTPUT);  
+  pinMode(i21, OUTPUT);     
+  pinMode(i22, OUTPUT);           
     pinMode(5, OUTPUT);
     servo1.attach(10);
     servo1.setMaximumPulse(2200);
@@ -180,26 +195,41 @@ void loop()
       //Serial.print(volt);
       cmd[0]=0;
     }
-  /*  if(number==117) //ultrasonic
-  {
-    while(1)
-      if(Serial.available())
-      {
-        pin=Serial.read(); 
-        break;
-      }
-    pinMode(pin, OUTPUT);
-    digitalWrite(pin, LOW);
+    else if(cmd[0]==117) //ultrasonic
+    {
+    
+    int _pin=cmd[1]; 
+    Serial.print("US ");
+    Serial.print(_pin);
+    pinMode(_pin, OUTPUT);
+    digitalWrite(_pin, LOW);
     delayMicroseconds(2);
-    digitalWrite(pin, HIGH);
+    digitalWrite(_pin, HIGH);
     delayMicroseconds(5);
-    digitalWrite(pin,LOW);
-    pinMode(pin,INPUT);
-    int dur = pulseIn(pin,HIGH);
+    digitalWrite(_pin,LOW);
+    pinMode(_pin,INPUT);
+    long dur = pulseIn(_pin,HIGH);
     int RangeCm = dur/29/2;
+    
+    payload[0]=RangeCm/256;
+    payload[1]=RangeCm%256;
+    if(debug)
+    {
     Serial.print(RangeCm);
-    number=0;
+    Serial.print(" ");
+    Serial.print(payload[2]);
+    Serial.print(" ");
+    Serial.println(payload[3]);
+    }
+    cmd[0]=0;
   }
+  else if(cmd[0]==108)//LED light 'l'
+  {
+    //cmd[1]->pin(0-right,1-left LED)
+    //cmd[2]->PWM power (0-255)
+    led_light(cmd[1],cmd[2]);
+  }
+  /*
   if(number==98)
   {
     while(1)
@@ -229,7 +259,7 @@ void receiveData(int byteCount)
 // callback for sending data
 void sendData()
 {
-    Wire.write(payload);
+    Wire.write(payload,2);
 }
 void step1()
 {
