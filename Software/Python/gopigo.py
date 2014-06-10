@@ -29,7 +29,7 @@ volt_cmd=[118]
 us_cmd=[117]
 led_cmd=[108]
 servo_cmd=[98]
-
+enc_tgt_cmd=[50]
 LED_L=1
 LED_R=0
 #Write I2C block
@@ -39,16 +39,25 @@ def write_i2c_block(address,block):
 	except IOError:
 		print "IOError"
 		return -1
+	return 1
 		
 def writeNumber(value):
-    bus.write_byte(address, value)
+	try:
+		bus.write_byte(address, value)
+	except IOError:
+		print "IOError"
+		return -1	
     # bus.write_byte_data(address, 0, value) 
-    return -1
+	return 1
 
-def readNumber():
-    number = bus.read_byte(address)
+def readByte():
+	try:
+		number = bus.read_byte(address)
+	except IOError:
+		print "IOError"
+		return -1	
     # number = bus.read_byte_data(address, 1)
-    return number
+	return number
 
 #time.sleep(1)
 #i=0
@@ -81,13 +90,23 @@ def increase_speed():
 def decrease_speed():
 	return write_i2c_block(address,dspd_cmd+[0,0,0])
 def volt():
-	bus.write_i2c_block_data(address,1,volt_cmd+[0,0,0])
+	write_i2c_block(address,volt_cmd+[0,0,0])
 	time.sleep(.1)
 	#bus.read_byte(address)
-	number = bus.read_i2c_block_data(address,1)
-	v=number[0]*256+number[1]
-	v=(5*float(v)/1024)/.4
-	return v
+	#number = bus.read_i2c_block_data(address,1)
+	#v=number[0]*256+number[1]
+	#print number
+	b1=bus.read_byte(address)
+	b2=bus.read_byte(address)
+	#n3=bus.read_byte(address)
+	print b1,b2
+	if b1!=-1 and b2!=-1:
+		v=b1*256+b2
+		v=(5*float(v)/1024)/.4
+		return v
+	else:
+		return -1
+	
 def us_dist(pin):
 	write_i2c_block(address,us_cmd+[pin,0,0])
 	time.sleep(.1)
@@ -115,6 +134,15 @@ def led_off(l_id):
 		return -1
 def servo(position):
 	write_i2c_block(address,servo_cmd+[position,0,0])
+def enc_tgt(m1,m2,target):
+	if m1>1 or m1<0 or m2>1 or m2<0:
+		return -1
+	m_sel=m1*2+m2
+	write_i2c_block(address,enc_tgt_cmd+[m_sel,target/256,target%256])
+	return 1
+def read_status():
+	st=bus.read_byte(address)
+	return st
 '''
 ser = serial.Serial('/dev/ttyAMA0',  9600, timeout = 0)
 def fwd():

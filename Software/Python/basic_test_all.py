@@ -1,5 +1,6 @@
 from gopigo import *
 import sys
+#enc_tgt(1,0,1000)
 while True:
 	print "Cmd:",
 	a=raw_input()

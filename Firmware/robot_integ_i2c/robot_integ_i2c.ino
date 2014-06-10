@@ -4,7 +4,7 @@
 SoftwareServo servo1;
 
 #define SLAVE_ADDRESS 0x08
-#define debug 0
+#define debug 1
 int number = 5;
 
 //Motor inputs on arduino
@@ -23,10 +23,11 @@ unsigned long ti1,tf1,ti2,tf2,td1,td2;
 
 volatile int state = LOW;
 volatile int s=0;
-volatile int f1=0,f2=0;
+volatile int f1=0,f2=0,e1=0,e2=0;
+int tgt_flag=0,m1_en=0,m2_en=0,tgt=0;
 
-int cmd[5],index=0,flag=0;
-byte payload[2];
+volatile int cmd[5],index=0,flag=0,bytes_to_send=0;
+byte payload[3],st_flag=0;
 void forward()
 {
 	digitalWrite(i11, LOW);                
@@ -94,8 +95,8 @@ void setup()
   Serial.begin(9600);
   Serial.print("Ready");
   }
-  attachInterrupt(0, step1, RISING);
-  attachInterrupt(1, step2, RISING);
+  attachInterrupt(1, step1, RISING);
+  attachInterrupt(0, step2, RISING);
   pinMode(i11, OUTPUT);     
   pinMode(i12, OUTPUT);  
   pinMode(i21, OUTPUT);     
@@ -108,6 +109,7 @@ void setup()
     Wire.onReceive(receiveData);
     Wire.onRequest(sendData);   
 	sp1=sp2=sp;
+  //payload[2]=0;
 }
 int prev_number=0;
 void loop() 
@@ -211,6 +213,7 @@ void loop()
       payload[0]=volt/256;
       payload[1]=volt%256;
       //Serial.print(volt);
+      bytes_to_send=2;
       cmd[0]=0;
     }
     else if(cmd[0]==117) //ultrasonic
@@ -235,9 +238,9 @@ void loop()
     {
     Serial.print(RangeCm);
     Serial.print(" ");
-    Serial.print(payload[2]);
+    Serial.print(payload[0]);
     Serial.print(" ");
-    Serial.println(payload[3]);
+    Serial.println(payload[1]);
     }
     cmd[0]=0;
   }
@@ -258,6 +261,72 @@ void loop()
     SoftwareServo::refresh();
     number=0;
   }
+  if(cmd[0]==50 || tgt_flag==1)//Encoder targetting
+  {
+    if(cmd[0]==50)
+    {
+      cmd[0]=0;
+      tgt_flag=1;
+      m1_en=cmd[1]/2;
+      m2_en=cmd[1]%2;
+      tgt=cmd[2]*256+cmd[3];
+      e1=e2=0;
+    
+      //payload[2]=payload[2]&13;//bit 1,i.e, xxPx in payload[2] is status for encoder
+    }
+    
+    if(m1_en && !m2_en)
+    {
+      if(e1>=tgt)
+      {
+        cmd[0]=0;
+        stp();
+        tgt_flag=0;
+       
+        //payload[2]=payload[2]|2;
+      }
+    }
+    else if(!m1_en && m2_en)
+    {
+      if(e2>=tgt)
+      {
+        cmd[0]=0;
+        stp();
+        tgt_flag=0;
+        
+        //payload[2]=payload[2]|2;
+      }
+    }
+    else if(m1_en && m2_en)
+    {
+      if(e1>=tgt && e2>=tgt)
+      {
+        cmd[0]=0;
+        stp();
+        tgt_flag=0;
+        
+        //payload[2]=payload[2]|2;
+      }
+    }
+    if(debug)
+    {
+      Serial.print(cmd[1]);
+      Serial.print(" ");
+      Serial.print(cmd[2]);
+      Serial.print(" ");
+      Serial.print(cmd[3]);
+      Serial.print(" ");
+      Serial.print(e1);
+      Serial.print(" ");
+      Serial.print(e2);
+      Serial.print(" ");
+      Serial.print(bytes_to_send);
+      Serial.print(" ");
+      Serial.print(tgt_flag);
+      Serial.print(" ");
+      Serial.println(tgt);
+    }
+  }
   //delay(300);
 }
 void receiveData(int byteCount)
@@ -273,15 +342,30 @@ void receiveData(int byteCount)
     }
 }
 // callback for sending data
+volatile int ind=0;
 void sendData()
 {
-    Wire.write(payload,2);
+  if(bytes_to_send==2)
+  {
+    Wire.write(payload[ind++]);
+    if(ind==2)
+    {
+      ind=0;
+      bytes_to_send=0;
+    }
+  }
+  else if(tgt_flag)
+  {
+    Wire.write(tgt_flag);
+  }
 }
 void step1()
 {
+  e1++;
   f1=1;
 }
 void step2()
 {
+  e2++;
   f2=1;
 }
