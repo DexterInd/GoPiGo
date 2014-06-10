@@ -15,9 +15,13 @@ bus = smbus.SMBus(1)
 address = 0x08
 
 fwd_cmd=[119]
+motor_fwd_cmd=[105]
 bwd_cmd=[115]
+motor_bwd_cmd=[107]
 left_cmd=[97]
+left_rot_cmd=[98]
 right_cmd=[100]
+right_rot_cmd=[110]
 stop_cmd=[120]
 ispd_cmd=[116]
 dspd_cmd=[103]
@@ -56,12 +60,20 @@ def readNumber():
 
 def fwd():
 	return write_i2c_block(address,fwd_cmd+[0,0,0])
+def motor_fwd():
+	return write_i2c_block(address,motor_fwd_cmd+[0,0,0])
 def bwd():
 	return write_i2c_block(address,bwd_cmd+[0,0,0])
+def motor_bwd():
+	return write_i2c_block(address,motor_bwd_cmd+[0,0,0])
 def left():
 	return write_i2c_block(address,left_cmd+[0,0,0])
+def left_rot():
+	return write_i2c_block(address,left_rot_cmd+[0,0,0])
 def right():
 	return write_i2c_block(address,right_cmd+[0,0,0])
+def right_rot():
+	return write_i2c_block(address,right_rot_cmd+[0,0,0])
 def stop():
 	return write_i2c_block(address,stop_cmd+[0,0,0])
 def increase_speed():

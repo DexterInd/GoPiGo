@@ -48,10 +48,24 @@ void left()
 	digitalWrite(i21, HIGH);                
 	digitalWrite(i22, HIGH);
 }
+void left_rot()
+{
+	digitalWrite(i11, LOW);                
+	digitalWrite(i12, HIGH); 
+	digitalWrite(i21, HIGH);                
+	digitalWrite(i22, LOW);
+}
 void right()
 {
 	digitalWrite(i11, HIGH);                
 	digitalWrite(i12, HIGH);
+	digitalWrite(i21, LOW);                
+	digitalWrite(i22, HIGH); 
+}
+void right_rot()
+{
+	digitalWrite(i11, HIGH);                
+	digitalWrite(i12, LOW);
 	digitalWrite(i21, LOW);                
 	digitalWrite(i22, HIGH); 
 }
@@ -177,14 +191,18 @@ void loop()
       cmd[0] =0;
     }
     sp2=sp1;
-    if(cmd[0]==119)  //w
+    if(cmd[0]==119 || cmd[0]==105)  //w-pid, i-nopid
       forward();
     else if(cmd[0]==97) //a
       left();
-    else if(cmd[0]==115) //s
+    else if(cmd[0]==98) //b
+      left_rot();
+    else if(cmd[0]==115 || cmd[0]==107) //s-pid k-nopid
       backward();
     else if(cmd[0]==100)  //d
       right();
+    else if(cmd[0]==110)  //n
+      right_rot();
     else if(cmd[0]==120)  //x
       stp();
     else if(cmd[0]==118) //v
@@ -229,7 +247,7 @@ void loop()
     //cmd[2]->PWM power (0-255)
     led_light(cmd[1],cmd[2]);
   }
-  else if(cmd[0]==98)
+  else if(cmd[0]==98) //Servo  
   {
     value=cmd[1];
     if(debug)

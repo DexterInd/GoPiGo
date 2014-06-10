@@ -35,4 +35,12 @@ while True:
 			time.sleep(.01)
 		print led(LED_L,0)
 		print led(LED_R,0)
+	elif a=='i':
+		motor_fwd()
+	elif a=='k':
+		motor_bwd()
+	elif a=='n':
+		left_rot()
+	elif a=='m':
+		right_rot()
 	time.sleep(.1)
