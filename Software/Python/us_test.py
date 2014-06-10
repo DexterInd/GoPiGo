@@ -1,5 +1,6 @@
 from gopigo import *
 import sys
 while True:
-	print us_dist(0),'cm'
-	time.sleep(2)
+	#for i in range (21):
+	print us_dist(10),'cm'
+	time.sleep(.4)

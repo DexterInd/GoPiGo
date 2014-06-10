@@ -86,8 +86,8 @@ void setup()
   pinMode(i12, OUTPUT);  
   pinMode(i21, OUTPUT);     
   pinMode(i22, OUTPUT);           
-    //pinMode(5, OUTPUT);
-    servo1.attach(5);
+    pinMode(5, OUTPUT);
+    servo1.attach(10);
     servo1.setMaximumPulse(2200);
     Wire.begin(SLAVE_ADDRESS);
 
@@ -229,17 +229,19 @@ void loop()
     //cmd[2]->PWM power (0-255)
     led_light(cmd[1],cmd[2]);
   }
-  else if(cmd[0]==98)
+  /*
+  if(number==98)
   {
-    value=cmd[1];
-    if(debug)
-    {
-    Serial.println(value);
-    }
+    while(1)
+      if(Serial.available())
+      {
+        value=Serial.read(); 
+        break;
+      }
     servo1.write(value);
     SoftwareServo::refresh();
     number=0;
-  }
+  }*/
   //delay(300);
 }
 void receiveData(int byteCount)

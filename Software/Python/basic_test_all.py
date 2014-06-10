@@ -22,6 +22,7 @@ while True:
 	elif a=='b': #servo test
 		for i in range(180):
 			servo(i)
+			print i
 			time.sleep(.02)
 	elif a=='z':
 		sys.exit()

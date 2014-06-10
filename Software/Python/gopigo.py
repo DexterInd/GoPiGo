@@ -24,6 +24,7 @@ dspd_cmd=[103]
 volt_cmd=[118]
 us_cmd=[117]
 led_cmd=[108]
+servo_cmd=[98]
 
 LED_L=1
 LED_R=0
@@ -100,6 +101,8 @@ def led_off(l_id):
 		return 1
 	else:
 		return -1
+def servo(position):
+	write_i2c_block(address,servo_cmd+[position,0,0])
 '''
 ser = serial.Serial('/dev/ttyAMA0',  9600, timeout = 0)
 def fwd():
