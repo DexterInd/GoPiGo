@@ -1,5 +1,8 @@
 from gopigo import *
+import sys
+#enc_tgt(1,0,1000)
 while True:
+	print "Cmd:",
 	a=raw_input()
 	if a=='w':
 		fwd()
@@ -16,11 +19,29 @@ while True:
 	elif a=='g':
 		decrease_speed()
 	elif a=='v':
-		print volt(),'V'
-	elif a=='u':
-		print us_dist(17)
+		print volt(),"V"
 	elif a=='b': #servo test
 		for i in range(180):
 			servo(i)
+			print i
 			time.sleep(.02)
+	elif a=='z':
+		sys.exit()
+	elif a=='u':
+		print us_dist(15),'cm'
+	elif a=='l':
+		for i in range(256):
+			print led(LED_L,i)
+			print led(LED_R,i)
+			time.sleep(.01)
+		print led(LED_L,0)
+		print led(LED_R,0)
+	elif a=='i':
+		motor_fwd()
+	elif a=='k':
+		motor_bwd()
+	elif a=='n':
+		left_rot()
+	elif a=='m':
+		right_rot()
 	time.sleep(.1)
