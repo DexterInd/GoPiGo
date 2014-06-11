@@ -6,13 +6,13 @@ int number = 5;
 int state = 0;
 
 //Motor inputs on arduino
-int i11=2;
-int i12=3;
+int i11=7;
+int i12=8;
 int i21=4;
-int i22=5;
-int s_1=6;
-int s_2=9;
-
+int i22=13;
+int s_1=9;
+int s_2=6;
+int sp=200;
 void forward()
 {
   digitalWrite(i11, LOW);                
@@ -50,27 +50,46 @@ void stop()
 }
 
 void setup() {
+<<<<<<< HEAD:Firmware/i2c_robot/i2c_robot.ino
     //pinMode(13, OUTPUT);
+=======
+>>>>>>> origin/master:Firmware/old/motor_i2c/motor_i2c.ino
     pinMode(i11, OUTPUT);     
     pinMode(i12, OUTPUT);  
     pinMode(i21, OUTPUT);     
     pinMode(i22, OUTPUT); 
-   // pinMode(s_1, OUTPUT); 
-    //pinMode(s_2, OUTPUT); 
-    Serial.begin(9600);         
-
+    //pinMode(s_1, OUTPUT); 
+    //pinMode(s_2, OUTPUT);          
+     pinMode(5, OUTPUT);
     Wire.begin(SLAVE_ADDRESS);
 
     Wire.onReceive(receiveData);
-    Wire.onRequest(sendData);
-
-    Serial.println("Ready!");
-     
+    Wire.onRequest(sendData);   
 }
 
 void loop() {
-    analogWrite(6,255);
-    analogWrite(7,255);
+    analogWrite(s_1,sp);
+    analogWrite(s_2,sp);
+    if(number==116) //t
+    {
+      if(sp>244)
+        sp=255;
+      else
+        sp=sp+10;
+      number=0;
+    }
+    if(number==103) //g
+    {
+      if(sp<11)
+        sp=0;
+      else
+        sp=sp-10;
+      number =0;
+    }
+    if(sp>255)
+      sp=255;
+    if(sp<0)
+      sp=0;
     if(number==119)  //w
       forward();
     else if(number==97) //a
@@ -81,19 +100,18 @@ void loop() {
       right();
     else if(number==120)  //x
       stop();
-    //delay(100);
+    digitalWrite(5,HIGH);
+    delay(100);
+    digitalWrite(5,LOW);
+     delay(100);
 }
 
 void receiveData(int byteCount){
 
     while(Wire.available()) 
     {
-        number = Wire.read();
-        digitalWrite(13,HIGH);
-        delay(50);
-        digitalWrite(13,LOW);
-        Serial.print("data received: ");
-        Serial.println(number);
+        number = Wire.read();    
+        
      }
 }
 
