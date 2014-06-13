@@ -4,7 +4,7 @@
 SoftwareServo servo1;
 
 #define SLAVE_ADDRESS 0x08
-#define debug 1
+#define debug 0
 int number = 5;
 
 //Motor inputs on arduino
@@ -28,6 +28,8 @@ int tgt_flag=0,m1_en=0,m2_en=0,tgt=0;
 
 volatile int cmd[5],index=0,flag=0,bytes_to_send=0;
 byte payload[3],st_flag=0;
+
+int servo_flag=0;
 void forward()
 {
 	digitalWrite(i11, LOW);                
@@ -220,8 +222,11 @@ void loop()
     {
     
     int _pin=cmd[1]; 
+    if(debug)
+    {
     Serial.print("US ");
     Serial.print(_pin);
+    }
     pinMode(_pin, OUTPUT);
     digitalWrite(_pin, LOW);
     delayMicroseconds(2);
@@ -234,6 +239,7 @@ void loop()
     
     payload[0]=RangeCm/256;
     payload[1]=RangeCm%256;
+    bytes_to_send=2;
     if(debug)
     {
     Serial.print(RangeCm);
@@ -249,17 +255,20 @@ void loop()
     //cmd[1]->pin(0-right,1-left LED)
     //cmd[2]->PWM power (0-255)
     led_light(cmd[1],cmd[2]);
+    cmd[0]=0;
   }
-  else if(cmd[0]==98) //Servo  
+  else if(cmd[0]==101) //Servo  
   {
+    // Serial.println("Hi");
     value=cmd[1];
     if(debug)
     {
     Serial.println(value);
     }
     servo1.write(value);
-    SoftwareServo::refresh();
-    number=0;
+    servo_flag=1;
+    
+    cmd[0]=0;
   }
   if(cmd[0]==50 || tgt_flag==1)//Encoder targetting
   {
@@ -327,6 +336,8 @@ void loop()
       Serial.println(tgt);
     }
   }
+  if(servo_flag)
+    SoftwareServo::refresh();
   //delay(300);
 }
 void receiveData(int byteCount)

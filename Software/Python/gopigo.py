@@ -28,7 +28,7 @@ dspd_cmd=[103]
 volt_cmd=[118]
 us_cmd=[117]
 led_cmd=[108]
-servo_cmd=[98]
+servo_cmd=[101]
 enc_tgt_cmd=[50]
 LED_L=1
 LED_R=0
@@ -96,8 +96,11 @@ def volt():
 	#number = bus.read_i2c_block_data(address,1)
 	#v=number[0]*256+number[1]
 	#print number
-	b1=bus.read_byte(address)
-	b2=bus.read_byte(address)
+	try:
+		b1=bus.read_byte(address)
+		b2=bus.read_byte(address)
+	except IOError:
+		return -1
 	#n3=bus.read_byte(address)
 	print b1,b2
 	if b1!=-1 and b2!=-1:
@@ -109,11 +112,21 @@ def volt():
 	
 def us_dist(pin):
 	write_i2c_block(address,us_cmd+[pin,0,0])
-	time.sleep(.1)
+	time.sleep(.08)
 	#bus.read_byte(address)
-	number = bus.read_i2c_block_data(address,1)
-	dist=number[0]*256+number[1]
-	return dist
+	#number = bus.read_i2c_block_data(address,1)
+	try:
+		b1=bus.read_byte(address)
+		b2=bus.read_byte(address)
+	except IOError:
+		return -1
+	#n3=bus.read_byte(address)
+	#print b1,b2
+	if b1!=-1 and b2!=-1:
+		v=b1*256+b2
+		return v
+	else:
+		return -1
 def led(l_id,power):
 	if l_id==LED_L or l_id==LED_R:
 		write_i2c_block(address,led_cmd+[l_id,power,0])

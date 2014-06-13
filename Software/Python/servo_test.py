@@ -1,5 +1,5 @@
 from gopigo import *
-while True:
-	for i in range(180):
-		servo(i)
-		time.sleep(.02)
+for i in range(180):
+	servo(i)
+	print i
+	time.sleep(.02)
