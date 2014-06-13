@@ -1,4 +1,4 @@
-//Code for encoder testing- Rotate the wheels with hand to make the LED's blink
+//Code for testing interrupts for the encoder signal
 volatile int state = LOW;
 volatile int s=0;
 volatile int f=0,f1=0;

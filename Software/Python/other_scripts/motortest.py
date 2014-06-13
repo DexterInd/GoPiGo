@@ -21,8 +21,11 @@ time.sleep(1)
 i=0
 while True:
 	a=raw_input()
-	print ord(a)
-	writeNumber(ord(a))
+	try:
+		print ord(a)
+		writeNumber(ord(a))
+	except TypeError:
+		print "Invalid Input"
 	time.sleep(.1)
 	
 	

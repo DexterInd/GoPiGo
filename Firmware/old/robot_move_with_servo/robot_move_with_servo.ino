@@ -1,5 +1,7 @@
 //Make the robot move via the terminal
 #include <Wire.h>
+#include <SoftwareServo.h>
+SoftwareServo servo1;
 
 #define SLAVE_ADDRESS 0x04
 int number = 5;
@@ -50,10 +52,6 @@ void stop()
 }
 
 void setup() {
-<<<<<<< HEAD:Firmware/i2c_robot/i2c_robot.ino
-    //pinMode(13, OUTPUT);
-=======
->>>>>>> origin/master:Firmware/old/motor_i2c/motor_i2c.ino
     pinMode(i11, OUTPUT);     
     pinMode(i12, OUTPUT);  
     pinMode(i21, OUTPUT);     
@@ -65,9 +63,16 @@ void setup() {
 
     Wire.onReceive(receiveData);
     Wire.onRequest(sendData);   
+    servo1.attach(5);
+    servo1.setMaximumPulse(2200);
 }
-
+int value = 0;
 void loop() {
+  if(value==180)
+   value=0;
+  servo1.write(value++);
+  SoftwareServo::refresh();
+  
     analogWrite(s_1,sp);
     analogWrite(s_2,sp);
     if(number==116) //t
@@ -88,8 +93,7 @@ void loop() {
     }
     if(sp>255)
       sp=255;
-    if(sp<0)
-      sp=0;
+dd      sp=0;
     if(number==119)  //w
       forward();
     else if(number==97) //a
@@ -100,10 +104,7 @@ void loop() {
       right();
     else if(number==120)  //x
       stop();
-    digitalWrite(5,HIGH);
-    delay(100);
-    digitalWrite(5,LOW);
-     delay(100);
+  delay(10);
 }
 
 void receiveData(int byteCount){

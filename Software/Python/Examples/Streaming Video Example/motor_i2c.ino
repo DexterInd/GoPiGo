@@ -50,10 +50,6 @@ void stop()
 }
 
 void setup() {
-<<<<<<< HEAD:Firmware/i2c_robot/i2c_robot.ino
-    //pinMode(13, OUTPUT);
-=======
->>>>>>> origin/master:Firmware/old/motor_i2c/motor_i2c.ino
     pinMode(i11, OUTPUT);     
     pinMode(i12, OUTPUT);  
     pinMode(i21, OUTPUT);     
