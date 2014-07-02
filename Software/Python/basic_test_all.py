@@ -2,7 +2,7 @@ from gopigo import *
 import sys
 
 while True:
-	print "\nCmd:",
+	print "Cmd:",
 	a=raw_input()
 	if a=='w':
 		fwd()
@@ -44,8 +44,4 @@ while True:
 		left_rot()
 	elif a=='m':
 		right_rot()
-	elif a=='y':
-		enc_tgt(1,1,18)
-	elif a=='f':
-		print "v",fw_ver()
 	time.sleep(.1)
