@@ -34,7 +34,8 @@ SoftwareServo servo1;
 #define enc_test        10
 #define serial_test     11
 #define digial_write    12
-
+#define en_com_timeout_cmd  80
+#define dis_com_timeout_cmd  81
 //Pin Definitions
 int motor1_control_pin1=7;      //Motor 1 direction control pins
 int motor1_control_pin2=8;
@@ -56,6 +57,10 @@ volatile int state = LOW;       //Encoder targetting variables
 volatile int s=0;
 volatile int f1=0,f2=0,e1=0,e2=0;
 int tgt_flag=0,m1_en=0,m2_en=0,tgt=0;
+
+volatile unsigned long last_t=0;
+unsigned long timeout=0;
+int timeout_f=0;
 
 volatile int cmd[5],index=0,flag=0,bytes_to_send=0; //I2C Message variables
 byte payload[3];
@@ -385,6 +390,29 @@ void loop()
         servo_flag=0;
         cmd[0]=0;
     }
+    else if(cmd[0]==en_com_timeout_cmd)//Encoder targetting
+    {
+        timeout=cmd[1]*256+cmd[2];
+        cmd[0]=0;
+        last_t=millis();
+        timeout_f=1;
+    }
+    else if(cmd[0]==dis_com_timeout_cmd)//Encoder targetting
+    {
+        cmd[0]=0;
+        last_t=millis();
+        timeout_f=0;
+        tgt_flag=0;
+    }
+    if(timeout_f)
+    {
+        if(millis()-last_t>timeout)
+        {
+          stp();
+          cmd[0]=0;
+          timeout_f=0;
+        }
+    }   
     if(cmd[0]==enc_tgt_cmd || tgt_flag==1)//Encoder targetting
     {
         if(cmd[0]==50)
@@ -454,6 +482,8 @@ void receiveData(int byteCount)
         {
             flag=0;
             index=0;
+            if(timeout_f)
+              last_t=millis();
         }
         cmd[index++] = Wire.read();
     }
@@ -462,6 +492,8 @@ void receiveData(int byteCount)
 volatile int ind=0;
 void sendData()
 {
+    if(timeout_f)
+        last_t=millis();
     if(bytes_to_send==2)
     {
         Wire.write(payload[ind++]);

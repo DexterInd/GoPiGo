@@ -19,7 +19,7 @@ import struct
 
 import smbus
 import time
-
+import subprocess
 # for RPI version 1, use "bus = smbus.SMBus(0)"
 rev = GPIO.RPI_REVISION
 if rev == 2:
@@ -54,9 +54,17 @@ en_servo_cmd		=[61]
 dis_servo_cmd		=[60]
 set_left_speed_cmd	=[70]
 set_right_speed_cmd	=[71]
+en_com_timeout_cmd	=[80]
+dis_com_timeout_cmd	=[81]
+
 LED_L=1
 LED_R=0
 
+#Enable slow i2c
+def en_slow_i2c():
+	#subprocess.call('sudo rmmod i2c_bcm2708',shell=True)
+	subprocess.call('sudo modprobe i2c_bcm2708 baudrate=70000',shell=True)
+	
 #Write I2C block
 def write_i2c_block(address,block):
 	try:
@@ -276,4 +284,9 @@ def set_speed(speed):
 	set_left_speed(speed)
 	time.sleep(.1)
 	set_right_speed(speed)
+
+def enable_com_timeout(timeout):
+	return write_i2c_block(address,en_com_timeout_cmd+[timeout/256,timeout%256,0])
 	
+def disable_com_timeout():
+	return write_i2c_block(address,dis_com_timeout_cmd+[0,0,0])
