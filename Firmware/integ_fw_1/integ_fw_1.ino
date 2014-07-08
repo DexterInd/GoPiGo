@@ -6,7 +6,7 @@ SoftwareServo servo1;
 #define GOPIGO_ADDR 0x08    //GoPiGo Address 0x08
 #define debug 1
 
-#define ver 12              //Firmware version (12 ->1.2)
+#define ver 9              //Firmware version (12 ->1.2)
 //Command list
 #define fwd_cmd         119
 #define motor_fwd_cmd   105
@@ -35,7 +35,8 @@ SoftwareServo servo1;
 #define serial_test     11
 #define digial_write    12
 #define en_com_timeout_cmd  80
-#define dis_com_timeout_cmd  81
+#define dis_com_timeout_cmd 81
+#define timeout_status_cmd  82
 //Pin Definitions
 int motor1_control_pin1=7;      //Motor 1 direction control pins
 int motor1_control_pin2=8;
@@ -67,6 +68,7 @@ byte payload[3];
 
 int servo_flag=0;
 
+int status_r=0;
 //Move the GoPiGo forward
 void forward()
 {
@@ -415,7 +417,7 @@ void loop()
     }   
     if(cmd[0]==enc_tgt_cmd || tgt_flag==1)//Encoder targetting
     {
-        if(cmd[0]==50)
+        if(cmd[0]==enc_tgt_cmd)
         {
             cmd[0]=0;
             tgt_flag=1;
@@ -470,6 +472,15 @@ void loop()
             Serial.println(tgt);
         }
     }
+    if(tgt_flag)//Set tgt_flag
+      status_r|=1<<0;
+    else
+      status_r&=~(1<<0);
+      
+    if(timeout_f)//Set timeout_flag
+      status_r|=1<<1;
+    else
+      status_r&=~(1<<1);
     if(servo_flag)  //Keep refreshing for software servo
         SoftwareServo::refresh();
 }
@@ -492,8 +503,8 @@ void receiveData(int byteCount)
 volatile int ind=0;
 void sendData()
 {
-    if(timeout_f)
-        last_t=millis();
+    //if(timeout_f)
+     //   last_t=millis();
     if(bytes_to_send==2)
     {
         Wire.write(payload[ind++]);
@@ -503,9 +514,9 @@ void sendData()
             bytes_to_send=0;
         }
     }
-    else if(tgt_flag)
+    else// if(tgt_flag)
     {
-        Wire.write(tgt_flag);
+        Wire.write(status_r);
     }
 }
 //Encoder ISR's

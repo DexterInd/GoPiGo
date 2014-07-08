@@ -50,20 +50,23 @@ enc_tgt_cmd			=[50]
 fw_ver_cmd			=[20]
 en_enc_cmd			=[51]
 dis_enc_cmd			=[52]
+read_enc_status_cmd	=[53]
 en_servo_cmd		=[61]
 dis_servo_cmd		=[60]
 set_left_speed_cmd	=[70]
 set_right_speed_cmd	=[71]
 en_com_timeout_cmd	=[80]
 dis_com_timeout_cmd	=[81]
-
+timeout_status_cmd	=[82]
 LED_L=1
 LED_R=0
 
+'''
 #Enable slow i2c
 def en_slow_i2c():
 	#subprocess.call('sudo rmmod i2c_bcm2708',shell=True)
 	subprocess.call('sudo modprobe i2c_bcm2708 baudrate=70000',shell=True)
+'''
 	
 #Write I2C block
 def write_i2c_block(address,block):
@@ -220,12 +223,6 @@ def enc_tgt(m1,m2,target):
 	write_i2c_block(address,enc_tgt_cmd+[m_sel,target/256,target%256])
 	return 1
 	
-#Read status
-#	return:	0 if encoder target is reached
-def read_status():
-	st=bus.read_byte(address)
-	return st
-	
 #Returns the firmware version
 def fw_ver():
 	write_i2c_block(address,fw_ver_cmd+[0,0,0])
@@ -285,8 +282,34 @@ def set_speed(speed):
 	time.sleep(.1)
 	set_right_speed(speed)
 
+#Enable communication time-out(stop the motors if no command received in the specified time-out)
+#	arg:
+#		timeout-> 0-65535 (timeout in ms)
 def enable_com_timeout(timeout):
-	return write_i2c_block(address,en_com_timeout_cmd+[timeout/256,timeout%256,0])
-	
+	return write_i2c_block(address,en_com_timeout_cmd+[timeout/256,timeout%256,0]) 
+
+#Disable communication time-out
 def disable_com_timeout():
 	return write_i2c_block(address,dis_com_timeout_cmd+[0,0,0])
+	
+#Read the status register on the GoPiGo
+#	Gets a byte, 	b0-enc_status
+#					b1-timeout_status
+#	Return:	list with 	l[0]-enc_status
+#						l[1]-timeout_status
+def read_status():
+	st=bus.read_byte(address)
+	st_reg=[st & (1 <<0),(st & (1 <<1))/2]
+	return st_reg
+	 
+#Read encoder status
+#	return:	0 if encoder target is reached
+def read_enc_status():
+	st=read_status()
+	return st[0]
+
+#Read timeout status
+#	return:	0 if timeout is reached
+def read_timeout_status():
+	st=read_status()
+	return st[1]
