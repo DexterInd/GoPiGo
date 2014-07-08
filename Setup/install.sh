@@ -1,6 +1,4 @@
 #! /bin/bash
-
-#! /bin/bash
 echo "  _____            _                                ";
 echo " |  __ \          | |                               ";
 echo " | |  | | _____  _| |_ ___ _ __                     ";
@@ -40,6 +38,9 @@ echo "Installing Dependencies"
 echo "======================="
 sudo apt-get install python-pip git libi2c-dev python-serial python-rpi.gpio i2c-tools python-smbus arduino minicom libnss-mdns
 echo "Dependencies installed"
+
+#Copy Software Servo
+cp -R ../Firmware/SoftwareServo/ /usr/share/arduino/libraries/
 
 git clone git://git.drogon.net/wiringPi
 cd wiringPi
@@ -98,6 +99,10 @@ cd /tmp
 wget http://project-downloads.drogon.net/gertboard/setup.sh
 chmod +x setup.sh
 sudo ./setup.sh
+
+#Enabling serial port in Arduino IDE
+crontab -l > file; echo '@reboot ln -sf /dev/ttyAMA0 /dev/ttyS0' >> file; crontab file
+rm file
 
 echo " "
 echo "Restarting"
