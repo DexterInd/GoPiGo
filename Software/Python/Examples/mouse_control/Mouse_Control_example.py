@@ -1,18 +1,22 @@
-# Karan
-# Initial Date: June 13, 2014
-#
+#!/usr/bin/python
+########################################################################                                                                  
+# This example is for controlling the GoPiGo robot from a mouse connected to the Raspberry Pi                            
+# http://www.dexterindustries.com/GoPiGo/                                                                
+# History
+# ------------------------------------------------
+# Author     Date      		Comments
+# Karan      13 June 14 	Initial Authoring
+# 			                                                         
 # These files have been made available online through a Creative Commons Attribution-ShareAlike 3.0  license.
-# (http://creativecommons.org/licenses/by-sa/3.0/)
+# (http://creativecommons.org/licenses/by-sa/3.0/)           
 #
-# http://www.dexterindustries.com/
-#
-# This example is for controlling the GoPiGo robot from a mouse connected to the Raspberry Pi
-
+########################################################################
 import struct
 import sys
 from gopigo import *
 
 file = open( "/dev/input/mice", "rb" );
+speed=150
 
 debug = 0	#Print raw values when debugging
 def getMouseEvent():
@@ -29,7 +33,8 @@ def getMouseEvent():
 flag=0
 print "Press Enter to start"
 a=raw_input()	#Wait for an input to start
-fwd()
+set_speed(speed)
+stop()
 while( 1 ):
 	[l,m,r,x,y]=getMouseEvent()	#Get the inputs from the mouse
 	if debug:

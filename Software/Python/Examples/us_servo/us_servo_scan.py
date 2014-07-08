@@ -15,6 +15,7 @@ import math
 
 #Create a map using an ultrasonic sensor and a servo
 def us_map():
+	delay=.02
 	debug =0	#True to spit all raw values
 	num_of_readings=45	#Number of readings to take 
 	incr=180/num_of_readings	#increment of angle in servo
@@ -53,7 +54,9 @@ def us_map():
 		index+=1
 
 		servo(ang)	#Move the servo to the next angle
+		time.sleep(delay)
 		ang+=incr
+		#print ang
 		if ang>180:
 			break
 	
@@ -88,12 +91,27 @@ def us_map():
 	print fence*2
 	return min(dist_l) #Return the closest distance in all directions
 	
+#en_slow_i2c()
+stop()
 while True:
-	enc_tgt(1,1,36)	#Set encoder targetting. Stop after 4 rotations of both the wheels
+	#enable_encoders()
+	enable_com_timeout(2000)
+	enc_tgt(1,1,18)	#Set encoder targetting. Stop after 4 rotations of both the wheels
 	fwd()
+	time.sleep(.2)
 	while True:
-		if read_status() == 0:	#Stop when target is reached
+		enc=read_enc_status()
+		ts=read_timeout_status()
+		time.sleep(.05)
+		print enc,ts
+		if enc == 0:	#Stop when target is reached
 			break
-		time.sleep(1)
+		if  ts==0:
+			break
+		
+	time.sleep(2)
+	#disable_encoders()
+	enable_servo()
 	if us_map() <20:	#If any obstacle is closer than 20 cm, stop
 		break
+	disable_servo()

@@ -1,8 +1,19 @@
+#!/usr/bin/python
+########################################################################                                                                  
 # This example controls the GoPiGo and Rocket Launcher with a wireless mouse on the USB port.
-# The GoPiGo motion is controlled by using the buttons.
-# The Rocket Launcher is controlled by moving the mouse.
+# The GoPiGo motion is controlled by moving the mouse.
+# The Rocket Launcher is controlled by pressing the mouse left button, and moving the mouse.
 # The Rocket Launcher is fired by pressing the middle button.  
-
+#                                
+# http://www.dexterindustries.com/GoPiGo/                                                                
+# History
+# ------------------------------------------------
+# Author     Date      		Comments
+# John Cole  April 14  		Initial Authoring                                                            
+# These files have been made available online through a Creative Commons Attribution-ShareAlike 3.0  license.
+# (http://creativecommons.org/licenses/by-sa/3.0/)           
+#
+########################################################################
 from gopigo import *
 import struct
 
@@ -30,7 +41,7 @@ DEVICE = None
 DEVICE_TYPE = None
 
 file = open( "/dev/input/mice", "rb" );
-debug = 0
+
 
 def setup_usb():
     # Tested only with the Cheeky Dream Thunder
@@ -116,101 +127,66 @@ def run_command_set(commands):
     for cmd, value in commands:
         run_command(cmd, value)
 
+
 def getMouseEvent():
-  buf = file.read(3)
-  button = ord( buf[0] )
-  bLeft = button & 0x1
-  bMiddle = ( button & 0x4 ) > 0
-  bRight = ( button & 0x2 ) > 0
-  x,y = struct.unpack( "bb", buf[1:] )
-  if debug:
-    print ("L:%d, M: %d, R: %d, x: %d, y: %d\n" % (bLeft,bMiddle,bRight, x, y) )
-  return [bLeft,bMiddle,bRight,x,y]
-flag=0
-def control():
-  global flag
-  #buf = file.read(3);
-  #button = ord( buf[0] );
-  #bLeft = button & 0x1;
-  #bMiddle = ( button & 0x4 ) > 0;
-  #bRight = ( button & 0x2 ) > 0;
-  #x,y = struct.unpack( "bb", buf[1:] );
+  buf = file.read(3);
+  button = ord( buf[0] );
+  bLeft = button & 0x1;
+  bMiddle = ( button & 0x4 ) > 0;
+  bRight = ( button & 0x2 ) > 0;
+  x,y = struct.unpack( "bb", buf[1:] );
   # print ("L:%d, M: %d, R: %d, x: %d, y: %d\n" % (bLeft,bMiddle,bRight, x, y) );
   # Now move the wheels according to the moues movements.
 
-  [bLeft,bMiddle,bRight,x,y]=getMouseEvent()  #Get the inputs from the mouse
-  
-  #if debug:
-  #print bLeft,bMiddle,bRight,x,y
-    
-  if flag==1: #If left or right mouse not pressed, move forward
-    fwd()
-    flag=0
-  if bLeft:    #If left mouse buton pressed, turn left
-    left()
-    flag=1
-  #if bMiddle:    #If middle mouse button pressed, stop
-    #stop()
-  if bRight:    #If right mouse button presses, turn right
-    right()
-    flag=1
-  if bLeft and bRight:  #If both the left and right mouse buttons pressed, go back
-    #bwd()
-	stop()
-	flag=0
- 
-  tdelay=80
   if bMiddle > 0:
-    print "fire rockets"
-    run_command("fire", tdelay)
+	print "fire rockets"
+	run_command("fire", 100)
 
-  #if bLeft > 0:
-  #  stop()
-    #if math.fabs(x) > math.fabs(y):
-  if x == 0:
-    print "Stop rockets"
-  elif x > 10:
-    print "Left rockets"
-    run_command("left", tdelay)
-  elif x < -10:
-    print "Right rockets"
-    run_command("right", tdelay)
-  #else:
-  if y == 0:
-    print "Stop Rockets Y"
-  elif y > 10:
-    print "Up Rockets"
-    run_command("up", tdelay)
-  elif y < -10:
-    print "Down rockets"
-    run_command("down", tdelay)
-  #else:
-    #if math.fabs(x) > math.fabs(y):
-     # if x == 0:
-      #  stop()
-       # run_command("led", 1)
-        #run_command("led", 0)
-    #elif x > 0:
-    #  right()
-    #elif x < 0:
-    #  left()
-    #else:
-     # if y == 0:
-      
-#	  stop()
- #       run_command("led", 1)
-  #      run_command("led", 0)
-    #elif y > 0:
-    #  fwd()
-    #elif y < 0:
-    #  bwd()
+  if bLeft > 0:
+	stop()
+	if math.fabs(x) > math.fabs(y):
+		if x == 0:
+			print "Stop rockets"
+		elif x > 0:
+			print "Left rockets"
+			run_command("left", 100)
+		elif x < 0:
+			print "Right rockets"
+			run_command("right", 100)
+	else:
+		if y == 0:
+			print "Stop Rockets Y"
+		elif y > 0:
+			print "Up Rockets"
+			run_command("up", 100)
+		elif y < 0:
+			print "Down rockets"
+			run_command("down", 100)
+  else:
+	if math.fabs(x) > math.fabs(y):
+  		if x == 0:
+			stop()
+			run_command("led", 1)
+			run_command("led", 0)
+		elif x > 0:
+			right()
+		elif x < 0:
+			left()
+	else:
+		if y == 0:
+			stop()
+			run_command("led", 1)
+			run_command("led", 0)
+		elif y > 0:
+			fwd()
+		elif y < 0:
+			bwd()
   return 
 
-print "Setting up"
-print "Left Mouse button- Turn left\nRight mouse button- Turn right\nBoth left and right- Stop\nMiddle mouse button- Fire rocket\nMove mouse to control the launcher"
 setup_usb()
-run_command("zero", 100)
-print "Start\n............."
-while True:
-  control()
+run_command("zero", 5000)
   
+while True:
+	getMouseEvent()
+	time.sleep(.1)
+	
