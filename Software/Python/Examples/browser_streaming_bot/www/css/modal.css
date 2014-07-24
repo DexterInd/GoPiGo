@@ -1,0 +1,86 @@
+/*
+ * Modified from demo at http://cameronbaney.com/2012/07/26/pure-html5css3-responsive-modal-window/
+ */
+
+/* Normal styles for the modal shutdown dialog */
+#modalShutdownDialog {
+    left:10%;
+    /*margin:-250px 0 0 -40%;*/
+    opacity: 0;
+    position:absolute;
+    top:-90%;
+    visibility: hidden;
+    width:80%;
+    height:80%;
+    box-shadow:0 3px 7px rgba(0,0,0,.25);
+    box-sizing:border-box;
+    transition: all 0.4s ease-in-out;
+    -moz-transition: all 0.4s ease-in-out;
+    -webkit-transition: all 0.4s ease-in-out;
+}
+
+/* Make the modal appear when targeted */
+/*#modalShutdownDialog:target {
+    opacity: 1;
+    top:50%;
+    visibility: visible;
+}*/
+    
+#modalShutdownDialog .header,#modalShutdownDialog .footer {
+    border-bottom: 1px solid #e7e7e7;
+    border-radius: 5px 5px 0 0;
+}
+    #modalShutdownDialog .footer {
+        border:none;
+        border-top: 1px solid #e7e7e7;
+        border-radius: 0 0 5px 5px;
+    }
+#modalShutdownDialog h2 {
+    margin:0;
+}
+#modalShutdownDialog .btn {
+    float:right;
+}
+#modalShutdownDialog .copy,#modalShutdownDialog .header, #modalShutdownDialog .footer {
+    padding:15px;
+}
+.modal-content {
+    background: #ffffff;
+    position: relative;
+    z-index: 20;
+    border-radius:5px;
+    height: 100%;
+}
+#modalShutdownDialog .copy {
+    background: #fff;
+    position: absolute;
+    height: 200px;
+    width: 40%;
+    top: 50%;
+    left: 50%;
+    margin-top: -100px;
+    margin-left: -25%;
+}
+
+#modalShutdownDialog .overlay {
+    background-color: #000;
+    background: rgba(0,0,0,.5);
+    height: 100%;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 10;
+}
+
+#shutdownText {
+    text-align: center;
+    margin-bottom: 40px;
+    font-size: large
+}
+
+#shutdownProgress {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
