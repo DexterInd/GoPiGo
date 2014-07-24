@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Logs</title>
+        
+        <script src="js/jquery.js"></script>
+        <script src="js/sockjs-0.3.min.js"></script>
+        
+        <script>
+        
+        $(document).ready( function() { 
+        
+            webSocketURL = "http://" + window.location.hostname + "/robot_control";
+            socket = new SockJS( webSocketURL );
+            socket.onmessage = function( e ) {
+                
+                logData = $.parseJSON( e.data );
+                if ( "MainLog" in logData )
+                {
+                    $( "#mainLog" ).text( logData[ "MainLog" ] );
+                    $( "#mainLogHeader" ).css( "display", "inline" );
+                }
+                else
+                {
+                    $( "#mainLogHeader" ).css( "display", "none" );
+                }
+                
+                if ( "InoBuildLog" in logData )
+                {
+                    $( "#inoBuildLog" ).text( logData[ "InoBuildLog" ] );
+                    $( "#inoBuildLogHeader" ).css( "display", "inline" );
+                }
+                else
+                {
+                    $( "#inoBuildLogHeader" ).css( "display", "none" );
+                }
+            };
+            
+            socket.onopen = function() {
+                socket.send( "GetLogs" );
+            };
+            
+        });
+        </script>
+    </head>
+    <body>
+        <br/>
+        <div id="mainLogHeader" style="display: none; font-weight:bold;">Main Log</div>
+        <pre id="mainLog"></pre>
+        <div id="inoBuildLogHeader" style="display: none; font-weight:bold;">Ino Build Log</div>
+        <pre id="inoBuildLog"></pre>
+    </body>
+</html>

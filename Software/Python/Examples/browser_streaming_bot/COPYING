@@ -1,0 +1,5 @@
+The code is Licensed under Creative Commons Attribution-ShareAlike 3.0  license.
+
+The code from the python example by Dawn Robotics Ltd is licensed under the BSD license.
+
+Of the included JavaScript libraries, jQuery and SockJS are licensed under the MIT license. Our joystick class jquery.joystick.js is a modified version of https://github.com/mifi/jquery-joystick. This project doesn't have a license but obviously all derived projects should link back and provide acknowledgement.

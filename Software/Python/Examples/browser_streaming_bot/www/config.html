@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Configuration</title>
+        
+        <link href="css/style.css" rel="stylesheet">
+        <link href="css/config.css" rel="stylesheet">
+        
+        <script src="js/jquery.js"></script>
+        <script src="js/sockjs-0.3.min.js"></script>
+        
+        <script>
+        
+        function onSliderChange( slider, socket )
+        {        
+            var angle = slider.val();
+
+            if ( slider.attr( "id" ) == "panAngle" )
+            {
+                $( "#panAngleDisplay" ).text( angle );
+            }
+            else if ( slider.attr( "id" ) == "tiltAngle" )
+            {
+                $( "#tiltAngleDisplay" ).text( angle );
+            }
+            
+            if ( socket.readyState == SockJS.OPEN ) 
+            {
+                var panAngle = $( "#panAngle" ).val();
+                var tiltAngle = $( "#tiltAngle" ).val();
+                socket.send( "SetNeckAngles " + panAngle + " " + tiltAngle );
+            }
+        }
+        
+        function onLeftMotorScaleChange( slider, socket )
+        {        
+            var leftMotorScale = slider.val();
+
+            $( "#leftMotorScaleDisplay" ).text( leftMotorScale );
+        }
+        
+        function onUsePresetMotorSpeedsChange()
+        {
+            var usePresets = $( "#usePresetMotorSpeeds" ).prop( "checked" );
+            
+            if ( usePresets )
+            {
+                $( ".presetSpeeds" ).removeAttr( "style" );
+                $( ".customSpeeds" ).css( "display", "none" );
+            }
+            else
+            {
+                $( ".presetSpeeds" ).css( "display", "none" );
+                $( ".customSpeeds" ).removeAttr( "style" );
+            }
+        }
+        
+        function pollForStatus( socket )
+        {
+            if ( socket.readyState == SockJS.OPEN ) 
+            {
+                socket.send( "GetRobotStatus" );
+            }
+        }
+        
+        function saveConfigData( socket )
+        {
+            var configData = {
+                panPulseWidthMin: $( "#panMinPWM" ).val(),
+                panPulseWidthMax: $( "#panMaxPWM" ).val(),
+                tiltPulseWidthMin: $( "#tiltMinPWM" ).val(),
+                tiltPulseWidthMax: $( "#tiltMaxPWM" ).val(),
+                usePresetMotorSpeeds: $( "#usePresetMotorSpeeds" ).prop( "checked" ), 
+                customMaxAbsMotorSpeed: $( "#customMaxAbsMotorSpeed" ).val(),
+                customMaxAbsTurnSpeed: $( "#customMaxAbsTurnSpeed" ).val(),
+                leftMotorScale: $( "#leftMotorScale" ).val(),
+            };
+            
+            if ( socket.readyState == SockJS.OPEN ) 
+            {
+                socket.send( "SetConfig " + JSON.stringify( configData ) );
+            }
+        }
+        
+        $(document).ready( function() { 
+        
+            drivingStraight = false;
+            webSocketURL = "http://" + window.location.hostname + "/robot_control";
+            socket = new SockJS( webSocketURL );
+            socket.onmessage = function( e ) {
+                //console.log('message', e.data);
+                
+                configData = $.parseJSON( e.data );
+                if ( "panPulseWidthMin" in configData )
+                {
+                    $( "#panMinPWM" ).val( configData[ "panPulseWidthMin" ] );
+                }
+                
+                if ( "panPulseWidthMax" in configData )
+                {
+                    $( "#panMaxPWM" ).val( configData[ "panPulseWidthMax" ] );
+                }
+                
+                if ( "tiltPulseWidthMin" in configData )
+                {
+                    $( "#tiltMinPWM" ).val( configData[ "tiltPulseWidthMin" ] );
+                }
+                
+                if ( "tiltPulseWidthMax" in configData )
+                {
+                    $( "#tiltMaxPWM" ).val( configData[ "tiltPulseWidthMax" ] );
+                }
+                
+                if ( "usePresetMotorSpeeds" in configData )
+                {
+                    $( "#usePresetMotorSpeeds" ).prop( "checked", configData[ "usePresetMotorSpeeds" ] );
+                    onUsePresetMotorSpeedsChange();
+                }
+                
+                if ( "customMaxAbsMotorSpeed" in configData )
+                {
+                    $( "#customMaxAbsMotorSpeed" ).val( configData[ "customMaxAbsMotorSpeed" ] );
+                }
+                
+                if ( "customMaxAbsTurnSpeed" in configData )
+                {
+                    $( "#customMaxAbsTurnSpeed" ).val( configData[ "customMaxAbsTurnSpeed" ] );
+                }
+                
+                if ( "leftMotorScale" in configData )
+                {
+                    $( "#leftMotorScale" ).val( configData[ "leftMotorScale" ] );
+                    onLeftMotorScaleChange( $( "#leftMotorScale" ), socket );
+                }
+                
+                // Status data
+                if ( "batteryVoltage" in configData )
+                {
+                    $( "#batteryVoltage" ).text( configData[ "batteryVoltage" ].toFixed( 3 ) );
+                }
+                
+                if ( "presetMaxAbsMotorSpeed" in configData )
+                {
+                    $( "#presetMaxAbsMotorSpeed" ).text( configData[ "presetMaxAbsMotorSpeed" ] );
+                }
+                
+                if ( "presetMaxAbsTurnSpeed" in configData )
+                {
+                    $( "#presetMaxAbsTurnSpeed" ).text( configData[ "presetMaxAbsTurnSpeed" ] );
+                }
+            };
+            
+            socket.onopen = function() {
+                socket.send( "GetConfig" );
+            };
+            
+            console.log( "Setting up status poller" );
+            statusPollerId = setInterval( function() { pollForStatus( socket ) }, 250 );
+            
+            // Select tab by default
+            if ( document.location.hash == "" || document.location.hash == "#" )
+            {
+                document.location.hash = "#PanTilt";
+            }
+            
+            $( "#panAngle" ).on( "input", function() { onSliderChange( $( this ), socket ); } );
+            $( "#tiltAngle" ).on( "input", function() { onSliderChange( $( this ), socket ); } );
+            $( "#panAngle" ).val( 90 );
+            $( "#panAngleDisplay" ).text( "90" );
+            $( "#tiltAngle" ).val( 90 );
+            $( "#tiltAngleDisplay" ).text( "90" );
+            
+            $( "#leftMotorScale" ).on( "input change", function() { onLeftMotorScaleChange( $( this ), socket ); } );
+            
+            onUsePresetMotorSpeedsChange()
+            $( "#usePresetMotorSpeeds" ).on( "input change", onUsePresetMotorSpeedsChange );
+            
+            $( "#btnSave" ).click( function() {
+                saveConfigData( socket );
+            } );
+            
+            $( "#btnDriveStraight" ).click( function() {
+                
+                if ( drivingStraight )
+                {
+                    return;
+                }
+                
+                drivingStraight = true;
+                
+                saveConfigData( socket );
+                
+                if ( socket.readyState == SockJS.OPEN ) 
+                {
+                    socket.send( "Move 0.0 1.0" );  // Start driving forwards (using a joystick command)
+                }
+                
+                setTimeout( function() {
+                    if ( socket.readyState == SockJS.OPEN ) 
+                    {
+                        socket.send( "Move 0.0 -1.0" );  // Start driving backwards
+                    }
+                    
+                    setTimeout( function() {
+                        if ( socket.readyState == SockJS.OPEN ) 
+                        {
+                            socket.send( "Move 0.0 0.0" );  // Stop
+                        }
+                        
+                        drivingStraight = false;
+                    }, 1000 );
+                    
+                }, 1000 );
+            } );
+        });
+        </script>
+    </head>
+    <body>
+        <br/>
+        
+        <article class="tabs">
+        
+            <section id="PanTilt">
+                <h2><a href="#PanTilt">Pan/Tilt</a></h2>
+        
+                <table class="tab_content">
+                    <tr>
+                        <td></td>
+                        <td>PWM for 0</td>
+                        <td>PWM for 180</td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td>Pan</td>
+                        <td><input id="panMinPWM" type="text"></td>
+                        <td><input id="panMaxPWM" type="text"></td>
+                        <td><input id="panAngle" type="range" min="0" max="180" value="90"></td>
+                        <td id="panAngleDisplay">23</td>
+                    </tr>
+                    <tr>
+                        <td>Tilt</td>
+                        <td><input id="tiltMinPWM" type="text"></td>
+                        <td><input id="tiltMaxPWM" type="text"></td>
+                        <td><input id="tiltAngle" type="range" min="0" max="180" value="90"></td>
+                        <td id="tiltAngleDisplay">23</td>
+                    </tr>
+                </table>  
+            </section>
+        
+            <section id="Motors">
+                <h2><a href="#Motors">Motors</a></h2>
+        
+                <table class="tab_content">
+                    <tr>
+                        <td>Battery Voltage</td>
+                        <td id="batteryVoltage">0</td>
+                    </tr>
+                    <tr>
+                        <td>Use Preset Motor Speeds</td>
+                        <td><input id="usePresetMotorSpeeds" type="checkbox"></td>
+                    </tr>
+                    <tr class="customSpeeds">
+                        <td>Custom Max Absolute Motor Speed</td>
+                        <td><input id="customMaxAbsMotorSpeed" type="text"></td>
+                    </tr>
+                    <tr class="customSpeeds">
+                        <td>Custom Max Absolute Turn Speed</td>
+                        <td><input id="customMaxAbsTurnSpeed" type="text"></td>
+                    </tr>
+                    <tr class="presetSpeeds">
+                        <td>Preset Max Absolute Motor Speed</td>
+                        <td id="presetMaxAbsMotorSpeed">0</td>
+                    </tr>
+                    <tr class="presetSpeeds">
+                        <td>Preset Max Absolute Turn Speed</td>
+                        <td id="presetMaxAbsTurnSpeed">0</td>
+                    </tr>
+                    <tr>
+                        <td>Left Motor Speed Scale</td>
+                        <td><input id="leftMotorScale" type="range" min="0.0" max="2.0" value="1.0" step="0.01"></td>
+                        <td id="leftMotorScaleDisplay">1.0</td>
+                        <td><button id="btnDriveStraight" type="button" class="btn">Drive Straight</button></td> 
+                    </tr>
+                </table>  
+                
+            </section>
+       
+        </article>
+        <br/>
+        
+        <button id="btnSave" type="button" class="btn">Save</button> 
+    </body>
+</html>
