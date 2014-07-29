@@ -1,0 +1,11 @@
+[Desktop Entry]
+Encoding=UTF-8
+Version=1.0
+Type=Application
+Exec=/home/pi/Desktop/GoPiGo/Software/Scratch/GoPiGo_Scratch_Scripts/GoPiGo_Scratch_Start.sh
+Icon=/usr/share/scratch/Media/Costumes/Animals/cat1-b.gif
+Terminal=false
+Name=GoPiGo_Scratch_Start
+Comment= Programming system and content development tool
+Categories=Application;Education;Development;
+MimeType=application/x-scratch-project
