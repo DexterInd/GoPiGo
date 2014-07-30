@@ -22,7 +22,7 @@ import time
 import subprocess
 # for RPI version 1, use "bus = smbus.SMBus(0)"
 rev = GPIO.RPI_REVISION
-if rev == 2:
+if rev == 2 or rev == 3:
 	bus = smbus.SMBus(1) 
 else:
 	bus = smbus.SMBus(0) 
