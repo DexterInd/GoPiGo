@@ -22,7 +22,7 @@ print "Initializing"
 p=ps3()		#Create a PS3 object
 print "Done"
 s=150	#Initialize
-run=0
+run=1
 flag=0
 while True:
 	if run:
