@@ -1,6 +1,6 @@
 #!/usr/bin/python
 ########################################################################                                                                  
-# This example is for controlling the GoPiGo robot from a mouse connected to the Raspberry Pi                            
+# This example is for controlling the GoPiGo robot from a mouse buttons                        
 # http://www.dexterindustries.com/GoPiGo/                                                                
 # History
 # ------------------------------------------------
