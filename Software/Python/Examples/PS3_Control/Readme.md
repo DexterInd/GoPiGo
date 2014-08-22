@@ -1,3 +1,7 @@
+Run
+sudo apt-get update
+
+Create a folder for the PS3 setup and delete the folder after the installation is complete
 (Do all of this in one folder so you can download and delete it when you're done)
 
 sudo apt-get install bluez-utils bluez-compat bluez-hcidump checkinstall libusb-dev  libbluetooth-dev joystick
