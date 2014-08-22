@@ -1,6 +1,6 @@
 #!/usr/bin/python
 ########################################################################                                                                  
-# This example is for controlling the GoPiGo robot from a mouse connected to the Raspberry Pi                            
+# This example is for controlling the GoPiGo robot from a mouse buttons                        
 # http://www.dexterindustries.com/GoPiGo/                                                                
 # History
 # ------------------------------------------------
@@ -15,10 +15,18 @@ import struct
 import sys
 from gopigo import *
 
+#Open the stream of data coming from the mouse
 file = open( "/dev/input/mice", "rb" );
 speed=150
 
 debug = 0	#Print raw values when debugging
+
+#Parse through the fata coming from mouse
+#Returns: 	[left button pressed,
+#		middle button pressed,
+#		right button pressed,
+#		change of position in x-axis,
+#		change of position in y-axis]
 def getMouseEvent():
 	buf = file.read(3)
 	button = ord( buf[0] )
