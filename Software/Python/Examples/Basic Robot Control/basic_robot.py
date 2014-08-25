@@ -1,3 +1,25 @@
+#!/usr/bin/python
+#############################################################################################################                                                                  
+# Basic example for controlling the GoPiGo using the Keyboard
+# Controls:
+# 	w:	Move forward
+#	a:	Turn left
+#	d:	Turn right
+#	s:	Move back
+#	x:	Stop
+#	t:	Increase speed
+#	g:	Decrease speed
+#	z: 	Exit
+# http://www.dexterindustries.com/GoPiGo/                                                                
+# History
+# ------------------------------------------------
+# Author     	Date      		Comments  
+# Karan			27 June 14		Code cleanup                                                    
+# These files have been made available online through a Creative Commons Attribution-ShareAlike 3.0  license.
+# (http://creativecommons.org/licenses/by-sa/3.0/)           
+#
+##############################################################################################################
+
 from gopigo import *	#Has the basic functions for controlling the GoPiGo Robot
 import sys	#Used for closing the running program
 print "This is a basic example for the GoPiGo Robot control"
