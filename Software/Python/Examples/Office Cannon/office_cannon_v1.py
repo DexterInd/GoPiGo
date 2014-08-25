@@ -1,8 +1,8 @@
 #!/usr/bin/python
 ########################################################################                                                                  
 # This example controls the GoPiGo and Rocket Launcher with a wireless mouse on the USB port.
-# The GoPiGo motion is controlled by moving the mouse.
-# The Rocket Launcher is controlled by pressing the mouse left button, and moving the mouse.
+# The GoPiGo motion is controlled by the buttons of the.
+# The Rocket Launcher is controlled by the motion of the mouse.
 # The Rocket Launcher is fired by pressing the middle button.  
 #                                
 # http://www.dexterindustries.com/GoPiGo/                                                                
@@ -10,13 +10,16 @@
 # ------------------------------------------------
 # Author     	Date      		Comments
 # John Cole  	April 14  		Initial Authoring    
-# Karan Nayan   27 June 14		Code cleanup and made more responsive                                                     
+# Karan			27 June 14		Code cleanup and made more responsive   
+# 				25 Aug  14		USB high current mode for Raspberry Pi Model B+ added        
+#                                       
 # These files have been made available online through a Creative Commons Attribution-ShareAlike 3.0  license.
 # (http://creativecommons.org/licenses/by-sa/3.0/)           
 #
 ########################################################################
 from gopigo import *
 import struct
+import os
 
 import sys
 import platform
@@ -29,6 +32,9 @@ import base64
 
 import usb.core
 import usb.util
+
+#Enable for Model B+ and disable for Model B
+model_b_plus=True
 
 # Protocol command bytes
 DOWN    = 0x01
@@ -44,9 +50,8 @@ DEVICE_TYPE = None
 file = open( "/dev/input/mice", "rb" );
 debug = 0
 
+# Setup the Office Cannon
 def setup_usb():
-    # Tested only with the Cheeky Dream Thunder
-    # and original USB Launcher
     global DEVICE 
     global DEVICE_TYPE
 
@@ -61,35 +66,33 @@ def setup_usb():
     else:
         DEVICE_TYPE = "Thunder"
 
-    
-
     # On Linux we need to detach usb HID first
     if "Linux" == platform.system():
         try:
             DEVICE.detach_kernel_driver(0)
         except Exception, e:
             pass # already unregistered    
-
     DEVICE.set_configuration()
 
-
+#Send command to the office cannon
 def send_cmd(cmd):
     if "Thunder" == DEVICE_TYPE:
         DEVICE.ctrl_transfer(0x21, 0x09, 0, 0, [0x02, cmd, 0x00,0x00,0x00,0x00,0x00,0x00])
     elif "Original" == DEVICE_TYPE:
         DEVICE.ctrl_transfer(0x21, 0x09, 0x0200, 0, [cmd])
 
+#Send command to control the LED on the office cannon
 def led(cmd):
     if "Thunder" == DEVICE_TYPE:
         DEVICE.ctrl_transfer(0x21, 0x09, 0, 0, [0x03, cmd, 0x00,0x00,0x00,0x00,0x00,0x00])
     elif "Original" == DEVICE_TYPE:
         print("There is no LED on this device")
 
+#Send command to move the office cannon
 def send_move(cmd, duration_ms):
     send_cmd(cmd)
     time.sleep(duration_ms / 1000.0)
     send_cmd(STOP)
-
 
 def run_command(command, value):
     command = command.lower()
@@ -123,107 +126,92 @@ def run_command(command, value):
     else:
         print "Error: Unknown command: '%s'" % command
 
-
 def run_command_set(commands):
     for cmd, value in commands:
         run_command(cmd, value)
 
+#Read the values from the mouse
 def getMouseEvent():
-  buf = file.read(3)
-  button = ord( buf[0] )
-  bLeft = button & 0x1
-  bMiddle = ( button & 0x4 ) > 0
-  bRight = ( button & 0x2 ) > 0
-  x,y = struct.unpack( "bb", buf[1:] )
-  if debug:
-    print ("L:%d, M: %d, R: %d, x: %d, y: %d\n" % (bLeft,bMiddle,bRight, x, y) )
-  return [bLeft,bMiddle,bRight,x,y]
+	buf = file.read(3)
+	button = ord( buf[0] )
+	bLeft = button & 0x1
+	bMiddle = ( button & 0x4 ) > 0
+	bRight = ( button & 0x2 ) > 0
+	x,y = struct.unpack( "bb", buf[1:] )
+	if debug:
+		print ("L:%d, M: %d, R: %d, x: %d, y: %d\n" % (bLeft,bMiddle,bRight, x, y) )
+	return [bLeft,bMiddle,bRight,x,y]
+  
+  
 flag=0
+#Control the office cannon
 def control():
-  global flag
-  #buf = file.read(3);
-  #button = ord( buf[0] );
-  #bLeft = button & 0x1;
-  #bMiddle = ( button & 0x4 ) > 0;
-  #bRight = ( button & 0x2 ) > 0;
-  #x,y = struct.unpack( "bb", buf[1:] );
-  # print ("L:%d, M: %d, R: %d, x: %d, y: %d\n" % (bLeft,bMiddle,bRight, x, y) );
-  # Now move the wheels according to the moues movements.
+	global flag
+	[bLeft,bMiddle,bRight,x,y]=getMouseEvent()  #Get the inputs from the mouse
 
-  [bLeft,bMiddle,bRight,x,y]=getMouseEvent()  #Get the inputs from the mouse
+	#GoPiGo control
+	if flag==1: 			#If left or right mouse not pressed, move forward
+		fwd()
+		flag=0
+	if bLeft:    			#If left mouse buton pressed, turn left
+		left()
+		flag=1
   
-  #if debug:
-  #print bLeft,bMiddle,bRight,x,y
-    
-  if flag==1: #If left or right mouse not pressed, move forward
-    fwd()
-    flag=0
-  if bLeft:    #If left mouse buton pressed, turn left
-    left()
-    flag=1
-  #if bMiddle:    #If middle mouse button pressed, stop
-    #stop()
-  if bRight:    #If right mouse button presses, turn right
-    right()
-    flag=1
-  if bLeft and bRight:  #If both the left and right mouse buttons pressed, go back
-    #bwd()
-	stop()
-	flag=0
+	if bRight:    			#If right mouse button presses, turn right
+		right()
+		flag=1
+	if bLeft and bRight:  	#If both the left and right mouse buttons pressed, go back
+		stop()
+		flag=0
  
-  tdelay=80
-  if bMiddle > 0:
-    print "fire rockets"
-    run_command("fire", tdelay)
+	#Office cannon control
+	tdelay=80
+	if bMiddle > 0:
+		print "fire rockets"
+		run_command("fire", tdelay)
 
-  #if bLeft > 0:
-  #  stop()
-    #if math.fabs(x) > math.fabs(y):
-  if x == 0:
-    print "Stop rockets"
-  elif x > 10:
-    print "Left rockets"
-    run_command("left", tdelay)
-  elif x < -10:
-    print "Right rockets"
-    run_command("right", tdelay)
-  #else:
-  if y == 0:
-    print "Stop Rockets Y"
-  elif y > 10:
-    print "Up Rockets"
-    run_command("up", tdelay)
-  elif y < -10:
-    print "Down rockets"
-    run_command("down", tdelay)
-  #else:
-    #if math.fabs(x) > math.fabs(y):
-     # if x == 0:
-      #  stop()
-       # run_command("led", 1)
-        #run_command("led", 0)
-    #elif x > 0:
-    #  right()
-    #elif x < 0:
-    #  left()
-    #else:
-     # if y == 0:
-      
-#	  stop()
- #       run_command("led", 1)
-  #      run_command("led", 0)
-    #elif y > 0:
-    #  fwd()
-    #elif y < 0:
-    #  bwd()
-  return 
+	#Move the mouse left to move the cannon left
+	#Move the mouse right to move the cannon right
+	#Press middle button to fire
+	
+	if x == 0:
+		print "Stop rockets"
+	elif x > 10:
+		print "Left rockets"
+		run_command("left", tdelay)
+	elif x < -10:
+		print "Right rockets"
+		run_command("right", tdelay)
+	if y == 0:
+		print "Stop Rockets Y"
+	elif y > 10:
+		print "Up Rockets"
+		run_command("up", tdelay)
+	elif y < -10:
+		print "Down rockets"
+		run_command("down", tdelay)
 
-print "Setting up"
-print "Left Mouse button- Turn left\nRight mouse button- Turn right\nBoth left and right- Stop\nMiddle mouse button- Fire rocket\nMove mouse to control the launcher"
-setup_usb()
-run_command("zero", 100)
-stop()
-print "Start\n............."
-while True:
-  control()
+	time.sleep(.1)
+	return
   
+try:
+	print "Setting up"
+	print "Left Mouse button- Turn left\nRight mouse button- Turn right\nBoth left and right- Stop\nMiddle mouse button- Fire rocket\nMove mouse to control the launcher"
+	setup_usb()
+	
+	#Enable USB to give supply upto 1.2A on model B+
+	if model_b_plus:
+		os.system("gpio -g write 38 0")
+		os.system("gpio -g mode 38 out")
+		os.system("gpio -g write 38 1")
+	
+	run_command("zero", 100)
+	stop()
+	print "Start\n............."
+	while True:
+	  control()
+except KeyboardInterrupt:
+	#Disable hight current mode on USB before exiting
+	if model_b_plus:
+		os.system("gpio -g write 38 0")
+	
