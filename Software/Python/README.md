@@ -4,7 +4,7 @@
 **_Files:_**
 - **gopigo.py** : Main Python library to control the GoPiGo
 - **basic_test_all.py** : Example to test all the functions of the GoPiGO
-- **setup.py** : Installation file for the GoPiGo
+- **setup.py** : Installation file for the GoPiGo (use only if you are not using Dexter Industries SD Card)
 
 **_Folders:_**
 - **Examples** : Example programs and projects for the GoPiGo
