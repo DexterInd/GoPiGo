@@ -20,6 +20,3 @@ else
     LD_LIBRARY_PATH=/opt/mjpg-streamer/ /opt/mjpg-streamer/mjpg_streamer -i "input_file.so -f /tmp/stream -n pic.jpg" -o "output_http.so -p 9000 -w /opt/mjpg-streamer/www" > /dev/null 2>&1&
     echo "mjpg_streamer started"
 fi
-
-sudo python motortest.py
-

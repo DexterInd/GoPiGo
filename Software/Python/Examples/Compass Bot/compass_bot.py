@@ -1,6 +1,6 @@
 #!/usr/bin/python
 ##################################################################################################################
-# This is a project example for uning the GoPiGo with the compass as a turtle robot
+# This is a project example for using the GoPiGo with the compass as a turtle robot
 #                             
 # http://www.dexterindustries.com/GrovePi/        
 # Compass module: http://www.seeedstudio.com/depot/Grove-3Axis-Digital-Compass-p-759.html
@@ -21,7 +21,7 @@
 #	r 45	:	rotate right by 45 degrees
 #
 #	NOTE	:	There might be a bug with the Grove Compass which causes it to rotate by more than what you want.
-#					Try the compass test to see that you get proper reading when you rotate the compas 360 degrees in
+#					Try the compass test to see that you get proper reading when you rotate the compass 360 degrees in
 #				90 degree increments.
 ####################################################################################################################
 
@@ -123,7 +123,5 @@ while True:
 			print "Wrong command"
 	except ValueError:
 		print "Wrong command"
-	#print heading
 	
 	time.sleep(.1)
-	

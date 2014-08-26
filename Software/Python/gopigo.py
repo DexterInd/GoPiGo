@@ -1,16 +1,19 @@
 #!/usr/bin/python
 ########################################################################                                                                  
-# This library is for communicating with the GoPiGo                                
+# This library is used for communicating with the GoPiGo.                                
 # http://www.dexterindustries.com/GoPiGo/                                                                
 # History
 # ------------------------------------------------
-# Author     Date      		Comments
-# Karan      30 March 14  	Initial Authoring
-# 			 02 July  14	Removed bugs and some features added (v0.9)                                                              
+# Author	Date      		Comments
+# Karan		30 March 14  	Initial Authoring
+# 			02 July  14		Removed bugs and some features added (v0.9) 
+#			26 Aug	 14		Code commenting and cleanup
+																		
 # These files have been made available online through a Creative Commons Attribution-ShareAlike 3.0  license.
 # (http://creativecommons.org/licenses/by-sa/3.0/)           
 #
 ########################################################################
+
 import serial, time
 import smbus
 import math
@@ -20,6 +23,7 @@ import struct
 import smbus
 import time
 import subprocess
+
 # for RPI version 1, use "bus = smbus.SMBus(0)"
 rev = GPIO.RPI_REVISION
 if rev == 2 or rev == 3:
@@ -31,38 +35,40 @@ else:
 address = 0x08
 
 #GoPiGo Commands
-fwd_cmd				=[119]
-motor_fwd_cmd		=[105]
-bwd_cmd				=[115]
-motor_bwd_cmd		=[107]
-left_cmd			=[97]
-left_rot_cmd		=[98]
-right_cmd			=[100]
-right_rot_cmd		=[110]
-stop_cmd			=[120]
-ispd_cmd			=[116]
-dspd_cmd			=[103]
-volt_cmd			=[118]
-us_cmd				=[117]
-led_cmd				=[108]
-servo_cmd			=[101]
-enc_tgt_cmd			=[50]
-fw_ver_cmd			=[20]
-en_enc_cmd			=[51]
-dis_enc_cmd			=[52]
-read_enc_status_cmd	=[53]
-en_servo_cmd		=[61]
-dis_servo_cmd		=[60]
-set_left_speed_cmd	=[70]
-set_right_speed_cmd	=[71]
-en_com_timeout_cmd	=[80]
-dis_com_timeout_cmd	=[81]
-timeout_status_cmd	=[82]
+fwd_cmd				=[119]		#Move forward with PID
+motor_fwd_cmd		=[105]		#Move forward without PID
+bwd_cmd				=[115]		#Move back with PID
+motor_bwd_cmd		=[107]		#Move back without PID
+left_cmd			=[97]		#Turn Left by turning off one motor
+left_rot_cmd		=[98]		#Rotate left by running both motors is opposite direction
+right_cmd			=[100]		#Turn Right by turning off one motor
+right_rot_cmd		=[110]		#Rotate Right by running both motors is opposite direction
+stop_cmd			=[120]		#Stop the GoPiGo
+ispd_cmd			=[116]		#Increase the speed by 10
+dspd_cmd			=[103]		#Decrease the speed by 10
+volt_cmd			=[118]		#Read the voltage of the batteries
+us_cmd				=[117]		#Read the distance from the ultrasonic sensor
+led_cmd				=[108]		#Turn On/Off the LED's
+servo_cmd			=[101]		#Rotate the servo
+enc_tgt_cmd			=[50]		#Set the encoder targeting
+fw_ver_cmd			=[20]		#Read the firmware version
+en_enc_cmd			=[51]		#Enable the encoders
+dis_enc_cmd			=[52]		#Disable the encoders
+read_enc_status_cmd	=[53]		#Read encoder status
+en_servo_cmd		=[61]		#Enable the servo's	
+dis_servo_cmd		=[60]		#Disable the servo's
+set_left_speed_cmd	=[70]		#Set the speed of the right motor
+set_right_speed_cmd	=[71]		#Set the speed of the left motor
+en_com_timeout_cmd	=[80]		#Enable communication timeout
+dis_com_timeout_cmd	=[81]		#Disable communication timeout
+timeout_status_cmd	=[82]		#Read the timeout status
+
+#LED setup
 LED_L=1
 LED_R=0
 
 '''
-#Enable slow i2c
+#Enable slow i2c (for better stability)
 def en_slow_i2c():
 	#subprocess.call('sudo rmmod i2c_bcm2708',shell=True)
 	subprocess.call('sudo modprobe i2c_bcm2708 baudrate=70000',shell=True)
@@ -77,7 +83,7 @@ def write_i2c_block(address,block):
 		return -1
 	return 1
 
-#Write a byte 
+#Write a byte to the GoPiGo
 def writeNumber(value):
 	try:
 		bus.write_byte(address, value)
@@ -86,7 +92,7 @@ def writeNumber(value):
 		return -1	
 	return 1
 
-#Read a byte
+#Read a byte from the GoPiGo
 def readByte():
 	try:
 		number = bus.read_byte(address)
@@ -103,11 +109,11 @@ def fwd():
 def motor_fwd():
 	return write_i2c_block(address,motor_fwd_cmd+[0,0,0])
 
-#Move GoPiGo backward
+#Move GoPiGo back
 def bwd():
 	return write_i2c_block(address,bwd_cmd+[0,0,0])
 
-#Move GoPiGo backward without PID control
+#Move GoPiGo back without PID control
 def motor_bwd():
 	return write_i2c_block(address,motor_bwd_cmd+[0,0,0])
 
@@ -115,7 +121,7 @@ def motor_bwd():
 def left():
 	return write_i2c_block(address,left_cmd+[0,0,0])
 
-#Rotate GoPiGo left in same position
+#Rotate GoPiGo left in same position (both motors moving in the opposite direction)
 def left_rot():
 	return write_i2c_block(address,left_rot_cmd+[0,0,0])
 
@@ -123,7 +129,7 @@ def left_rot():
 def right():
 	return write_i2c_block(address,right_cmd+[0,0,0])
 
-#Rotate GoPiGo right in same position
+#Rotate GoPiGo right in same position both motors moving in the opposite direction)
 def right_rot():
 	return write_i2c_block(address,right_rot_cmd+[0,0,0])
 
@@ -156,6 +162,7 @@ def volt():
 		return round(v,2)
 	else:
 		return -1
+		
 #Read ultrasonic sensor
 #	arg:
 #		pin -> 	Pin number on which the US sensor is connected
