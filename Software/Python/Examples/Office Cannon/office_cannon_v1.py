@@ -34,7 +34,10 @@ import usb.core
 import usb.util
 
 #Enable for Model B+ and disable for Model B
-model_b_plus=True
+model_b_plus=True	# For the model B+ we need to turn this variable on to run the Office Cannon.
+					# This can be left on for the Model B and not cause problems.
+					# This pulls GPIO 38 to high, which overrides USB overcurrent setting.
+					# With this set, the USB can deliver up to 1.2 Amps.
 
 # Protocol command bytes
 DOWN    = 0x01
