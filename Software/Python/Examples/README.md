@@ -1,9 +1,11 @@
 ## Python Examples
 ### This folder contains the basic Python examples and projects for the GoPiGo
 
-- **Basic Robot Control** : Simplest of the programs for using the GoPiGo. Simply control the GoPiGo using the basic keyboard commands
+- **Basic Robot Control** : Simplest of the programs for using the GoPiGo. Simply control the GoPiGo using the basic keyboard commands.
+
 <a href="http://www.youtube.com/watch?feature=player_embedded&v=9s4MbPS8MfE" target="_blank"><img src="http://img.youtube.com/vi/9s4MbPS8MfE/0.jpg" 
 alt="GoPiGo Basic Robot Control Video" width="240" height="180" border="10" /></a>
+
 - **GPS Bot** : Reads the GPS data from the Grove GPS module. Can be used to program the GoPiGo to follow way points.
 - **Streaming Video Example** : Stream video over the network using mpeg-streamer (decent-quality)
 - **Office Cannon** : Control the GoPiGo and the office cannon using a mouse connected to the Raspberry Pi
