@@ -12,8 +12,6 @@
 
 **Note:**
 
-The office cannon needs more than the 600mA that is supplied by USB to fire the projectiles.
-
-For this, the we pull the GPIO 32 to HIGH which allows the USB to supply upto 1.2A.
-
-The USB power supply is reverted back to normal when the program closes or when the user uses CTRL+CTRL to close the program.
+- The office cannon needs more than the 600mA that is supplied by USB to fire the projectiles.
+- For this, the we pull the GPIO 32 to HIGH which allows the USB to supply upto 1.2A.
+- The USB power supply is reverted back to normal when the program closes or when the user uses CTRL+CTRL to close the program.
