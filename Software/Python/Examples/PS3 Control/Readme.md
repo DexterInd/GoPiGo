@@ -11,7 +11,7 @@
 
 >./sixpair
 
-- Now run the ps3_gpg_example.py
+- Now disconnect the USB cable an press the **PS** button on teh PS3 controller a few times and the run the ps3_gpg_example.py
 
 >python ps3_gpg_example.py
 
