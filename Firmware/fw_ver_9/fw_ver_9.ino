@@ -49,7 +49,7 @@ SoftwareServo servo1;
 #define digital_write   12      //Digital write on a port
 #define en_com_timeout_cmd  80  //Enable communication timeout
 #define dis_com_timeout_cmd 81  //Disable communication timeout
-#define timeout_status_cmd  82  //Read the timeout status`
+#define timeout_status_cmd  82  //Read the timeout status
 
 //Pin Definitions (Arduino Pin Definitions)
 int motor1_control_pin1=7;      //Motor 1 direction control pins

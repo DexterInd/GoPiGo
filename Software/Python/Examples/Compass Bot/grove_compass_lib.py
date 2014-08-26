@@ -57,6 +57,7 @@ class compass:
 		#Enable the compass
 		bus.write_byte_data(HMC5883L_ADDRESS,MODE_REGISTER,0)
 		time.sleep(.1)
+		#Set a default configuration for the Compass
 		bus.write_byte_data(HMC5883L_ADDRESS,CONFIGURATION_REGISTERA,24)
 		time.sleep(.1)
 		data=bus.read_i2c_block_data(HMC5883L_ADDRESS,0)

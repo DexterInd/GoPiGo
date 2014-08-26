@@ -1,13 +1,17 @@
 #!/usr/bin/python
-# Karan
-# Initial Date: June 13, 2014
+########################################################################                                                                  
+# This example is for using the GoPiGo to move around and get the Latitude and Longitude coordinates and save them to a file
 #
+# http://www.dexterindustries.com/GoPiGo/                                                                
+# History
+# ------------------------------------------------
+# Author     Date      		Comments
+# Karan      21 Aug 14 		Initial Authoring
+# 			                                                         
 # These files have been made available online through a Creative Commons Attribution-ShareAlike 3.0  license.
-# (http://creativecommons.org/licenses/by-sa/3.0/)
+# (http://creativecommons.org/licenses/by-sa/3.0/)           
 #
-# http://www.dexterindustries.com/
-#
-# This example is for using the GoPiGo to move around ad get the Latitude and Longitude coordinates and save them to a file
+########################################################################
 from gopigo import *
 import serial, time
 import smbus
