@@ -8,9 +8,12 @@
 
 **Usage**
 - Connect the PS3 controller with the Raspberry Pi using a USB cable and run sixpair
-./sixpair
+
+>./sixpair
+
 - Now run the ps3_gpg_example.py
-python ps3_gpg_example.py
+
+>python ps3_gpg_example.py
 
 **Note:**
 If you are not using Dexter Industries Image, do the following:
