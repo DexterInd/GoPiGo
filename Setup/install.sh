@@ -45,7 +45,9 @@ cp -R ../Firmware/SoftwareServo/ /usr/share/arduino/libraries/
 chmod +x gpg 
 cp gpg /usr/bin
 
-python ../Software/Python/setup.py install
+cd ../Software/Python
+python setup.py install
+cd ../../Setup
 
 git clone git://git.drogon.net/wiringPi
 cd wiringPi
