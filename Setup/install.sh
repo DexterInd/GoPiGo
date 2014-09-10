@@ -42,6 +42,13 @@ echo "Dependencies installed"
 #Copy Software Servo
 cp -R ../Firmware/SoftwareServo/ /usr/share/arduino/libraries/
 
+chmod +x gpg 
+cp gpg /usr/bin
+
+cd ../Software/Python
+python setup.py install
+cd ../../Setup
+
 git clone git://git.drogon.net/wiringPi
 cd wiringPi
 ./build
@@ -105,11 +112,4 @@ crontab -l > file; echo '@reboot ln -sf /dev/ttyAMA0 /dev/ttyS0' >> file; cronta
 rm file
 
 echo " "
-echo "Restarting"
-echo "3"
-sleep 1
-echo "2"
-sleep 1
-echo "1"
-sleep 1
-shutdown -r now
+echo "Please restart the Raspberry Pi for the changes to take effect"
