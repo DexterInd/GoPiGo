@@ -112,11 +112,4 @@ crontab -l > file; echo '@reboot ln -sf /dev/ttyAMA0 /dev/ttyS0' >> file; cronta
 rm file
 
 echo " "
-echo "Restarting"
-echo "3"
-sleep 1
-echo "2"
-sleep 1
-echo "1"
-sleep 1
-shutdown -r now
+echo "Please restart the Raspberry Pi for the changes to take effect"
