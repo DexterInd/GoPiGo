@@ -42,6 +42,9 @@ echo "Dependencies installed"
 #Copy Software Servo
 cp -R ../Firmware/SoftwareServo/ /usr/share/arduino/libraries/
 
+chmod +x gpg 
+cp gpg /usr/bin
+
 python ../Software/Python/setup.py install
 
 git clone git://git.drogon.net/wiringPi

@@ -1,0 +1,2 @@
+#!/bin/bash
+python /home/pi/Desktop/GoPiGo/Software/Python/other_scripts/gopigo_status.py
