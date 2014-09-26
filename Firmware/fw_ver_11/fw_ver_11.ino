@@ -189,20 +189,7 @@ void led_light(int led_pin,int pow)
 //Setting up the GoPiGo
 void setup()
 {
-
-    // if (F_CPU == 16000000) clock_prescale_set(clock_div_8);
-    // F_CPU == 16000000/8;
-    // clock_prescale_set(clock_div_8);  
-    /*
-    while(true){
-      led_light(0, 255);
-      delay(1);
-      led_light(0, 0);
-      delay(1);
-    }
-    */
-
-    
+   
     if (debug)      //Enable the serial port on the GoPiGo
     {
         Serial.begin(115200);
