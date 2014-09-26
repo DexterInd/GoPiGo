@@ -5,9 +5,25 @@
 // ------------------------------------------------
 // Author     Date      		Comments
 // Karan      21 Aug 14 		Initial Authoring
-// Karan      25 Aug 14         Code clean-up and commenting		                                                         
+// Karan      25 Aug 14         Code clean-up and commenting
+// John       25 Sep 14         Changes for div8 fuse settings.		                                                         
 // These files have been made available online through a Creative Commons Attribution-ShareAlike 3.0  license.
 // (http://creativecommons.org/licenses/by-sa/3.0/)           
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+//  Fuse Settings:
+//  Extended - 0xFD
+//  High     - 0xDA
+//  Low      - 0x7F
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// Clock Settings:
+// The clock is reduced by 8 by setting the div8 fuse.  Use this as a reference:  http://playground.arduino.cc/Learning/Atmega83-3V
+// We made this change to decrease noise from the motors.
+// We have to lower the F_CPU settings.
+// In the file: \Arduino\hardware\arduino\boards.txt
+// Change, on line 16 under "Arduino Uno": 
+//     uno.build.f_cpu=16000000L
+// to:
+//     uno.build.f_cpu=2000000L
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 #include <avr/power.h>
@@ -173,6 +189,20 @@ void led_light(int led_pin,int pow)
 //Setting up the GoPiGo
 void setup()
 {
+
+    // if (F_CPU == 16000000) clock_prescale_set(clock_div_8);
+    // F_CPU == 16000000/8;
+    // clock_prescale_set(clock_div_8);  
+    /*
+    while(true){
+      led_light(0, 255);
+      delay(1);
+      led_light(0, 0);
+      delay(1);
+    }
+    */
+
+    
     if (debug)      //Enable the serial port on the GoPiGo
     {
         Serial.begin(115200);
