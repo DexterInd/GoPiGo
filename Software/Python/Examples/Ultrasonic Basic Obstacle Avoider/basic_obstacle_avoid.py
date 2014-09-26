@@ -14,6 +14,10 @@
 # (http://creativecommons.org/licenses/by-sa/3.0/)           
 #
 ########################################################################
+#
+# ! Attach Ultrasonic sensor to A1 Port.
+#
+########################################################################
 from gopigo import *
 import time
 
