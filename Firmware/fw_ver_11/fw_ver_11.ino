@@ -35,7 +35,7 @@ SoftwareServo servo1;
 
 #define debug 0             //Make 0 to disable debugging
 
-#define ver 10               //Firmware version (10 ->1.0)
+#define ver 11               //Firmware version (10 ->1.0)
 
 //Command list received from the Raspberry Pi
 #define fwd_cmd         119     //Move forward with PID
@@ -99,7 +99,7 @@ int timeout_f=0;
 volatile int cmd[5],index=0,flag=0,bytes_to_send=0; //I2C Message variables
 byte payload[3];
 
-int servo_flag=0;       //Servo enabled or not
+int servo_flag=1;       //Servo enabled or not
 
 int status_r=0;
 
@@ -192,7 +192,7 @@ void setup()
    
     if (debug)      //Enable the serial port on the GoPiGo
     {
-        Serial.begin(115200);
+        Serial.begin(19200);
         Serial.print("Ready");
     }
     
@@ -205,7 +205,7 @@ void setup()
     pinMode(motor2_control_pin2, OUTPUT);
     
     servo1.attach(5);                       //Set up the Servo
-    servo1.setMaximumPulse(2200);
+    //servo1.setMaximumPulse(3000);
     
     Wire.begin(GOPIGO_ADDR);                //Set up I2C
     Wire.onReceive(receiveData);
