@@ -1,6 +1,9 @@
 from gopigo import *
 import sys
 
+import atexit
+atexit.register(stop)
+
 while True:
 	print "\nCmd:",
 	a=raw_input()
