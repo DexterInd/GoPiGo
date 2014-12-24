@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 ########################################################################                                               
 # This is the library to read values from PS3 Dualshock 3 controller
 #                                

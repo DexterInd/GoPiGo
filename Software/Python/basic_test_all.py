@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 from gopigo import *
 import sys
 
