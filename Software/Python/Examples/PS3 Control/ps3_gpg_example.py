@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 ########################################################################                                               
 # This example controls the GoPiGo and using a PS3 Dualshock 3 controller
 #                                

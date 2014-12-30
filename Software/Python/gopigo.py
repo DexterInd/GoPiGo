@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 ########################################################################                                                                  
 # This library is used for communicating with the GoPiGo.                                
 # http://www.dexterindustries.com/GoPiGo/                                                                
