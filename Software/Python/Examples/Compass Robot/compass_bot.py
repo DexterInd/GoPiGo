@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 ##################################################################################################################
 # This is a project example for using the GoPiGo with the compass as a turtle robot
 #                             

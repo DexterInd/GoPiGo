@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 ########################################################################                                                                  
 # This example demonstrates controlling the Servo on the GoPiGo robot.
 # In this example, we control the servo with a keyboard.  When you run

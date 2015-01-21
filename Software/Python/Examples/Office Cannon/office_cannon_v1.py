@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 ########################################################################                                                                  
 # This example controls the GoPiGo and Rocket Launcher with a wireless mouse on the USB port.
 # The GoPiGo motion is controlled by the buttons of the.

@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 #############################################################################################################                                                                  
 # Basic example for controlling the GoPiGo using the Keyboard
 # Controls:
