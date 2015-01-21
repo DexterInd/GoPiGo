@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 ##############################################################################################################                                                              
 # This example is for streaming video and controlling the GoPiGo from a web browser
 # http://www.dexterindustries.com/GoPiGo/                                                                

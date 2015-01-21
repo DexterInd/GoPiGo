@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 ########################################################################                                                                  
 # This example is for controlling the GoPiGo robot from a mouse scroll                          
 # http://www.dexterindustries.com/GoPiGo/                                                                

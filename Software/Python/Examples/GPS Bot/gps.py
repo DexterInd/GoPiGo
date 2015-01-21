@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 ########################################################################                                                                  
 # This example is for using the GoPiGo to move around and get the Latitude and Longitude coordinates and save them to a file
 #

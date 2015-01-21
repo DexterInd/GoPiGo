@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 ############################################################################################                                                                
 # This example creates LIDAR like map using an ultrasonic sensor and a servo with the GoPiGo
 #                                
