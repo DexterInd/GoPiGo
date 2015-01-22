@@ -103,15 +103,17 @@ def readByte():
 
 #Move the GoPiGo forward
 def fwd():
-	return write_i2c_block(address,fwd_cmd+[0,0,0])
+	return write_i2c_block(address,motor_fwd_cmd+[0,0,0])
+	# return write_i2c_block(address,fwd_cmd+[0,0,0])
 	
 #Move the GoPiGo forward without PID
 def motor_fwd():
 	return write_i2c_block(address,motor_fwd_cmd+[0,0,0])
 
-#Move GoPiGo back
+#Move GoPiGo back 
 def bwd():
-	return write_i2c_block(address,bwd_cmd+[0,0,0])
+	return write_i2c_block(address,motor_bwd_cmd+[0,0,0])
+	# return write_i2c_block(address,bwd_cmd+[0,0,0])
 
 #Move GoPiGo back without PID control
 def motor_bwd():
