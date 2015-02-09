@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/python
 ########################################################################                                                                  
 # This library is used for communicating with the GoPiGo.                                
 # http://www.dexterindustries.com/GoPiGo/                                                                
@@ -46,6 +46,9 @@ right_rot_cmd		=[110]		#Rotate Right by running both motors is opposite directio
 stop_cmd			=[120]		#Stop the GoPiGo
 ispd_cmd			=[116]		#Increase the speed by 10
 dspd_cmd			=[103]		#Decrease the speed by 10
+m1_cmd      		=[111]     	#Control motor1
+m2_cmd    			=[112]     	#Control motor2
+
 volt_cmd			=[118]		#Read the voltage of the batteries
 us_cmd				=[117]		#Read the distance from the ultrasonic sensor
 led_cmd				=[108]		#Turn On/Off the LED's
@@ -63,9 +66,22 @@ en_com_timeout_cmd	=[80]		#Enable communication timeout
 dis_com_timeout_cmd	=[81]		#Disable communication timeout
 timeout_status_cmd	=[82]		#Read the timeout status
 
+digital_write_cmd   =[12]      	#Digital write on a port
+digital_read_cmd    =[13]      	#Digital read on a port
+analog_read_cmd     =[14]      	#Analog read on a port
+analog_write_cmd    =[15]      	#Analog read on a port
+pin_mode_cmd        =[16]      	#Set up the pin mode on a port
+
+#LED Pins
+LED_L_PIN=10
+LED_R_PIN=5
+
 #LED setup
 LED_L=1
 LED_R=0
+
+# This allows us to be more specific about which commands contain unused bytes
+unused = 0
 
 '''
 #Enable slow i2c (for better stability)
@@ -101,19 +117,25 @@ def readByte():
 		return -1	
 	return number
 
+#Control Motor 1
+def motor1(direction,speed):
+	return write_i2c_block(address,m1_cmd+[direction,speed,0])
+	
+#Control Motor 2
+def motor2(direction,speed):
+	return write_i2c_block(address,m2_cmd+[direction,speed,0])
+	
 #Move the GoPiGo forward
 def fwd():
 	return write_i2c_block(address,motor_fwd_cmd+[0,0,0])
-	# return write_i2c_block(address,fwd_cmd+[0,0,0])
 	
 #Move the GoPiGo forward without PID
 def motor_fwd():
 	return write_i2c_block(address,motor_fwd_cmd+[0,0,0])
 
-#Move GoPiGo back 
+#Move GoPiGo back
 def bwd():
 	return write_i2c_block(address,motor_bwd_cmd+[0,0,0])
-	# return write_i2c_block(address,bwd_cmd+[0,0,0])
 
 #Move GoPiGo back without PID control
 def motor_bwd():
@@ -147,6 +169,62 @@ def increase_speed():
 def decrease_speed():
 	return write_i2c_block(address,dspd_cmd+[0,0,0])
 
+# Arduino Digital Read
+def digitalRead(pin):
+	if pin ==10 or pin ==15 or pin ==0 or pin ==1:
+		write_i2c_block(address, digital_read_cmd + [pin, unused, unused])
+		time.sleep(.1)
+		n=bus.read_byte(address)
+		bus.read_byte(address)		#Empty the buffer
+		return n
+	else:
+		return -2
+		
+# Arduino Digital Write
+def digitalWrite(pin, value):
+	if pin ==10 or pin ==15 or pin ==0 or pin ==1 or pin==5:
+		if value==0 or value ==1:
+			write_i2c_block(address, digital_write_cmd + [pin, value, unused])
+			time.sleep(.005)	#Wait for 5 ms for the commands to complete
+			return 1
+	else:
+		return -2
+
+# Setting Up Pin mode on Arduino
+def pinMode(pin, mode):
+	if pin ==10 or pin ==15 or pin ==0 or pin ==1:
+		if mode == "OUTPUT":
+			write_i2c_block(address, pin_mode_cmd + [pin, 1, unused])
+		elif mode == "INPUT":
+			write_i2c_block(address, pin_mode_cmd + [pin, 0, unused])
+		time.sleep(.005)	#Wait for 5 ms for the commands to complete
+		return 1
+	else:
+		return -2
+	
+# Read analog value from Pin
+def analogRead(pin):
+	if pin == 1 :
+		bus.write_i2c_block_data(address, analog_read_cmd + [pin, unused, unused])
+		time.sleep(.1)
+		try:
+			b1=bus.read_byte(address)
+			b2=bus.read_byte(address)
+		except IOError:
+			return -1
+		return b1* 256 + b2
+	else:
+		return -2
+		
+# Write PWM
+def analogWrite(pin, value):
+	if pin == 10 :
+		write_i2c_block(address, aWrite_cmd + [pin, value, unused])
+		time.sleep(.005)	#Wait for 5 ms for the commands to complete
+		return 1
+	else:
+		return -2
+		
 #Read voltage
 #	return:	voltage in V
 def volt():
@@ -183,23 +261,15 @@ def us_dist(pin):
 	else:
 		return -1
 
-#Set led to the power level 
-#	arg:
-#		l_id:	1 for left LED and 0 for right LED
-#		power:	pwm power for the LED's
-def led(l_id,power):
-	if l_id==LED_L or l_id==LED_R:
-		write_i2c_block(address,led_cmd+[l_id,power,0])
-		return 1
-	else:
-		return -1
-
 #Turn led on
 #	arg:
 #		l_id: 1 for left LED and 0 for right LED
 def led_on(l_id):
 	if l_id==LED_L or l_id==LED_R:
-		write_i2c_block(address,led_cmd+[l_id,255,0])
+		if l_id==LED_L:
+			digitalWrite(LED_L_PIN,1)
+		elif l_id==LED_R:
+			digitalWrite(LED_R_PIN,1)
 		return 1
 	else:
 		return -1
@@ -209,7 +279,10 @@ def led_on(l_id):
 #		l_id: 1 for left LED and 0 for right LED
 def led_off(l_id):
 	if l_id==LED_L or l_id==LED_R:
-		write_i2c_block(address,led_cmd+[l_id,0,0])
+		if l_id==LED_L:
+			digitalWrite(LED_L_PIN,0)
+		elif l_id==LED_R:
+			digitalWrite(LED_R_PIN,0)
 		return 1
 	else:
 		return -1
