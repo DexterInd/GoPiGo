@@ -205,7 +205,7 @@ def pinMode(pin, mode):
 # Read analog value from Pin
 def analogRead(pin):
 	if pin == 1 :
-		bus.write_i2c_block_data(address, analog_read_cmd + [pin, unused, unused])
+		write_i2c_block(address, analog_read_cmd + [pin, unused, unused])
 		time.sleep(.1)
 		try:
 			b1=bus.read_byte(address)
@@ -219,7 +219,7 @@ def analogRead(pin):
 # Write PWM
 def analogWrite(pin, value):
 	if pin == 10 :
-		write_i2c_block(address, aWrite_cmd + [pin, value, unused])
+		write_i2c_block(address, analog_write_cmd + [pin, value, unused])
 		time.sleep(.005)	#Wait for 5 ms for the commands to complete
 		return 1
 	else:
