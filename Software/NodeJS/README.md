@@ -29,7 +29,6 @@ var gopigo = require('node-gopigo')
 ```
 
 Once the module has been loaded you can start using it:
-### Single read
 ```javascript
 gopigo.init({
   reset: true,
