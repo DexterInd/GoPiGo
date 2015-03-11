@@ -53,9 +53,9 @@ gopigo.init({
 })
 ```
 
-The "sensors" object defines the attached sensors and the relative pins
-The "reset" option will reset the servo's position and the leds' status after the init.
-The "onLowVoltage" callback will be invoked in case of the voltage drops under 5.5 Volts (default value) or the preferred value passed through the "minVoltage" parameter
+* The "sensors" object defines the attached sensors and the relative pins
+* The "reset" option will reset the servo's position and the leds' status after the init.
+* The "onLowVoltage" callback will be invoked in case of the voltage drops under 5.5 Volts (default value) or the preferred value passed through the "minVoltage" parameter
 
 ## Conclusions
 A lot of improvements are waiting to be implemented so be patient and stay focused! :-)
