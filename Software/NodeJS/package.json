@@ -31,5 +31,11 @@
   "license": "Creative Commons Attribution-ShareAlike 3.0",
   "bugs": {
     "url": "https://github.com/marcellobarile/GoPiGo/issues"
+  },
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
   }
 }

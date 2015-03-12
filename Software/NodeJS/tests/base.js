@@ -43,7 +43,30 @@ function handleAnswer(answer) {
   var message = ''
   switch (answer) {
     case 'help':
-      message = ''
+      console.log('')
+      console.log('reset => performs a reset of LEDs and servo motor')
+      console.log('left led on => turn left led on')
+      console.log('left led off => turn left led off')
+      console.log('right led on => turn right led on')
+      console.log('right led off => turn right led off')
+      console.log('move forward => moves the GoPiGo forward')
+      console.log('move backward => moves the GoPiGo backward')
+      console.log('turn left => turns the GoPiGo to the left')
+      console.log('turn right => turns the GoPiGo to the right')
+      console.log('stop => stops the GoPiGo')
+      console.log('increase speed => increases the motors speed')
+      console.log('decrease speed => decreases the motors speed')
+      console.log('voltage => returns the voltage value')
+      console.log('servo test => performs a servo test')
+      console.log('ultrasonic distance => returns the distance from an object')
+      console.log('move forward with PID => moves the GoPiGo forward with PID')
+      console.log('move backward with PID => moves the GoPiGo backward with PID')
+      console.log('rotate left => rotates the GoPiGo to the left')
+      console.log('rotate right => rotates the GoPiGo to the right')
+      console.log('set encoder targeting => sets the encoder targeting')
+      console.log('firmware version => returns the firmware version')
+      console.log('exit => exits from this test')
+      console.log('')
     break
     case 'reset':
       gopigo.reset()
