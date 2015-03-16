@@ -28,9 +28,6 @@ if [ $motors = $y ]; then
 
    avrdude -c gpio -p m328p -U flash:w:fw_ver_12.cpp.hex
    echo "============================="
-   echo "Check for GoPiGo Present:"
-   gpg
-   echo "============================="
 else
   echo "Disconect your motors and retry!"
 fi
