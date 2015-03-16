@@ -37,7 +37,7 @@ SoftwareServo servo1;
 
 #define debug 0             //Make 0 to disable debugging
 
-#define ver 12               //Firmware version (10 ->1.0)
+#define ver 13               //Firmware version (10 ->1.0)
 
 //Command list received from the Raspberry Pi
 #define fwd_cmd         119     //Move forward with PID
