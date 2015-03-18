@@ -102,13 +102,21 @@ while True:
 				print msg
 			l_led_pow=int(msg[4:])
 			if en_gpg:
-				led(LED_L,l_led_pow)
+				if l_led_pow > 127:
+					led_on(1)
+				else:
+					led_off(1)
+				
 		elif msg[:4]=="LEDR":
 			if en_debug:
 				print msg
 			r_led_pow=int(msg[4:])
 			if en_gpg:
-				led(LED_R,r_led_pow)
+				if en_gpg:
+					if r_led_pow > 127:
+						led_on(0)
+					else:
+						led_off(0)
 		elif msg[:9]=="WHEEL ROT":
 			if en_debug:
 				print msg
