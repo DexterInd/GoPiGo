@@ -74,7 +74,7 @@
             if ( screen.width > screen.height )
             {
                 // In landscape mode
-                motorStick.css( 'left', 0.1*screen.width - motorStick.width()/2 );
+                motorStick.css( 'left', 0.5*screen.width - motorStick.width()/2 );
                 motorStick.css( 'top', 0.5*screen.height - motorStick.height()/2 );
                 panTiltStick.css( 'left', 0.9*screen.width - panTiltStick.width()/2 );
                 panTiltStick.css( 'top', 0.5*screen.height - panTiltStick.height()/2 );
@@ -204,12 +204,12 @@
       <div class="inner_circle"></div>
       <div class="handle"></div>
     </div>
-    
+    <!--
     <div class="joystick" id="pan_tilt_stick">
       <div class="inner_circle"></div>
       <div class="handle"></div>
     </div>
-    
+    //-->
     <button id="btnShutdown" type="button" class="btn">Shutdown</button>
     
     <div id="modalShutdownDialog">

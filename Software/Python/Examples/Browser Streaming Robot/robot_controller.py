@@ -5,7 +5,8 @@
 # History
 # ------------------------------------------------
 # Author     Date      		Comments
-# Karan      24 July 14  	Initial Authoring                                                          
+# Karan      24 July 14  	Initial Authoring         
+# Karan		 19 Feb 15		Converted to 1 joystick mode                                                 
 # These files have been made available online through a Creative Commons Attribution-ShareAlike 3.0  license.
 # (http://creativecommons.org/licenses/by-sa/3.0/)           
 #
@@ -62,8 +63,9 @@ class RobotController:
     speed_r=200
     #-----------------------------------------------------------------------------------------------
     def __init__( self ):
-        gopigo.set_speed(0)
-        gopigo.fwd()
+        gopigo.set_speed(200)
+        gopigo.stop()
+        #gopigo.fwd()
         
         self.lastServoSettingsSendTime = 0.0
         self.lastUpdateTime = 0.0
@@ -91,25 +93,41 @@ class RobotController:
         return ( joystickX, joystickY )
 
     def centreNeck( self ):
-        gopigo.set_right_speed(0)
+        #gopigo.set_right_speed(0)
+		pass
        
     def setMotorJoystickPos( self, joystickX, joystickY ):
         joystickX, joystickY = self.normaliseJoystickData( joystickX, joystickY )
         if debug:
 			print "Left joy",joystickX, joystickY
-			print self.speed_l*joystickY
-        gopigo.set_left_speed(int(self.speed_l*joystickY))
-        gopigo.fwd()
+			#print self.speed_l*joystickY
+        #gopigo.set_left_speed(int(self.speed_l*joystickY))
+        #gopigo.fwd()
+        if joystickX > .5:
+			print "Left"
+			gopigo.left()
+        elif joystickX <-.5:
+			print "Right"
+			gopigo.right()
+        elif joystickY > .5:
+			print "Fwd"
+			gopigo.fwd()
+        elif joystickY < -.5:
+			print "Back"
+			gopigo.bwd()
+        else:
+			print "Stop"
+			gopigo.stop()
 		
     def setNeckJoystickPos( self, joystickX, joystickY ):
         #print "g"
         joystickX, joystickY = self.normaliseJoystickData( joystickX, joystickY )
         if debug:	
 			print "Right joy",joystickX, joystickY
-			print self.speed_r*joystickY
-        gopigo.set_right_speed(int(self.speed_r*joystickY))
-        gopigo.fwd()
-        self.lastMotionCommandTime = time.time()
+			#print self.speed_r*joystickY
+        #gopigo.set_right_speed(int(self.speed_r*joystickY))
+        #gopigo.fwd()
+        #self.lastMotionCommandTime = time.time()
 
     def update( self ):
         if debug:	
