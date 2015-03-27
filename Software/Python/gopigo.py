@@ -65,6 +65,10 @@ set_right_speed_cmd	=[71]		#Set the speed of the left motor
 en_com_timeout_cmd	=[80]		#Enable communication timeout
 dis_com_timeout_cmd	=[81]		#Disable communication timeout
 timeout_status_cmd	=[82]		#Read the timeout status
+enc_read_cmd		=[53]		#Read encoder values
+trim_test_cmd		=[30]		#Test the trim values
+trim_write_cmd		=[31]		#Write the trim values
+trim_read_cmd		=[32]		
 
 digital_write_cmd   =[12]      	#Digital write on a port
 digital_read_cmd    =[13]      	#Digital read on a port
@@ -168,6 +172,42 @@ def increase_speed():
 #Decrease the speed
 def decrease_speed():
 	return write_i2c_block(address,dspd_cmd+[0,0,0])
+
+#Trim test with the value specified
+def trim_test(value):
+	if value>100:
+		value=100
+	elif value<-100:
+		value=-100
+	value+=100
+	write_i2c_block(address,trim_test_cmd+[value,0,0])
+
+#Read the trim value in	EEPROM if present else return -3
+def trim_read():
+	write_i2c_block(address,trim_read_cmd+[0,0,0])
+	time.sleep(.08)
+	try:
+		b1=bus.read_byte(address)
+		b2=bus.read_byte(address)
+	except IOError:
+		return -1
+		
+	if b1!=-1 and b2!=-1:
+		v=b1*256+b2
+		if v==255:
+			return -3
+		return v
+	else:
+		return -1
+		
+#Write the trim value to EEPROM, where -100=0 and 100=200
+def trim_write(value):
+	if value>100:
+		value=100
+	elif value<-100:
+		value=-100
+	value+=100
+	write_i2c_block(address,trim_write_cmd+[value,0,0])
 
 # Arduino Digital Read
 def digitalRead(pin):
@@ -305,6 +345,24 @@ def enc_tgt(m1,m2,target):
 	write_i2c_block(address,enc_tgt_cmd+[m_sel,target/256,target%256])
 	return 1
 	
+#Read encoder value
+#	arg:
+#		motor -> 	0 for motor1 and 1 for motor2
+#	return:		distance in cm
+def enc_read(motor):
+	write_i2c_block(address,enc_read_cmd+[motor,0,0])
+	time.sleep(.08)
+	try:
+		b1=bus.read_byte(address)
+		b2=bus.read_byte(address)
+	except IOError:
+		return -1
+	if b1!=-1 and b2!=-1:
+		v=b1*256+b2
+		return v
+	else:
+		return -1
+		
 #Returns the firmware version
 def fw_ver():
 	write_i2c_block(address,fw_ver_cmd+[0,0,0])
