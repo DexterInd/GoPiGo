@@ -68,7 +68,7 @@ var self = module.exports = {
 
     if (typeof opts.onLowVoltage != 'undefined')
       onLowVoltage = opts.onLowVoltage
-    
+
     if (typeof opts.onError !=' undefined')
       onError = opts.onError
 
@@ -394,6 +394,58 @@ var self = module.exports = {
     return self
   },
 
+  /** Trim test with the value specified */
+  trim_test: function(value, callback) {
+    if (value > 100) {
+      value = 100
+    } else if (value < -100) {
+      vaue = -100
+    }
+    value += 100
+
+    self.write_i2c_block(cmd.trim_test.concat([value, cmd.unused, cmd.unused]))
+    callback(trueRet)
+
+    return self
+  },
+
+  /** Read the trim value in EEPROM if present else return -3 **/
+  trim_read: function(callback) {
+    self.write_i2c_block(cmd.trim_read.concat([cmd.unused, cmd.unused, cmd.unused]))
+    self.utils.wait(80)
+
+    var b1 = self.read_i2c_byte()
+    var b2 = self.read_i2c_byte()
+
+    if (b1 != -1 && b2 != -1) {
+      var value = b1 * 256 + b2
+      if (value == 255) {
+        callback(-3)
+      } else {
+        callback(value)
+      }
+    } else {
+      callback(falseRet)
+    }
+
+    return self
+  },
+
+  /** Write the trim value to EEPROM, where -100=0 and 100=200 */
+  trim_write: function(value, callback) {
+    if (value > 100) {
+      value = 100
+    } else if (value < -100) {
+      vaue = -100
+    }
+    value += 100
+
+    self.write_i2c_block(cmd.trim_write.concat([value, cmd.unused, cmd.unused]))
+    callback(trueRet)
+
+    return self
+  },
+
   /** Read voltage (Returns voltage in V) **/
   volt: function(callback) {
     self.write_i2c_block(cmd.volt.concat([cmd.unused, cmd.unused, cmd.unused]))
@@ -474,6 +526,26 @@ var self = module.exports = {
       var m_sel = m1 * 2 + m2
       self.write_i2c_block(cmd.enc_tgt.concat([m_sel, target / 256, target % 256]))
       callback(trueRet)
+    }
+
+    return self
+  },
+
+  /** Read encoder value **/
+  /** motor: 0 for motor1 and 1 for motor2 **/
+  /** return distance in cm **/
+  encoder_read: function(motor) {
+    self.write_i2c_block(cmd.enc_read.concat([motor, cmd.unused, cmd.unused]))
+    self.utils.wait(80)
+
+    var b1 = self.read_i2c_byte()
+    var b2 = self.read_i2c_byte()
+
+    if (b1 != -1 && b2 != -1) {
+      var value = b1 * 256 + b2
+      callback(value)
+    } else {
+      callback(falseRet)
     }
 
     return self

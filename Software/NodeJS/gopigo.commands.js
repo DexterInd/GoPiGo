@@ -30,6 +30,10 @@ module.exports = {
   , en_com_timeout                              : [80]    // Enable communication timeout
   , dis_com_timeout                             : [81]    // Disable communication timeout
   , timeout_status                              : [82]    // Read the timeout status
+  , enc_read                                    : [53]    // Read encoder values
+  , trim_test                                   : [30]    // Test the trim values
+  , trim_write                                  : [31]    // Write the trim values
+  , trim_read                                   : [32]
 
   , dWrite                                      : [12]    // Digital write on a port
   , dRead                                       : [13]    // Digital read on a port
