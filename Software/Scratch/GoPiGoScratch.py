@@ -19,6 +19,12 @@ from gopigo import *
 
 en_gpg=1
 en_debug=1
+
+#360 roation is ~64 encoder pulses
+#or 5 deg/pulse
+#Deg:Pulse Ratio
+DPR = 360.0/64
+
 try:
     s = scratch.Scratch()
     if s.connected:
@@ -123,6 +129,22 @@ while True:
 			dist= int(msg[9:])
 			if en_gpg:
 				enc_tgt(1,1,dist)
+		elif msg[:6]=="R TURN":
+			if en_debug:
+				print msg
+			deg= int(msg[6:])
+			dist= int(deg/DPR)
+			if en_gpg:
+				enc_tgt(1,0,dist)
+                right()
+		elif msg[:6]=="L TURN":
+			if en_debug:
+				print msg
+			deg= int(msg[6:])
+			dist= int(deg/DPR)
+			if en_gpg:
+				enc_tgt(0,1,dist)
+                right()
 		elif msg[:3]=="SER":
 			if en_debug:
 				print msg
