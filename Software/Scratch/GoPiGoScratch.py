@@ -136,7 +136,7 @@ while True:
 			dist= int(deg/DPR)
 			if en_gpg:
 				enc_tgt(1,0,dist)
-                right()
+				right()
 		elif msg[:6]=="L TURN":
 			if en_debug:
 				print msg
@@ -144,7 +144,7 @@ while True:
 			dist= int(deg/DPR)
 			if en_gpg:
 				enc_tgt(0,1,dist)
-                right()
+				left()
 		elif msg[:3]=="SER":
 			if en_debug:
 				print msg
@@ -157,6 +157,13 @@ while True:
 					elif srv_pos < 0:
 						srv_pos = 0
 					servo(srv_pos)
+		elif msg=="GET_DIST":
+			if en_debug:
+				print "Received distance request."
+				print msg
+			dist= us_dist(15)
+				if en_gpg:
+					s.sensorupdate({'distance':dist})
 		else:
 			if en_debug:
 				print "m",msg
