@@ -123,6 +123,18 @@ while True:
 			dist= int(msg[9:])
 			if en_gpg:
 				enc_tgt(1,1,dist)
+		elif msg[:3]=="SER":
+			if en_debug:
+				print msg
+			srv_pos=int(msg[3:])
+			if en_gpg:
+				# Why is this done 2x??
+				if en_gpg:
+					if srv_pos > 180:
+						srv_pos = 180
+					elif srv_pos < 0:
+						srv_pos = 0
+					servo(srv_pos)
 		else:
 			if en_debug:
 				print "m",msg
