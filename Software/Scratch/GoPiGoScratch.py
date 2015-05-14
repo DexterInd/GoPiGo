@@ -112,7 +112,6 @@ while True:
 					led_on(1)
 				else:
 					led_off(1)
-				
 		elif msg[:4]=="LEDR":
 			if en_debug:
 				print msg
@@ -129,6 +128,10 @@ while True:
 			dist= int(msg[9:])
 			if en_gpg:
 				enc_tgt(1,1,dist)
+		## Perhaps these should become
+		## helper or convenience fcns
+		## in the gopigo package.
+		## and then below would just reference them.
 		elif msg[:6]=="R TURN":
 			if en_debug:
 				print msg
