@@ -1,8 +1,12 @@
-var gopigo   = require('../gopigo')
+var Gopigo   = require('../libs').Gopigo
+var Commands = Gopigo.commands
+var Robot = Gopigo.robot
+var robot
+
 var readline = require('readline')
 var sleep = require('sleep')
 
-var ultrasonic_pin = 15
+var ultrasonicPin = 15
 
 var rl = readline.createInterface({
   input : process.stdin,
@@ -13,25 +17,46 @@ console.log(' Welcome to the GoPiGo test application             ')
 console.log(' When asked, insert a command to test your GoPiGo   ')
 console.log(' (!) For a complete list of commands, please type help')
 
-gopigo.init({
-  debug: true,
-  reset: true,
+robot = new Robot({
   minVoltage: 5.5,
-  sensors: {
-    'ultrasonic': ultrasonic_pin
-  },
-  onInit: function callback() {
+  criticalVoltage: 1.2,
+  debug: true,
+  ultrasonicSensorPin: ultrasonicPin
+})
+robot.on('init', function onInit(res) {
+  if (res) {
     console.log('GoPiGo Ready!')
     askForCommand()
-  },
-  onLowVoltage: function callback(res) {
-    console.log('GoPiGo has detected a low voltage ('+res+' V). You probably shut down the system securely in order to avoid issues.')
-  },
-  onError: function(err) {
-    console.log('Something went wrong')
-    console.log(err)
+  } else {
+    console.log('Something went wrong during the init.')
   }
 })
+robot.on('error', function onError(err) {
+  console.log('Something went wrong')
+  console.log(err)
+})
+robot.on('free', function onFree() {
+  console.log('GoPiGo is free to go')
+})
+robot.on('halt', function onFree() {
+  console.log('GoPiGo is halted')
+})
+robot.on('close', function onFree() {
+  console.log('GoPiGo is going to sleep')
+})
+robot.on('reset', function onFree() {
+  console.log('GoPiGo is resetting')
+})
+robot.on('normalVoltage', function onFree(voltage) {
+  console.log('Voltage is ok ['+voltage+']')
+})
+robot.on('lowVoltage', function onFree(voltage) {
+  console.log('(!!) Voltage is low ['+voltage+']')
+})
+robot.on('criticalVoltage', function onFree(voltage) {
+  console.log('(!!!) Voltage is critical ['+voltage+']')
+})
+robot.init()
 
 function askForCommand() {
   rl.question('What do you want me to do? > ', function(answer) {
@@ -69,140 +94,119 @@ function handleAnswer(answer) {
       console.log('')
     break
     case 'reset':
-      gopigo.reset()
+      robot.reset()
     break
     case 'left led on':
-      gopigo.led_on(gopigo.LED_L_PIN, function onLedOn(res) {
-        console.log('Led left on::'+res)
-      })
+      var res = robot.ledLeft.on()
+      console.log('Led left on::'+res)
     break
     case 'left led off':
-      gopigo.led_off(gopigo.LED_L_PIN, function onLedOff(res) {
-        console.log('Led left off::'+res)
-      })
+      var res = robot.ledLeft.off()
+      console.log('Led left off::'+res)
     break
     case 'right led on':
-      gopigo.led_on(gopigo.LED_R_PIN, function onLedOn(res) {
-        console.log('Led right on::'+res)
-      })
+      var res = robot.ledRight.on()
+      console.log('Led right on::'+res)
     break
     case 'right led off':
-      gopigo.led_off(gopigo.LED_R_PIN, function onLedOff(res) {
-        console.log('Led right off::'+res)
-      })
+      var res = robot.ledRight.off()
+      console.log('Led right off::'+res)
     break
     case 'move forward':
     case 'w':
-      gopigo.forward(function onTestComplete(res) {
-        console.log('Moving forward::' + res)
-      }, false)
+      var res = robot.motion.forward(false)
+      console.log('Moving forward::' + res)
     break
     case 'turn left':
     case 'a':
-      gopigo.left(function onTestComplete(res) {
-        console.log('Turning left::' + res)
-      })
+      var res = robot.motion.left()
+      console.log('Turning left::' + res)
     break
     case 'turn right':
     case 'd':
-      gopigo.right(function onTestComplete(res) {
-        console.log('Turning right::' + res)
-      })
+      var res = robot.motion.right()
+      console.log('Turning right::' + res)
     break
     case 'move backward':
     case 's':
-      gopigo.backward(function onTestComplete(res) {
-        console.log('Moving backward::' + res)
-      }, false)
+      var res = robot.motion.backward(false)
+      console.log('Moving backward::' + res)
     break
     case 'stop':
     case 'x':
-      gopigo.stop(function onTestComplete(res) {
-        console.log('Stop::' + res)
-      })
+      var res = robot.motion.stop()
+      console.log('Stop::' + res)
     break
     case 'increase speed':
     case 't':
-      gopigo.increase_speed(function onTestComplete(res) {
-        console.log('Increasing speed::' + res)
-      })
+      var res = robot.motion.increaseSpeed()
+      console.log('Increasing speed::' + res)
     break
     case 'decrease speed':
     case 'g':
-      gopigo.decrease_speed(function onTestComplete(res) {
-        console.log('Decreasing speed::' + res)
-      })
+      var res = robot.motion.decreaseSpeed()
+      console.log('Decreasing speed::' + res)
     break
     case 'voltage':
     case 'v':
-      gopigo.volt(function onTestComplete(res) {
-        console.log('Voltage::' + res + ' V')
-      })
+      var res = robot.board.getVoltage()
+      console.log('Voltage::' + res + ' V')
     break
     case 'servo test':
     case 'b':
-      gopigo.servo(0, function onTestComplete(res) {
-        console.log('servo in position 0')
+      robot.servo.move(0)
+      console.log('Servo in position 0')
 
-        sleep.sleep(1)
-        gopigo.servo(180, function onTestComplete(res) {
-          console.log('servo in position 180')
+      sleep.sleep(1)
+      robot.servo.move(180)
+      console.log('Servo in position 180')
 
-          sleep.sleep(1)
-          gopigo.servo(90, function onTestComplete(res) {
-            console.log('servo in position 90')
-          })
-        })
-      })
+      sleep.sleep(1)
+      robot.servo.move(90)
+      console.log('Servo in position 90')
     break
     case 'exit':
     case 'z':
+      robot.close()
       process.exit()
     break
     case 'ultrasonic distance':
     case 'u':
-      gopigo.ultrasonic_distance(ultrasonic_pin, function onTestComplete(res) {
-        console.log('Ultrasonic Distance::' + res + ' cm')
-      })
+      var res = robot.ultraSonicSensor.getDistance()
+      console.log('Ultrasonic Distance::' + res + ' cm')
     break
     case 'l':
       // TODO
     break
     case 'move forward with pid':
     case 'i':
-      gopigo.forward(function onTestComplete(res) {
-        console.log('Moving forward::' + res)
-      }, true)
+      var res = robot.motion.forward(true)
+      console.log('Moving forward::' + res)
     break
     case 'move backward with pid':
     case 'k':
-      gopigo.backward(function onTestComplete(res) {
-        console.log('Moving forward::' + res)
-      }, true)
+      var res = robot.motion.backward(true)
+      console.log('Moving backward::' + res)
     break
     case 'rotate left':
     case 'n':
-      gopigo.left_with_rotation(function onTestComplete(res) {
-        console.log('Rotating left::' + res)
-      })
+      var res = robot.motion.leftWithRotation()
+      console.log('Rotating left::' + res)
     break
     case 'rotate right':
     case 'm':
-      gopigo.right_with_rotation(function onTestComplete(res) {
-        console.log('Rotating right::' + res)
-      })
+      var res = robot.motion.rightWithRotation()
+      console.log('Rotating right::' + res)
     break
     case 'set encoder targeting':
     case 'y':
-      gopigo.encoder_targeting(1, 1, 18, function onTestComplete(res) {
-        console.log('Setting encoder targeting:1:1:18::' + res)
-      })
+      var res = robot.encoders.targeting(1, 1, 18)
+      console.log('Setting encoder targeting:1:1:18::' + res)
     break
     case 'firmware version':
     case 'f':
-      gopigo.version(function onTestComplete(res) {
-        console.log('Firmware version::' + res)
-      })
+      var res = robot.board.version()
+      console.log('Firmware version::' + res)
     break
   }
 

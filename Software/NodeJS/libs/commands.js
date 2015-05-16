@@ -1,5 +1,4 @@
 module.exports = {
-  // GoPiGo Commands
     fwd                                         : [119]   // Move forward with PID
   , motor_fwd                                   : [105]   // Move forward without PID
   , bwd                                         : [115]   // Move back with PID
@@ -23,7 +22,7 @@ module.exports = {
   , en_enc                                      : [51]    // Enable the encoders
   , dis_enc                                     : [52]    // Disable the encoders
   , read_enc_status                             : [53]    // Read encoder status
-  , en_servo                                    : [61]    // Enable the servo's 
+  , en_servo                                    : [61]    // Enable the servo's
   , dis_servo                                   : [60]    // Disable the servo's
   , set_left_speed                              : [70]    // Set the speed of the right motor
   , set_right_speed                             : [71]    // Set the speed of the left motor
