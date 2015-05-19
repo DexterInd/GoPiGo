@@ -10,17 +10,17 @@
 
     public class EncoderController : IEncoderController
     {
-        private GoPiGo goPiGo;
+        private readonly GoPiGo _goPiGo;
 
         public EncoderController(GoPiGo goPiGo)
         {
-            this.goPiGo = goPiGo;
+            _goPiGo = goPiGo;
         }
 
         public IEncoderController SetEncoderTargetingOn(State motorOneState, State motorTwoState, int target)
         {
             var motorSelect = (int)motorOneState * 2 + (int)motorTwoState;
-            goPiGo.RunCommand(Commands.SetEncoderTargeting, (byte)motorSelect, (byte)(target / 256), (byte)(target % 256));
+            _goPiGo.RunCommand(Commands.SetEncoderTargeting, (byte)motorSelect, (byte)(target / 256), (byte)(target % 256));
             return this;
         }
 
@@ -28,8 +28,8 @@
         {
             var buffer = new[] { (byte)Commands.ReadEncoder, (byte)motor, Constants.Unused, Constants.Unused };
 
-            goPiGo.DirectAccess.Write(buffer);
-            goPiGo.DirectAccess.Read(buffer);
+            _goPiGo.DirectAccess.Write(buffer);
+            _goPiGo.DirectAccess.Read(buffer);
 
             int encoder = buffer[1] * 256 + buffer[2];
             return encoder;
@@ -37,13 +37,13 @@
 
         public IEncoderController EnableEncoders()
         {
-            goPiGo.RunCommand(Commands.EnableEncoder);
+            _goPiGo.RunCommand(Commands.EnableEncoder);
             return this;
         }
 
         public IEncoderController DisableEncoders()
         {
-            goPiGo.RunCommand(Commands.DisableEncoder);
+            _goPiGo.RunCommand(Commands.DisableEncoder);
             return this;
         }
     }

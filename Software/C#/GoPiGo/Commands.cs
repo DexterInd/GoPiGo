@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace GoPiGo
+﻿namespace GoPiGo
 {
     public enum Commands
     {
-
         Version = 20,
         BatteryVoltage = 118,
         UltraSonic = 117,
@@ -50,6 +43,5 @@ namespace GoPiGo
         TrimTest = 30,
         WriteTrim = 31,
         ReadTrim = 32
-
     }
 }
