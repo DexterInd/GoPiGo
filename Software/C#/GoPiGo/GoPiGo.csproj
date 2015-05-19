@@ -123,6 +123,7 @@
     <Compile Include="Sensors\Sensorcs.cs" />
     <Compile Include="Sensors\SensorStatus.cs" />
     <Compile Include="Sensors\UltrasonicRangerSensor.cs" />
+    <Compile Include="State.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System.Numerics.Vectors, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
