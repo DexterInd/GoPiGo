@@ -108,13 +108,21 @@ while True:
 				bwd()
 			if en_debug:
 				print msg
-		elif msg=="LEFT":
+		elif msg[:4]=="LEFT":
 			if en_gpg:
+				if len(msg) > 4:
+					deg= int(msg[4:])
+					pulse= int(deg/DPR)
+					enc_tgt(0,1,pulse)
 				left()
 			if en_debug:
 				print msg
-		elif msg=="RIGHT":
+		elif msg[:5]=="RIGHT":
 			if en_gpg:
+				if len(msg) > 5:
+					deg= int(msg[5:])
+					pulse= int(deg/DPR)
+					enc_tgt(1,0,pulse)
 				right()
 			if en_debug:
 				print msg
@@ -158,22 +166,6 @@ while True:
 		## helper or convenience fcns
 		## in the gopigo package.
 		## and then below would just reference them.
-		elif msg[:6]=="R TURN":
-			if en_debug:
-				print msg
-			deg= int(msg[6:])
-			dist= int(deg/DPR)
-			if en_gpg:
-				enc_tgt(1,0,dist)
-				right()
-		elif msg[:6]=="L TURN":
-			if en_debug:
-				print msg
-			deg= int(msg[6:])
-			dist= int(deg/DPR)
-			if en_gpg:
-				enc_tgt(0,1,dist)
-				left()
 		elif msg[:3]=="SER":
 			if en_debug:
 				print msg
