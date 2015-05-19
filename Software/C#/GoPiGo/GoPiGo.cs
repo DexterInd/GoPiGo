@@ -14,7 +14,6 @@ namespace GoPiGo
         decimal BatteryVoltage();
         IMotorController MotorController();
         IEncoderController EncoderController();
-        IGoPiGo ReadStatus();
         IGoPiGo RunCommand(Commands command, byte firstParam = Constants.Unused, byte secondParam = Constants.Unused, byte thirdParam = Constants.Unused);
     }
 

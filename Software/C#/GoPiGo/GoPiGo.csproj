@@ -112,7 +112,9 @@
     <Compile Include="Commands.cs" />
     <Compile Include="Constants.cs" />
     <Compile Include="DeviceFactory.cs" />
+    <Compile Include="EncoderController.cs" />
     <Compile Include="GoPiGo.cs" />
+    <Compile Include="Motor.cs" />
     <Compile Include="MotorController.cs" />
     <Compile Include="Pin.cs" />
     <Compile Include="PinMode.cs" />
