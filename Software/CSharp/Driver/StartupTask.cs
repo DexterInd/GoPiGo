@@ -14,11 +14,19 @@ namespace Driver
         {
             var goPiGo = _deviceFactory.BuildGoPiGo();
 
-            _deviceFactory.BuildLed(Pin.LedLeft).ChangeState(SensorStatus.On);
-            _deviceFactory.BuildLed(Pin.LedRight).ChangeState(SensorStatus.On);
-            var cm = _deviceFactory.BuildUltraSonicSensor(Pin.Analog1).MeasureInCentimeters();
+            var leftLed = _deviceFactory.BuildLed(Pin.LedLeft);
+            var rightLed = _deviceFactory.BuildLed(Pin.LedRight);
 
-            goPiGo.MotorController().MoveForward();
+            //leftLed.ChangeState(SensorStatus.On);
+            //rightLed.ChangeState(SensorStatus.On);
+
+            leftLed.ChangeState(SensorStatus.Off);
+            rightLed.ChangeState(SensorStatus.Off);
+
+            var version = goPiGo.GetFirmwareVersion();
+            //goPiGo.MotorController().MoveForward();
+            goPiGo.MotorController().Stop();
+
         }
     }
 }

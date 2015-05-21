@@ -13,14 +13,15 @@ namespace GoPiGo
         void PinMode(Pin pin, PinMode mode);
         decimal BatteryVoltage();
         IMotorController MotorController();
-        IEncoderController EncoderController();
+        //Currently not functioning
+        //IEncoderController EncoderController();
         IGoPiGo RunCommand(Commands command, byte firstParam = Constants.Unused, byte secondParam = Constants.Unused, byte thirdParam = Constants.Unused);
     }
 
     public class GoPiGo : IGoPiGo
     {
-        private IMotorController _motorController;
-        private IEncoderController _encoderController;
+        private readonly IMotorController _motorController;
+        private readonly IEncoderController _encoderController;
 
         internal GoPiGo(I2cDevice device)
         {
@@ -47,7 +48,7 @@ namespace GoPiGo
             var buffer = new[] { (byte)Commands.Version, Constants.Unused, Constants.Unused, Constants.Unused };
             DirectAccess.Write(buffer);
             DirectAccess.Read(buffer);
-            return $"{buffer[1]}.{buffer[2]}.{buffer[3]}";
+            return $"{buffer[0]}";
         }
 
         public byte DigitalRead(Pin pin)
