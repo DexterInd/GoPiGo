@@ -27,8 +27,8 @@
         public int ReadEncoder(Motor motor)
         {
             var buffer = new[] { (byte)Commands.ReadEncoder, (byte)motor, Constants.Unused, Constants.Unused };
-
             _goPiGo.DirectAccess.Write(buffer);
+
             _goPiGo.DirectAccess.Read(buffer);
 
             int encoder = buffer[1] * 256 + buffer[2];
