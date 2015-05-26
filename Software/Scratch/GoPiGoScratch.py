@@ -19,6 +19,29 @@ from gopigo import *
 
 en_gpg=1
 en_debug=1
+
+#360 roation is ~64 encoder pulses
+#or 5 deg/pulse
+#Deg:Pulse Ratio
+DPR = 360.0/64
+WHEEL_RAD = 3.25 # Wheels are ~6.5 cm diameter. 
+CHASS_WID = 13.5 # Chassis is ~13.5 cm wide.
+
+## This should probably be moved into a gopigo python module.
+def cm2pulse(dist):
+    '''
+    Calculate the number of pulses to move the chassis dist cm.
+    pulses = dist * [pulses/revolution]/[dist/revolution]
+    '''
+    wheel_circ = 2*math.pi*WHEEL_RAD # [cm/rev] cm traveled per revolution of wheel
+    print 'WHEEL_RAD',WHEEL_RAD
+    revs = dist/wheel_circ
+    print 'revs',revs
+    PPR = 18 # [p/rev] encoder Pulses Per wheel Revolution
+    pulses = PPR*revs # [p] encoder pulses required to move dist cm.
+    print 'pulses',pulses
+    return pulses
+
 try:
     s = scratch.Scratch()
     if s.connected:
@@ -67,23 +90,39 @@ while True:
 				stop()
 			if en_debug:
 				print msg
-		elif msg=="FORWARD":
+		elif msg[:7]=="FORWARD":
 			if en_gpg:
+				if len(msg) > 7:
+					dist = int(msg[7:])
+					pulse = int(cm2pulse(dist))
+					enc_tgt(1,1,pulse)
 				fwd()
 			if en_debug:
 				print msg
-		elif msg=="BACKWARD":
+		elif msg[:8]=="BACKWARD":
 			if en_gpg:
+				if len(msg) > 8:
+					dist = int(msg[8:])
+					pulse = int(cm2pulse(dist))
+					enc_tgt(1,1,pulse)
 				bwd()
 			if en_debug:
 				print msg
-		elif msg=="LEFT":
+		elif msg[:4]=="LEFT":
 			if en_gpg:
+				if len(msg) > 4:
+					deg= int(msg[4:])
+					pulse= int(deg/DPR)
+					enc_tgt(0,1,pulse)
 				left()
 			if en_debug:
 				print msg
-		elif msg=="RIGHT":
+		elif msg[:5]=="RIGHT":
 			if en_gpg:
+				if len(msg) > 5:
+					deg= int(msg[5:])
+					pulse= int(deg/DPR)
+					enc_tgt(1,0,pulse)
 				right()
 			if en_debug:
 				print msg
@@ -106,12 +145,12 @@ while True:
 					led_on(1)
 				else:
 					led_off(1)
-				
 		elif msg[:4]=="LEDR":
 			if en_debug:
 				print msg
 			r_led_pow=int(msg[4:])
 			if en_gpg:
+				## Why is the 'if' in here twice?
 				if en_gpg:
 					if r_led_pow > 127:
 						led_on(0)
@@ -123,6 +162,27 @@ while True:
 			dist= int(msg[9:])
 			if en_gpg:
 				enc_tgt(1,1,dist)
+		## Perhaps these should become
+		## helper or convenience fcns
+		## in the gopigo package.
+		## and then below would just reference them.
+		elif msg[:3]=="SER":
+			if en_debug:
+				print msg
+			srv_pos=int(msg[3:])
+			if en_gpg:
+				if srv_pos > 180:
+					srv_pos = 180
+				elif srv_pos < 0:
+					srv_pos = 0
+				servo(srv_pos)
+		elif msg=="GET_DIST":
+			if en_debug:
+				print "Received distance request."
+				print msg
+			dist= us_dist(15)
+			if en_gpg:
+				s.sensorupdate({'distance':dist})
 		else:
 			if en_debug:
 				print "m",msg
