@@ -12,20 +12,6 @@ namespace Driver
 
         public void Run(IBackgroundTaskInstance taskInstance)
         {
-            var goPiGo = _deviceFactory.BuildGoPiGo();
-
-            var leftLed = _deviceFactory.BuildLed(Pin.LedLeft);
-            var rightLed = _deviceFactory.BuildLed(Pin.LedRight);
-
-            //leftLed.ChangeState(SensorStatus.On);
-            //rightLed.ChangeState(SensorStatus.On);
-
-            leftLed.ChangeState(SensorStatus.Off);
-            rightLed.ChangeState(SensorStatus.Off);
-
-            var version = goPiGo.GetFirmwareVersion();
-            //goPiGo.MotorController().MoveForward();
-            goPiGo.MotorController().Stop();
 
         }
     }
