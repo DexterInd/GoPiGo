@@ -183,6 +183,23 @@ while True:
 			dist= us_dist(15)
 			if en_gpg:
 				s.sensorupdate({'distance':dist})
+
+		elif msg=="LIGHT":
+			# print "LIGHTS!"
+			pin = 1
+			mode = "INPUT"
+			try:
+				a = pinMode(pin, mode)
+			except:
+				if en_debug:
+					e = sys.exc_info()[1]
+					print "Error reading light sensor: " + str(e)
+			time.sleep(0.1)
+			light = analogRead(pin)
+			if en_debug:
+				print "Light Reading: " + str(light)
+			if en_gpg:
+				s.sensorupdate({'light':light})
 		else:
 			if en_debug:
 				print "m",msg
