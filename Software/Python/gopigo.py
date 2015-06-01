@@ -33,7 +33,7 @@ else:
 
 # This is the address for the GoPiGo
 address = 0x08
-
+debug=0
 #GoPiGo Commands
 fwd_cmd				=[119]		#Move forward with PID
 motor_fwd_cmd		=[105]		#Move forward without PID
@@ -76,9 +76,12 @@ analog_read_cmd     =[14]      	#Analog read on a port
 analog_write_cmd    =[15]      	#Analog read on a port
 pin_mode_cmd        =[16]      	#Set up the pin mode on a port
 
+ir_read_cmd		=[21]
+ir_recv_pin_cmd		=[22]
 #LED Pins
-LED_L_PIN=10
-LED_R_PIN=5
+#MAKE COMPATIBLE WITH OLD FIRMWARE
+# LED_L_PIN=17
+# LED_R_PIN=16
 
 #LED setup
 LED_L=1
@@ -99,7 +102,8 @@ def write_i2c_block(address,block):
 	try:
 		return bus.write_i2c_block_data(address,1,block)
 	except IOError:
-		print "IOError"
+		if debug:
+			print "IOError"
 		return -1
 	return 1
 
@@ -108,7 +112,8 @@ def writeNumber(value):
 	try:
 		bus.write_byte(address, value)
 	except IOError:
-		print "IOError"
+		if debug:
+			print "IOError"
 		return -1	
 	return 1
 
@@ -117,7 +122,8 @@ def readByte():
 	try:
 		number = bus.read_byte(address)
 	except IOError:
-		print "IOError"
+		if debug:
+			print "IOError"
 		return -1	
 	return number
 
@@ -222,39 +228,39 @@ def digitalRead(pin):
 		
 # Arduino Digital Write
 def digitalWrite(pin, value):
-	if pin ==10 or pin ==15 or pin ==0 or pin ==1 or pin==5:
-		if value==0 or value ==1:
-			write_i2c_block(address, digital_write_cmd + [pin, value, unused])
-			time.sleep(.005)	#Wait for 5 ms for the commands to complete
-			return 1
-	else:
-		return -2
+	#if pin ==10 or pin ==0 or pin ==1 or pin==5 or pin ==16 or pin==17 :
+	if value==0 or value ==1:
+		write_i2c_block(address, digital_write_cmd + [pin, value, unused])
+		# time.sleep(.005)	#Wait for 5 ms for the commands to complete
+		return 1
+	#else:
+	#	return -2
 
 # Setting Up Pin mode on Arduino
 def pinMode(pin, mode):
-	if pin ==10 or pin ==15 or pin ==0 or pin ==1:
-		if mode == "OUTPUT":
-			write_i2c_block(address, pin_mode_cmd + [pin, 1, unused])
-		elif mode == "INPUT":
-			write_i2c_block(address, pin_mode_cmd + [pin, 0, unused])
-		time.sleep(.005)	#Wait for 5 ms for the commands to complete
-		return 1
-	else:
-		return -2
+	# if pin ==10 or pin ==15 or pin ==0 or pin ==1:
+	if mode == "OUTPUT":
+		write_i2c_block(address, pin_mode_cmd + [pin, 1, unused])
+	elif mode == "INPUT":
+		write_i2c_block(address, pin_mode_cmd + [pin, 0, unused])
+	#time.sleep(.005)	#Wait for 5 ms for the commands to complete
+	return 1
+	# else:
+		# return -2
 	
 # Read analog value from Pin
 def analogRead(pin):
-	if pin == 1 :
-		write_i2c_block(address, analog_read_cmd + [pin, unused, unused])
-		time.sleep(.1)
-		try:
-			b1=bus.read_byte(address)
-			b2=bus.read_byte(address)
-		except IOError:
-			return -1
-		return b1* 256 + b2
-	else:
-		return -2
+	#if pin == 1 :
+	write_i2c_block(address, analog_read_cmd + [pin, unused, unused])
+	time.sleep(.005)
+	try:
+		b1=bus.read_byte(address)
+		b2=bus.read_byte(address)
+	except IOError:
+		return -1
+	return b1* 256 + b2
+	#else:
+	#	return -2
 		
 # Write PWM
 def analogWrite(pin, value):
@@ -282,6 +288,18 @@ def volt():
 		return round(v,2)
 	else:
 		return -1
+	
+#Read board revision
+#	return:	voltage in V
+def brd_rev():
+	write_i2c_block(address, analog_read_cmd + [7, unused, unused])
+	time.sleep(.1)
+	try:
+		b1=bus.read_byte(address)
+		b2=bus.read_byte(address)
+	except IOError:
+		return -1
+	return b1* 256 + b2
 		
 #Read ultrasonic sensor
 #	arg:
@@ -305,11 +323,23 @@ def us_dist(pin):
 #	arg:
 #		l_id: 1 for left LED and 0 for right LED
 def led_on(l_id):
+	vol=analogRead(7)
+	#GPG16
+	if vol > 700:
+		r_led=16
+		l_led=17
+	else:
+		r_led=5
+		l_led=10
+		
+	
 	if l_id==LED_L or l_id==LED_R:
 		if l_id==LED_L:
-			digitalWrite(LED_L_PIN,1)
+			pinMode(l_led,"OUTPUT")
+			digitalWrite(l_led,1)
 		elif l_id==LED_R:
-			digitalWrite(LED_R_PIN,1)
+			pinMode(r_led,"OUTPUT")
+			digitalWrite(r_led,1)
 		return 1
 	else:
 		return -1
@@ -318,11 +348,22 @@ def led_on(l_id):
 #	arg:
 #		l_id: 1 for left LED and 0 for right LED
 def led_off(l_id):
+	vol=analogRead(7)
+	#GPG16
+	if vol > 700:
+		r_led=16
+		l_led=17
+	else:
+		r_led=5
+		l_led=10
+		
 	if l_id==LED_L or l_id==LED_R:
 		if l_id==LED_L:
-			digitalWrite(LED_L_PIN,0)
+			pinMode(l_led,"OUTPUT")
+			digitalWrite(l_led,0)
 		elif l_id==LED_R:
-			digitalWrite(LED_R_PIN,0)
+			pinMode(r_led,"OUTPUT")
+			digitalWrite(r_led,0)
 		return 1
 	else:
 		return -1
@@ -332,6 +373,7 @@ def led_off(l_id):
 #		position: angle in degrees to set the servo at
 def servo(position):
 	write_i2c_block(address,servo_cmd+[position,0,0])
+	#time.sleep(.05)
 	
 #Set encoder targeting on
 #arg:
@@ -444,6 +486,7 @@ def read_status():
 	 
 #Read encoder status
 #	return:	0 if encoder target is reached
+
 def read_enc_status():
 	st=read_status()
 	return st[0]
@@ -453,3 +496,19 @@ def read_enc_status():
 def read_timeout_status():
 	st=read_status()
 	return st[1]
+
+# Grove - Infrared Receiver- get the commands received from the Grove IR sensor
+def ir_read_signal():
+	try:
+		write_i2c_block(address,ir_read_cmd+[unused,unused,unused])
+		time.sleep(.1)
+		data_back= bus.read_i2c_block_data(address, 1)[0:21]
+		if data_back[1]<>255:
+			return data_back
+		return [-1]*21
+	except IOError:
+		return [-1]*21
+		
+# Grove - Infrared Receiver- set the pin on which the Grove IR sensor is connected
+def ir_recv_pin(pin):
+	write_i2c_block(address,ir_recv_pin_cmd+[pin,unused,unused])
