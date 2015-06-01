@@ -26,7 +26,7 @@ if [ $motors = $y ]; then
    output=$($var)
    echo "$output"
 
-   avrdude -c gpio -p m328p -U flash:w:fw_ver_12.cpp.hex
+   avrdude -c gpio -p m328p -U flash:w:fw_ver_13.cpp.hex
    echo "============================="
 else
   echo "Disconect your motors and retry!"
