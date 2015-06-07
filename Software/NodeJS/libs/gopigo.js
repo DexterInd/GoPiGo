@@ -97,6 +97,7 @@ GoPiGo.prototype.init = function() {
   }
 }
 GoPiGo.prototype.checkVoltage = function() {
+  var self = this
   self.debug('Voltage check')
 
   var voltage = self.board.getVoltage()
