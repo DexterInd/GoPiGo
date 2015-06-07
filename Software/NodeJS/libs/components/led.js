@@ -1,4 +1,4 @@
-var commands   = require('../commands.js')
+var commands   = require('../commands')
 
 Led.LEFT_PIN = 10
 Led.RIGHT_PIN = 5
@@ -9,6 +9,8 @@ function Led(gopigo, id) {
   this.gopigo = gopigo
   this.pin = id == Led.LEFT ? Led.LEFT_PIN : Led.RIGHT_PIN
 }
+
+Led.prototype = new Led()
 
 Led.prototype.on = function() {
   return this.gopigo.board.digitalWrite(this.pin, 1)

@@ -1,8 +1,10 @@
-var commands   = require('../commands.js')
+var commands   = require('../commands')
 
 function Servo(gopigo) {
   this.gopigo = gopigo
 }
+
+Servo.prototype = new Servo()
 
 Servo.prototype.move = function(position) {
   var write = this.gopigo.board.writeBytes(commands.servo.concat([position, commands.unused, commands.unused]))

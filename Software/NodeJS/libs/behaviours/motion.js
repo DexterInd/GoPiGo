@@ -1,4 +1,4 @@
-var commands   = require('../commands.js')
+var commands   = require('../commands')
 
 Motion.directions = {
   'n' : 0,
@@ -14,6 +14,8 @@ Motion.directions = {
 function Motion(gopigo) {
   this.gopigo = gopigo
 }
+
+Motion.prototype = new Motion()
 
 Motion.prototype.forward = function(usePid) {
   var command = usePid ? commands.fwd : commands.motor_fwd

@@ -7,6 +7,7 @@ var readline = require('readline')
 var sleep = require('sleep')
 
 var ultrasonicPin = 15
+//var irreceiverPin = 8
 
 var rl = readline.createInterface({
   input : process.stdin,
@@ -21,7 +22,8 @@ robot = new Robot({
   minVoltage: 5.5,
   criticalVoltage: 1.2,
   debug: true,
-  ultrasonicSensorPin: ultrasonicPin
+  ultrasonicSensorPin: ultrasonicPin,
+  //IRReceiverSensorPin: irreceiverPin
 })
 robot.on('init', function onInit(res) {
   if (res) {

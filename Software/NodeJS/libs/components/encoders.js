@@ -1,8 +1,10 @@
-var commands   = require('../commands.js')
+var commands   = require('../commands')
 
 function Encoders(gopigo) {
   this.gopigo = gopigo
 }
+
+Encoders.prototype = new Encoders()
 
 Encoders.prototype.targeting = function(m1, m2, target) {
   if (m1 > 1 || m1 < 0 || m2 > 1 || m2 < 0)

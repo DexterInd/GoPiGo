@@ -1,4 +1,4 @@
-var commands   = require('../commands.js')
+var commands   = require('../commands')
 
 Motor.LEFT_COMMAND = 10
 Motor.RIGHT_COMMAND = 5
@@ -11,6 +11,8 @@ function Motor(gopigo, id) {
   this.gopigo = gopigo
   this.command = id == Motor.LEFT ? Motor.LEFT_COMMAND : Motor.RIGHT_COMMAND
 }
+
+Motor.prototype = new Motor()
 
 Motor.prototype.move = function(direction, speed) {
   return this.gopigo.board.writeBytes(this.command.concat([direction, speed, commands.unused]))

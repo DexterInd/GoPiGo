@@ -35,6 +35,7 @@ function Board(gopigo) {
 }
 
 util.inherits(Board, EventEmitter)
+Board.prototype = new Board()
 
 Board.prototype.init = function() {
   try {

@@ -1,9 +1,11 @@
-var commands   = require('../commands.js')
+var commands   = require('../commands')
 
 function UltraSonicSensor(gopigo, pin) {
   this.gopigo = gopigo
   this.pin = pin
 }
+
+UltraSonicSensor.prototype = new UltraSonicSensor()
 
 UltraSonicSensor.prototype.setPin = function(pin) {
   this.pin = pin

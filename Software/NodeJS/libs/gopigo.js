@@ -3,13 +3,14 @@ var EventEmitter = require('events').EventEmitter
 var log          = require('npmlog')
 var sleep        = require('sleep')
 
-var Board        = require('./components/board.js')
-var Encoders     = require('./components/encoders.js')
-var Led          = require('./components/led.js')
-var Motor        = require('./components/motor.js')
-var Servo        = require('./components/servo.js')
-var UltraSonicSensor = require('./components/ultraSonicSensor.js')
-var Motion       = require('./behaviours/motion.js')
+var Board        = require('./components/board')
+var Encoders     = require('./components/encoders')
+var Led          = require('./components/led')
+var Motor        = require('./components/motor')
+var Servo        = require('./components/servo')
+var UltraSonicSensor = require('./components/ultraSonicSensor')
+var IRReceiverSensor = require('./components/IRReceiverSensor')
+var Motion       = require('./behaviours/motion')
 
 var initWait  = 1     // in seconds
 
@@ -51,7 +52,10 @@ function GoPiGo(opts) {
     this.board            = new Board(this)
     this.encoders         = new Encoders(this)
     this.servo            = new Servo(this)
-    this.ultraSonicSensor = new UltraSonicSensor(this, opts.ultrasonicSensorPin)
+    if (typeof opts.ultrasonicSensorPin != 'undefined')
+      this.ultraSonicSensor = new UltraSonicSensor(this, opts.ultrasonicSensorPin)
+    if (typeof opts.IRReceiverSensorPin != 'undefined')
+      this.IRReceiverSensor = new IRReceiverSensor(this, opts.IRReceiverSensorPin)
     this.ledLeft          = new Led(this, Led.LEFT)
     this.ledRight         = new Led(this, Led.RIGHT)
     this.motorLeft        = new Motor(this, Motor.LEFT)
@@ -63,6 +67,7 @@ function GoPiGo(opts) {
 }
 
 util.inherits(GoPiGo, EventEmitter)
+GoPiGo.prototype = new GoPiGo()
 
 GoPiGo.prototype.init = function() {
   if (!isHalt) {

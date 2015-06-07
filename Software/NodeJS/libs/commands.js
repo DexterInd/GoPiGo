@@ -40,6 +40,12 @@ module.exports = {
   , aWrite                                      : [15]    // Analog read on a port
   , pMode                                       : [16]    // Set up the pin mode on a port
 
+  // Grove IR sensor
+  // Read the button from IR sensor
+  , irRead                                      : [21]
+  // Set pin for the IR reciever
+  , irRecvPin                                   : [22]
+
   // This allows us to be more specific about which commands contain unused bytes
   , unused                                      : 0
 };
