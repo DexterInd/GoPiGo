@@ -46,6 +46,15 @@ def cm2pulse(dist):
     print 'pulses',pulses
     return pulses
 
+fw_version=fw_ver()
+print "Current firmware version:",fw_ver()
+if fw_version > 1.2:
+	pass
+else:
+	print "Please Install the new firmware for the GoPiGo (v1.2+) to use GoPiGo with Scratch. \nPress enter to exit"
+	raw_input()
+	sys.exit()
+
 try:
     s = scratch.Scratch()
     if s.connected:
@@ -70,6 +79,7 @@ thread1 = myThread(1, "Thread-1", 1)        #Setup and start the thread
 thread1.setDaemon(True)
 
 stop()
+
 try:
     s.broadcast('READY')
 except NameError:
