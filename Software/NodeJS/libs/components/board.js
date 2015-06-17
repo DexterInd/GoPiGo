@@ -89,7 +89,7 @@ Board.prototype.writeBytes = function(bytes) {
   var buffer = new Buffer(bytes)
   var ret = false
   try {
-    this.wait(100)
+    this.wait(100)  // TODO: is this needed?
     var val = bus.i2cWriteSync(ADDRESS, buffer.length, buffer)
     ret = val > 0 ? true : false
   } catch (err) {
@@ -99,15 +99,17 @@ Board.prototype.writeBytes = function(bytes) {
   }
 }
 Board.prototype.analogRead = function(pin, length) {
+  /*
   if (pin != 1)
     return false
+  */
 
   if (typeof length == 'undefined')
     length = this.BYTESLEN
 
   var writeRet = this.writeBytes(commands.aRead.concat([pin, commands.unused, commands.unused]))
   if (writeRet) {
-    this.wait(100)
+    this.wait(50)
     var b1 = this.readByte()
     var b2 = this.readByte()
     if (b1[0] != -1 && b2[0] != -1) {
@@ -136,13 +138,17 @@ Board.prototype.digitalRead = function(pin) {
   }
 }
 Board.prototype.digitalWrite = function(pin, value) {
-  return this.writeBytes(commands.dWrite.concat([pin, value, commands.unused]))
+  // if (pin == 10 || pin == 0 || pin == 1 || pin == 5 || pin == 16 || pin == 17)
+  if (value == 0 || value == 1)
+    return this.writeBytes(commands.dWrite.concat([pin, value, commands.unused]))
+  else
+    return false
 }
 Board.prototype.pinMode = function(pin, mode) {
   var isOperative = this.gopigo.checkStatus()
   if (!isOperative)
     return false
-
+  // if (pin == 10 || pin == 15 || pin == 0 || pin == 1)
   if (mode == this.OUTPUT) {
     return this.writeBytes(commands.pMode.concat([pin, 1, commands.unused]))
   } else if (mode == this.INPUT) {
@@ -182,6 +188,21 @@ Board.prototype.version = function() {
       return version
     } else
       return false
+  } else {
+    return false
+  }
+}
+Board.prototype.revision = function() {
+  var write = this.writeBytes(commands.aRead.concat([7, commands.unused, commands.unused]))
+  if (writeRet) {
+    this.wait(100)
+    var b1 = this.readByte()
+    var b2 = this.readByte()
+    if (b1[0] != -1 && b2[0] != -1) {
+      return b1[0] * 256 + b2[0]
+    } else {
+      return false
+    }
   } else {
     return false
   }

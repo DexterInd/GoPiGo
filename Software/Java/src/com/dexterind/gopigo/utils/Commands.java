@@ -172,7 +172,14 @@ public class Commands {
    * Set up the pin mode on a port.
    */
   public static final int PIN_MODE             = 16;
-
+  /**
+   * InfraRed receiver read.
+   */
+  public static final int IR_READ              = 21;
+  /**
+   * InfraRed set pin.
+   */
+  public static final int IR_RECV_PIN          = 22;
   /**
    * This allows us to be more specific about which commands contain unused ints
    */

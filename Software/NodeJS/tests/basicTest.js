@@ -92,6 +92,8 @@ function handleAnswer(answer) {
       console.log('rotate right => rotates the GoPiGo to the right')
       console.log('set encoder targeting => sets the encoder targeting')
       console.log('firmware version => returns the firmware version')
+      console.log('board reversion => returns the board reversion')
+      console.log('ir receive => returns the data from the IR receiver')
       console.log('exit => exits from this test')
       console.log('')
     break
@@ -177,6 +179,11 @@ function handleAnswer(answer) {
       var res = robot.ultraSonicSensor.getDistance()
       console.log('Ultrasonic Distance::' + res + ' cm')
     break
+    case 'ir receive':
+      var res = robot.IRReceiverSensor.read()
+      console.log('IR Receiver data::')
+      console.log(res)
+    break
     case 'l':
       // TODO
     break
@@ -209,6 +216,10 @@ function handleAnswer(answer) {
     case 'f':
       var res = robot.board.version()
       console.log('Firmware version::' + res)
+    break
+    case 'board revision':
+      var res = robot.board.revision()
+      console.log('Board revision::' + res)
     break
   }
 
