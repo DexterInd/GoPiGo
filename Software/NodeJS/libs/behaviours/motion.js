@@ -11,11 +11,12 @@ Motion.directions = {
   'nw': 315
 }
 
+var self
+
 function Motion(gopigo) {
+  self = this
   this.gopigo = gopigo
 }
-
-Motion.prototype = new Motion()
 
 Motion.prototype.forward = function(usePid) {
   var command = usePid ? commands.fwd : commands.motor_fwd

@@ -4,7 +4,6 @@ var Robot = Gopigo.robot
 var robot
 
 var readline = require('readline')
-var sleep = require('sleep')
 
 var ultrasonicPin = 15
 //var irreceiverPin = 8
@@ -92,7 +91,7 @@ function handleAnswer(answer) {
       console.log('rotate right => rotates the GoPiGo to the right')
       console.log('set encoder targeting => sets the encoder targeting')
       console.log('firmware version => returns the firmware version')
-      console.log('board reversion => returns the board reversion')
+      console.log('board revision => returns the board revision')
       console.log('ir receive => returns the data from the IR receiver')
       console.log('exit => exits from this test')
       console.log('')
@@ -102,19 +101,19 @@ function handleAnswer(answer) {
     break
     case 'left led on':
       var res = robot.ledLeft.on()
-      console.log('Led left on::'+res)
+      console.log('Left led on::'+res)
     break
     case 'left led off':
       var res = robot.ledLeft.off()
-      console.log('Led left off::'+res)
+      console.log('Left led off::'+res)
     break
     case 'right led on':
       var res = robot.ledRight.on()
-      console.log('Led right on::'+res)
+      console.log('Right led on::'+res)
     break
     case 'right led off':
       var res = robot.ledRight.off()
-      console.log('Led right off::'+res)
+      console.log('Right led off::'+res)
     break
     case 'move forward':
     case 'w':
@@ -161,11 +160,11 @@ function handleAnswer(answer) {
       robot.servo.move(0)
       console.log('Servo in position 0')
 
-      sleep.sleep(1)
+      robot.board.wait(1000)
       robot.servo.move(180)
       console.log('Servo in position 180')
 
-      sleep.sleep(1)
+      robot.board.wait(1000)
       robot.servo.move(90)
       console.log('Servo in position 90')
     break
@@ -223,6 +222,6 @@ function handleAnswer(answer) {
     break
   }
 
-  sleep.sleep(1)
+  robot.board.wait(1000)
   askForCommand()
 }

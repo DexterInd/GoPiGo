@@ -1,11 +1,12 @@
 var commands   = require('../commands')
 
+var self
+
 function IRReceiverSensor(gopigo, pin) {
+  self = this
   this.gopigo = gopigo
   this.pin = pin
 }
-
-IRReceiverSensor.prototype = new IRReceiverSensor()
 
 IRReceiverSensor.prototype.setPin = function(pin) {
   this.pin = pin + 1

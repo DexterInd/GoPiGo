@@ -25,6 +25,8 @@ var voltageIntervalDelay = 60000    // in milliseconds (1 min.)
 var minVoltage           = 5.5      // in Volts
 var criticalVoltage      = 1.0      // in Volts
 
+var debugMode = false
+
 var self
 
 function GoPiGo(opts) {
@@ -67,7 +69,6 @@ function GoPiGo(opts) {
 }
 
 util.inherits(GoPiGo, EventEmitter)
-GoPiGo.prototype = new GoPiGo()
 
 GoPiGo.prototype.init = function() {
   if (!isHalt) {
@@ -81,7 +82,6 @@ GoPiGo.prototype.init = function() {
       this.debug('GoPiGo will check the voltage each ' + voltageIntervalDelay + ' milliseconds')
       voltageInterval = setInterval(this.checkVoltage, voltageIntervalDelay)
       this.checkVoltage()
-
       this.reset()
 
       this.emit('init', true)
@@ -97,7 +97,6 @@ GoPiGo.prototype.init = function() {
   }
 }
 GoPiGo.prototype.checkVoltage = function() {
-  var self = this
   self.debug('Voltage check')
 
   var voltage = self.board.getVoltage()
@@ -150,12 +149,12 @@ GoPiGo.prototype.checkStatus = function() {
   return true
 }
 GoPiGo.prototype.reset = function() {
-  this.debug('GoPiGo is resetting');
-  this.servo.move(Motion.directions.e);
-  this.ledLeft.off();
-  this.ledRight.off();
-  this.motion.setSpeed(255);
-  this.free();
+  this.debug('GoPiGo is resetting')
+  this.servo.move(Motion.directions.e)
+  this.ledRight.off()
+  this.ledLeft.off()
+  this.motion.setSpeed(255)
+  this.free()
   this.emit('reset', true)
 }
 GoPiGo.prototype.debug = function(msg) {

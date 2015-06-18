@@ -18,7 +18,10 @@ var busNumber
 
 var ADDRESS   = 0x08
 
+var self
+
 function Board(gopigo) {
+  self = this
   this.gopigo = gopigo
 
   this.BYTESLEN = 4
@@ -35,7 +38,6 @@ function Board(gopigo) {
 }
 
 util.inherits(Board, EventEmitter)
-Board.prototype = new Board()
 
 Board.prototype.init = function() {
   try {
@@ -154,7 +156,7 @@ Board.prototype.pinMode = function(pin, mode) {
   } else if (mode == this.INPUT) {
     return this.writeBytes(commands.pMode.concat([pin, 0, commands.unused]))
   } else {
-    this.debug('Unknown pin mode')
+    this.gopigo.debug('Unknown pin mode, given mode was ' + mode)
   }
 }
 Board.prototype.wait = function(ms) {
@@ -194,7 +196,7 @@ Board.prototype.version = function() {
 }
 Board.prototype.revision = function() {
   var write = this.writeBytes(commands.aRead.concat([7, commands.unused, commands.unused]))
-  if (writeRet) {
+  if (write) {
     this.wait(100)
     var b1 = this.readByte()
     var b2 = this.readByte()
