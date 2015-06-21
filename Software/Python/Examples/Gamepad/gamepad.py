@@ -33,7 +33,8 @@ for event in gamepad.read_loop():
     if event.type == ecodes.EV_KEY:
         keyevent = categorize(event)
         if keyevent.keystate == KeyEvent.key_down:
-            if keyevent.keycode == 'BTN_A':
+            # BTN_A comes in a tuple
+            if keyevent.keycode[0] == 'BTN_A':
                 print "Back"
                 bwd()
             elif keyevent.keycode == 'BTN_Y':
