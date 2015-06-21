@@ -10,7 +10,7 @@
 
 
 **Overview**
-For an in-depth explanation of these script see [this blog post) (http://egoebelbecker.me/2015/06/10/raspberry-pi-and-gamepad-programming-part-2-controlling-the-gopigo/)
+For an in-depth explanation of these script see [this blog post] (http://egoebelbecker.me/2015/06/10/raspberry-pi-and-gamepad-programming-part-2-controlling-the-gopigo/)
 
 The example script uses buttons on the gamepad to control the GoPiGo's movement. The script is written for a Logitech F710, but other gamepads should work. Use the showbuttons script to display the button values on your gamepad and modify the script.
 
