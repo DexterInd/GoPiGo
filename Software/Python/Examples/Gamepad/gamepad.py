@@ -1,7 +1,7 @@
 #!/usr/bin/python
 
 ###############################################################                                                                  
-# This is the first script in the tutorial at
+# Find details on this script at
 # http://wp.me/p5kNk-37
 #
 # History
@@ -16,16 +16,24 @@
 from evdev import InputDevice, categorize, ecodes, KeyEvent
 from gopigo import *
 
+# Open the device
 gamepad = InputDevice('/dev/input/event0')
 
+# Set our initial speed
 speed=100
 set_speed(speed)
 
+#
+# The keycodes here work with a Logitech F710 Gamepad
+# If your gamepad does not work use show_buttons.py
+# to find the code you wish to use and replace them in 
+# this if/elif block
+#
 for event in gamepad.read_loop():
     if event.type == ecodes.EV_KEY:
         keyevent = categorize(event)
         if keyevent.keystate == KeyEvent.key_down:
-            if keyevent.keycode[0] == 'BTN_A':
+            if keyevent.keycode == 'BTN_A':
                 print "Back"
                 bwd()
             elif keyevent.keycode == 'BTN_Y':
@@ -43,8 +51,8 @@ for event in gamepad.read_loop():
             elif keyevent.keycode == 'BTN_TR':
                 print "Faster"
                 speed += 50
-                if speed > 550:
-                    speed = 550
+                if speed > 250:
+                    speed = 250
                 set_speed(speed)
             elif keyevent.keycode == 'BTN_TL':
                 print "Slower"
@@ -52,5 +60,4 @@ for event in gamepad.read_loop():
                 if speed < 50:
                     speed = 50
                 set_speed(speed)
-
 
