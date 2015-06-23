@@ -26,7 +26,7 @@ from gopigo import __version__
 from gopigo import __author__
 from gopigo import __maintainer__
 from gopigo import __url__
-from gopigo import __email__
+#from gopigo import __email__
 from gopigo import __doc__
 from gopigo import __shortdesc__
 from gopigo import __name__ as __packagename__
