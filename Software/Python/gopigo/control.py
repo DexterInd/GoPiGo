@@ -4,6 +4,10 @@ This module contains convenience functions to simplify
 the coding of simple tasks.
 '''
 
+from gopigo.base import *
+
+en_debug=1
+
 ## 360 roation is ~64 encoder pulses or 5 deg/pulse
 ## DPR is the Deg:Pulse Ratio or the # of degrees per
 ##  encoder pulse.
@@ -63,10 +67,11 @@ def cm2pulse(dist):
     pulses = dist * [pulses/revolution]/[dist/revolution]
     '''
     wheel_circ = 2*math.pi*WHEEL_RAD # [cm/rev] cm traveled per revolution of wheel
-    print 'WHEEL_RAD',WHEEL_RAD
     revs = dist/wheel_circ
-    print 'revs',revs
     PPR = 18 # [p/rev] encoder Pulses Per wheel Revolution
     pulses = PPR*revs # [p] encoder pulses required to move dist cm.
-    print 'pulses',pulses
+    if en_debug:
+        print 'WHEEL_RAD',WHEEL_RAD
+        print 'revs',revs
+        print 'pulses',pulses
     return pulses
