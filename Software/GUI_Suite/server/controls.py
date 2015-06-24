@@ -33,7 +33,7 @@ class Control():
             self.msg = bytes.decode(data)
 
             self.parse(self.msg)
-
+            self.client.close()
     def parse(self, cmd):
         if cmd == 'forward':
             fwd()
