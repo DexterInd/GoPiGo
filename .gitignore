@@ -214,5 +214,6 @@ pip-log.txt
 #Mr Developer
 .mr.developer.cfg
 
-#Client GUI ip file
+#Client GUI files
 Software/GUI_Suite/client/ip.txt
+Software/GUI_Suite/client/log.txt
