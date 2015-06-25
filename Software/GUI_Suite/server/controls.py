@@ -4,7 +4,6 @@
 
 import time, socket, select
 from gopigo import *
-import gopigo
 
 class Control():
     def __init__(self):
@@ -12,7 +11,8 @@ class Control():
         self.pos = 110
         enable_servo()
         servo(self.pos)
-        disable_servo()
+
+        self.first = True
 
         #Setup server
         self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -23,17 +23,19 @@ class Control():
         print 'Listing for a client...'
         self.client, self.addr = self.server.accept()
         print 'Accepted connection from ', self.addr
-        self.client.send(str.encode('Connected'))
         self.msg = 'stop'
 
     def wait_for_cmd(self):
         while True:
             self.old_cmd = self.msg
+            self.client, self.addr = self.server.accept()
+        
             data = self.client.recv(1024)   
             self.msg = bytes.decode(data)
 
             self.parse(self.msg)
             self.client.close()
+            
     def parse(self, cmd):
         if cmd == 'forward':
             fwd()
@@ -51,18 +53,10 @@ class Control():
             self.pos -= 5
             if self.pos < 0:
                 self.pos = 0
-            enable_servo()
-            servo(self.pos)
-            time.sleep(1)
-            disable_servo()
         if cmd == 'servo left':
             self.pos += 5
             if self.pos > 180:
                 self.pos = 180
-            enable_servo()
-            servo(self.pos)
-            time.sleep(1)
-            disable_servo()
         if cmd == 'take picture':
             self.take_picture()
         if cmd == 'stop':
@@ -79,15 +73,19 @@ class Control():
         if cmd == '00':
             led_off(LED_L)
             led_off(LED_R)
-
+        servo(self.pos)
+        
     def take_picture(self):
-        print 'take pic'
-
-    def servo_left(self):
-        print 'servo l'
-
-    def servo_right(self):
-        print 'servo r'
+        try:
+            pic = open('pic.txt', 'r')
+            pic.close()
+            self.first = False
+        except:
+            if self.first:
+                pic = open('pic.txt', 'w+')
+                pic.write('True')
+                pic.close()
+            self.first = True
 
 if __name__ == '__main__':
     system = Control()

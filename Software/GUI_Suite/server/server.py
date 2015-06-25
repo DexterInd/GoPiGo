@@ -10,7 +10,7 @@ import io
 import time
 import picamera
 import yuv2rgb
-import socket, sys
+import socket, sys, os
 from subprocess import Popen
 
 print 'Starting control server...'
@@ -35,9 +35,39 @@ camera.rotation = 180
 camera.brightness = 75
 camera.contrast = 50
 
-print 'streaming...'
+def take_picture():
+   try:
+      pic = open('pic.txt', 'r')
+      pic.close()
+      
+      try:
+         pic_num_file = open('pic_num.txt', 'r')
+         pic_num = pic_num_file.readline()
+         pic_num_file.close()
+         
+      except Exception, e:
+         print 'Creating uncreated file'
+         pic_num_file = open('pic_num.txt', 'w+')
+         pic_num_file.write('0')
+         pic_num_file.close()
+         pic_num_file = open('pic_num.txt', 'r')
+         pic_num = pic_num_file.readline()
+         pic_num_file.close()
+
+      camera.capture('images/' + pic_num + '.jpg')
+      pic_num_file = open('pic_num.txt', 'w')
+      pic_num_file.write(str(int(pic_num) + 1))
+      pic_num_file.close()
+      print 'Took picture ' + pic_num + '.jpg'
+      os.remove('pic.txt')
+      
+   except Exception, f:
+      pass
+
+print 'Server Ready'
 try:
    while(True):
+      take_picture()
       connection, address = serversocket.accept()
       stream = io.BytesIO() # Capture into in-memory stream
       camera.capture(stream, use_video_port=True, format='raw')

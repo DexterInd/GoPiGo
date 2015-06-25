@@ -217,6 +217,9 @@ pip-log.txt
 #Client GUI files
 Software/GUI_Suite/client/ip.txt
 Software/GUI_Suite/client/log.txt
+Software/GUI_Suite/server/pic.txt
+Software/GUI_Suite/server/pic_num.txt
+Software/GUI_Suite/server/images
 
 #Wiring Pi Lib
 Setup/wiringPi
