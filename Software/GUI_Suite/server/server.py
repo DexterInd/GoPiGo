@@ -13,6 +13,9 @@ import yuv2rgb
 import socket, sys, os
 from subprocess import Popen
 
+if not os.path.exists('images/'):
+    os.makedirs('images')
+    
 print 'Starting control server...'
 s = Popen(['python', 'controls.py'])
 print 'Server running.'

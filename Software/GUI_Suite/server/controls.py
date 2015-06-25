@@ -39,16 +39,16 @@ class Control():
     def parse(self, cmd):
         if cmd == 'forward':
             fwd()
-            time.sleep(.1)
+            time.sleep(.05)
         if cmd == 'backward':
             bwd()
-            time.sleep(.1)
+            time.sleep(.05)
         if cmd == 'left':
             left()
-            time.sleep(.1)
+            time.sleep(.05)
         if cmd == 'right':
             right()
-            time.sleep(.1)
+            time.sleep(.05)
         if cmd == 'servo right':
             self.pos -= 5
             if self.pos < 0:
