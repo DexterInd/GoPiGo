@@ -1,5 +1,5 @@
 #GoPiGo GUI Client v1.0
-#copyright (c) 2015 Tyler Spadgenske GPL v2
+#By Tyler Spadgenske
 
 import socket, select
 from subprocess import Popen
@@ -150,35 +150,39 @@ class Suite():
             self.start_time = time.time()
             self.total_time += 1
 
-        if self.total_time == 2:
+        if self.total_time == 1:
             self.progress = 'Connecting to robot...'
-        if self.total_time == 3:
+        if self.total_time == 2:
             self.progress = 'Detecting camera...'
-        if self.total_time == 4:
+        if self.total_time == 3:
             self.exit = True
 
     def connect(self):
         '''Connects to camera stream'''
         self.clientsocket=socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.clientsocket.settimeout(3)
         self.clientsocket.connect((self.host, self.PORT))
-
+        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.server.settimeout(3)
+        self.server.connect((self.host, self.control_port))
+        
     def controls_connect(self):
         '''Connects to robot control server'''
-        self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.control_port = 5150
-        
         try:
-            self.server.connect((self.host, self.control_port))
-            self.data = self.server.recv(1024)
-            msg = bytes.decode(self.data)
+            self.server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+            self.server.settimeout(3)
+            self.control_port = 5150
+
         except:
             self.load_error = True
+            self.exit = False
             self.progress = 'Cannot connect to robot'
             try:
                 os.remove('ip.txt')
             except:
                 pass
-
+        
+        
     def send_data(self, data):
         '''send control data to server'''
         self.server.send(str.encode(str(data)))
@@ -273,6 +277,19 @@ class Suite():
                 sys.exit()
 
 if __name__ == '__main__':
-    client = Suite()
-    client.setup()
-    client.main()
+    try:
+        client = Suite()
+        client.setup()
+        client.main()
+    except Exception, error:
+        try:
+            os.remove('log.txt')
+        except:
+            pass
+        log = open('log.txt', 'w+')
+        log.write(str(error))
+        log.close()
+
+        client.load_error = True
+        client.exit = False
+        client.setup()
