@@ -32,11 +32,19 @@ public class Led {
   /**
    * The left pin code.
    */
-  private static final int LEFT_PIN = 10;
+  private static final int LEFT_PIN_A = 10;
   /**
    * The right pin code.
    */
-  private static final int RIGHT_PIN = 5;
+  private static final int RIGHT_PIN_A = 5;
+  /**
+   * The left pin code.
+   */
+  private static final int LEFT_PIN_B = 17;
+  /**
+   * The right pin code.
+   */
+  private static final int RIGHT_PIN_B = 16;
   /**
    * The left pin ID.
    */
@@ -60,8 +68,18 @@ public class Led {
   private Debug debug;
 
   public Led(int id) throws IOException, InterruptedException {
-    pin = id == LEFT ? LEFT_PIN : RIGHT_PIN;
     board = Board.getInstance();
+    int vol = board.analogRead(7);
+    int left_pin = 0;
+    int right_pin = 0;
+    if (vol > 700) {
+        left_pin = LEFT_PIN_B;
+        right_pin = RIGHT_PIN_B;
+    } else {
+        left_pin = LEFT_PIN_A;
+        right_pin = RIGHT_PIN_A;
+    }
+    pin = id == LEFT ? left_pin : right_pin;
   }
 
   /**
@@ -70,6 +88,7 @@ public class Led {
    * @throws IOException
    */
   public int on() throws IOException {
+    board.setPinMode(pin, 1);
     return board.digitalWrite(pin, 1);
   }
 
@@ -79,6 +98,7 @@ public class Led {
    * @throws IOException
    */
   public int off() throws IOException {
+    board.setPinMode(pin, 1);
     return board.digitalWrite(pin, 0);
   }
 }

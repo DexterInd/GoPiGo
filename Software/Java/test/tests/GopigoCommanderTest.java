@@ -20,17 +20,18 @@
 package tests;
 
 import com.dexterind.gopigo.*;
-import com.dexterind.gopigo.components.Motor;
-import com.dexterind.gopigo.components.UltraSonicSensor;
+import com.dexterind.gopigo.components.*;
 import com.dexterind.gopigo.events.*;
 import com.dexterind.gopigo.utils.Statuses;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 
 public class GopigoCommanderTest implements GopigoListener {
   private static int ultrasonicPin = 15;
+  //private static int irReceiverPin = 8;
 
   private static Gopigo gopigo = null;
 
@@ -45,6 +46,7 @@ public class GopigoCommanderTest implements GopigoListener {
     gopigo.addListener(this);
 
     gopigo.ultraSonicSensor.setPin(ultrasonicPin);
+    //gopigo.irReceiverSensor.setPin(irReceiverPin);
     gopigo.setMinVoltage(5.5);
     gopigo.init();
   }
@@ -117,7 +119,9 @@ public class GopigoCommanderTest implements GopigoListener {
         System.out.println("rotate right => rotates the GoPiGo to the right");
         System.out.println("set encoder targeting => sets the encoder targeting");
         System.out.println("firmware version => returns the firmware version");
+        System.out.println("board revision => returns the board reversion");
         System.out.println("exit => exits from this test");
+        System.out.println("ir receive => returns the data from the IR receiver");
         System.out.println("");
       }
       if (command.equals("reset")) {
@@ -229,6 +233,14 @@ public class GopigoCommanderTest implements GopigoListener {
       if (command.equals("firmware version") || command.equals("f")) {
         outputMessage = "Firmware version";
         outputValue =  Float.toString(gopigo.board.version());
+      }
+      if (command.equals("board revision") || command.equals("f")) {
+          outputMessage = "Board revision";
+          outputValue =  Integer.toString(gopigo.board.revision());
+        }
+      if (command.equals("ir receive") || command.equals("u")) {
+        outputMessage = "IR Receiver data::";
+        outputValue =  Arrays.toString(IRReceiverSensor.getInstance().read());
       }
 
       if (outputMessage != null && outputValue != null) {

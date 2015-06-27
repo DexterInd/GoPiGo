@@ -83,6 +83,10 @@ public final class Gopigo {
    */
   public UltraSonicSensor ultraSonicSensor;
   /**
+   * The IR Receiver sensor.
+   */
+  public IRReceiverSensor irReceiverSensor;
+  /**
    * The left led.
    */
   public Led ledLeft;
@@ -123,6 +127,7 @@ public final class Gopigo {
       encoders = Encoders.getInstance();
       servo = Servo.getInstance();
       ultraSonicSensor = UltraSonicSensor.getInstance();
+      irReceiverSensor = IRReceiverSensor.getInstance();
       ledLeft = new Led(Led.LEFT);
       ledRight = new Led(Led.RIGHT);
       motorLeft = new Motor(Motor.LEFT);
