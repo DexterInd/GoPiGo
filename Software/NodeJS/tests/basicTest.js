@@ -39,22 +39,22 @@ robot.on('error', function onError(err) {
 robot.on('free', function onFree() {
   console.log('GoPiGo is free to go')
 })
-robot.on('halt', function onFree() {
+robot.on('halt', function onHalt() {
   console.log('GoPiGo is halted')
 })
-robot.on('close', function onFree() {
+robot.on('close', function onClose() {
   console.log('GoPiGo is going to sleep')
 })
-robot.on('reset', function onFree() {
+robot.on('reset', function onReset() {
   console.log('GoPiGo is resetting')
 })
-robot.on('normalVoltage', function onFree(voltage) {
+robot.on('normalVoltage', function onNormalVoltage(voltage) {
   console.log('Voltage is ok ['+voltage+']')
 })
-robot.on('lowVoltage', function onFree(voltage) {
+robot.on('lowVoltage', function onLowVoltage(voltage) {
   console.log('(!!) Voltage is low ['+voltage+']')
 })
-robot.on('criticalVoltage', function onFree(voltage) {
+robot.on('criticalVoltage', function onCriticalVoltage(voltage) {
   console.log('(!!!) Voltage is critical ['+voltage+']')
 })
 robot.init()
