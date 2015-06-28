@@ -10,7 +10,6 @@ Led.RIGHT = 0
 var self
 
 function Led(gopigo, id) {
-  console.log('initing led ' + id)
   self = this
   this.gopigo = gopigo
   this.pin = 0

@@ -1,6 +1,6 @@
 {
     "name": "node-gopigo",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "description": "GoPiGo library for Node.js",
     "keywords": ["gopigo", "robot", "gpio", "i2c"],
     "dependencies": {
