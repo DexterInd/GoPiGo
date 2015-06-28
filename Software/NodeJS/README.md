@@ -45,7 +45,7 @@ The next step is to add some listeners:
 robot.on('init', function onInit(res) {
   if (res) {
     console.log('GoPiGo Ready!')
-    askForCommand()
+    /* Now you can do awesome stuff with your GoPiGo */
   } else {
     console.log('Something went wrong during the init.')
   }
