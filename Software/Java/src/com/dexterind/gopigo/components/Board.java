@@ -28,7 +28,6 @@ import java.util.*;
 import com.dexterind.gopigo.*;
 import com.dexterind.gopigo.events.StatusEvent;
 import com.dexterind.gopigo.utils.*;
-
 import com.pi4j.io.i2c.I2CBus;
 import com.pi4j.io.i2c.I2CDevice;
 import com.pi4j.io.i2c.I2CFactory;
@@ -153,7 +152,12 @@ public class Board {
     if (Gopigo.getInstance().isHalt()) {
       Gopigo.getInstance().onHalt();
     }
-    return writeI2c(Commands.DIGITAL_WRITE, pin, value, Commands.UNUSED);
+ // if (pin == 10 || pin == 0 || pin == 1 || pin == 5 || pin == 16 || pin == 17)
+    if (value == 0 || value == 1) {
+        return writeI2c(Commands.DIGITAL_WRITE, pin, value, Commands.UNUSED);
+    } else {
+        return Statuses.ERROR;
+    }
   }
 
   /**
@@ -166,18 +170,18 @@ public class Board {
     if (Gopigo.getInstance().isHalt()) {
       Gopigo.getInstance().onHalt();
     }
-    if (pin == 1) {
+    //if (pin == 1) {
       writeI2c(Commands.ANALOG_READ, pin, Commands.UNUSED, Commands.UNUSED);
-      sleep(100);
+      sleep(50);
       byte[] b1 = readI2c(1);
-      byte[] b2 = readI2c(2);
+      byte[] b2 = readI2c(1); // Note: before was 2
       int val1 = (int)b1[0] & 0xFF;
       int val2 = (int)b2[0] & 0xFF;
 
       return val1 * 256 + val2;
-    } else {
+    /*} else {
       return -2;
-    }
+    }*/
   }
 
   /**
@@ -211,6 +215,7 @@ public class Board {
     if (Gopigo.getInstance().isHalt()) {
       Gopigo.getInstance().onHalt();
     }
+ // if (pin == 10 || pin == 15 || pin == 0 || pin == 1)
     return writeI2c(Commands.PIN_MODE, pin, pinMode, Commands.UNUSED);
   }
 
@@ -278,6 +283,28 @@ public class Board {
     readI2c(1);
 
     return (float)ver[0] / 10;
+  }
+  
+  /**
+   * Returns the board revision.
+   * @return The board revision.
+   * @throws IOException
+   */
+  public int revision() throws IOException {
+    writeI2c(Commands.ANALOG_READ, 7, Commands.UNUSED, Commands.UNUSED);
+    sleep(100);
+
+    byte[] b1 = readI2c(1);
+    byte[] b2 = readI2c(1);
+    int val1 = (int)b1[0] & 0xFF;
+    int val2 = (int)b2[0] & 0xFF;
+
+    if (val1 != -1 && val2 != -1) {
+      int v = val1 * 256 + val2;
+      return v;
+    } else {
+      return Statuses.ERROR;
+    }
   }
 
   /**
