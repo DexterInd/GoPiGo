@@ -22,6 +22,7 @@ package com.dexterind.gopigo.components;
 import java.io.IOException;
 
 import com.dexterind.gopigo.utils.Debug;
+import com.dexterind.gopigo.utils.Statuses;
 
 /**
  * Handles the LED functions.
@@ -63,23 +64,41 @@ public class Led {
    */
   private int pin = 0;
   /**
+   * The current led id
+   */
+  private int id = 0;
+  /**
    * The debug object.
    */
   private Debug debug;
 
-  public Led(int id) throws IOException, InterruptedException {
-    board = Board.getInstance();
-    int vol = board.analogRead(7);
-    int left_pin = 0;
-    int right_pin = 0;
-    if (vol > 700) {
+  public Led(int id) {
+    this.id = id;
+  }
+
+  /**
+   * Sets the pin to use for the led.
+   * @param pin The number of the pin where the led is attached.
+   */
+  public void setPin() {
+    try {
+      board = Board.getInstance();
+      int vol = board.analogRead(7);
+      int left_pin = 0;
+      int right_pin = 0;
+      if (vol > 700) {
         left_pin = LEFT_PIN_B;
         right_pin = RIGHT_PIN_B;
-    } else {
+      } else {
         left_pin = LEFT_PIN_A;
         right_pin = RIGHT_PIN_A;
-    }
-    pin = id == LEFT ? left_pin : right_pin;
+      }
+      pin = id == LEFT ? left_pin : right_pin;
+  } catch (IOException e) {
+    e.printStackTrace();
+  } catch (InterruptedException e) {
+    e.printStackTrace();
+  }
   }
 
   /**
@@ -87,9 +106,17 @@ public class Led {
    * @return A status code.
    * @throws IOException
    */
-  public int on() throws IOException {
-    board.setPinMode(pin, 1);
-    return board.digitalWrite(pin, 1);
+  public int on() {
+    if (pin == 0) {
+      setPin();
+    }
+    try {
+      board.setPinMode(pin, 1);
+      return board.digitalWrite(pin, 1);
+    } catch (IOException e) {
+      e.printStackTrace();
+      return Statuses.ERROR;
+    }
   }
 
   /**
@@ -97,8 +124,16 @@ public class Led {
    * @return A status code.
    * @throws IOException
    */
-  public int off() throws IOException {
-    board.setPinMode(pin, 1);
-    return board.digitalWrite(pin, 0);
+  public int off() {
+    if (pin == 0) {
+      setPin();
+    }
+    try {
+      board.setPinMode(pin, 1);
+      return board.digitalWrite(pin, 0);
+    } catch (IOException e) {
+      e.printStackTrace();
+      return Statuses.ERROR;
+    }
   }
 }
