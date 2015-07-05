@@ -44,6 +44,7 @@
 import logging
 
 LOG_FILENAME = "/tmp/robot_web_server_log.txt"
+file_location = "/home/pi/Desktop/GoPiGo/Software/Python/Examples/Browser Streaming Robot/www/"
 logging.basicConfig( filename=LOG_FILENAME, level=logging.DEBUG )
 
 # Also log to stdout
@@ -72,7 +73,7 @@ robot = None
 
 cameraStreamer = None
 scriptPath = os.path.dirname( __file__ )
-webPath = os.path.abspath( scriptPath + "/www" )
+webPath = os.path.abspath( scriptPath + file_location)
 print webPath
 robotConnectionResultQueue = Queue.Queue()
 isClosing = False
