@@ -151,6 +151,13 @@ while True:
 			if en_debug:
 				print msg
 				
+		# Turn the GoPiGo right when "RIGHT" is received from scratch
+		elif msg[:5]=="SPEED":
+			if en_gpg:
+				speed= int(msg[5:])
+				set_speed(speed)
+			if en_debug:
+				print msg
 		# Increase the speed of GoPiGo when "INCREASE SPEED" is received from scratch
 		elif msg=="INCREASE SPEED":
 			if en_gpg:
@@ -228,7 +235,7 @@ while True:
 				if en_debug:
 					e = sys.exc_info()[1]
 					print "Error reading light sensor: " + str(e)
-			time.sleep(0.1)
+			#time.sleep(0.1)
 			light = analogRead(pin)
 			if en_debug:
 				print "Light Reading: " + str(light)
@@ -254,20 +261,64 @@ while True:
 				s.sensorupdate({'button':button})
 				
 		# Get the value from the sound sensor connected to port A1
+		# elif msg=="SOUND":
+			# # print "LIGHTS!"
+			# pin = 1
+			# try:
+				# sound = analogRead(pin)
+			# except:
+				# if en_debug:
+					# e = sys.exc_info()[1]
+					# print "Error reading sound sensor: " + str(e)
+			# if en_debug:
+				# print "Sound Sensor Reading: " + str(sound)
+			# if en_gpg:
+				# s.sensorupdate({'sound':sound})
+			
 		elif msg=="SOUND":
-			# print "LIGHTS!"
 			pin = 1
+			print "Sound"
 			try:
-				sound = analogRead(pin)
+				#sound = analogRead(pin)
+				d=[]
+				i=0
+				len=100
+				window_size=10
+				t=1
+				peak=0
+				for j in range(t*50):
+					analog_read_value=analogRead(1)
+					# Print non zero values
+					if analog_read_value<>0:
+						'''
+						if i<window_size:
+							d.append(analog_read_value)
+							i+=1
+						else:
+							mavg_val=sum(d)/window_size
+							# print mavg_val
+							print "+"*(mavg_val/25)
+							if mavg_val>peak:
+								peak=mavg_val
+							d=d[1:]
+							i-=1
+						'''
+						peak += analog_read_value
+	
+				avg = peak/(t*100)
+				print avg
+				#print peak
 			except:
 				if en_debug:
 					e = sys.exc_info()[1]
 					print "Error reading sound sensor: " + str(e)
 			if en_debug:
-				print "Sound Sensor Reading: " + str(sound)
+				print "Sound Sensor Reading: ",peak
 			if en_gpg:
-				s.sensorupdate({'sound':sound})
-				
+				# s.sensorupdate({'sound':peak})
+				s.sensorupdate({'sound':avg})
+
+			#print movingaverage(d,5)	
 		# Make sound from the buzzer connected to the D10 port by giving the power value
 		elif msg[:6]=="BUZZER":
 			print msg
