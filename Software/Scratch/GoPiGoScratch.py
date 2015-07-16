@@ -151,6 +151,13 @@ while True:
 			if en_debug:
 				print msg
 				
+		# Turn the GoPiGo right when "RIGHT" is received from scratch
+		elif msg[:5]=="SPEED":
+			if en_gpg:
+				speed= int(msg[5:])
+				set_speed(speed)
+			if en_debug:
+				print msg
 		# Increase the speed of GoPiGo when "INCREASE SPEED" is received from scratch
 		elif msg=="INCREASE SPEED":
 			if en_gpg:
