@@ -23,7 +23,7 @@ echo " "
 echo "Check for internet connectivity..."
 echo "=================================="
 wget -q --tries=2 --timeout=20 http://google.com
-if [[ $? -eq 0 ]];then
+if [ $? -eq 0 ];then
 	echo "Connected"
 else
 	echo "Unable to Connect, try again !!!"
@@ -49,7 +49,7 @@ rm -rf mjpg-streamer-code-182
 rm index.html
 rm mjpg-streamer-code-182.zip
 
-git clone https://github.com/raspberrypi/userland.git
+git clone https://github.com/DexterInd/userland.git
 
 cd userland
 mkdir build
@@ -61,7 +61,7 @@ sudo make install
 cd ../../
 rm -R userland
 
-git clone https://bitbucket.org/DawnRobotics/raspberry_pi_camera_streamer.git
+git clone https://bitbucket.org/DexterIndustries/raspberry_pi_camera_streamer.git
 cd raspberry_pi_camera_streamer
 mkdir build
 cd build
@@ -73,7 +73,7 @@ cd ../../
 rm -R raspberry_pi_camera_streamer
 
 sudo pip install tornado
-git clone https://github.com/mrjoes/sockjs-tornado.git
+git clone https://github.com/DexterInd/sockjs-tornado
 cd sockjs-tornado
 sudo python setup.py install
 cd ..
