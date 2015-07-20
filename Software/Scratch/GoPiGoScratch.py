@@ -279,7 +279,6 @@ while True:
 			pin = 1
 			print "Sound"
 			try:
-				#sound = analogRead(pin)
 				d=[]
 				i=0
 				len=100
@@ -290,24 +289,11 @@ while True:
 					analog_read_value=analogRead(1)
 					# Print non zero values
 					if analog_read_value<>0:
-						'''
-						if i<window_size:
-							d.append(analog_read_value)
-							i+=1
-						else:
-							mavg_val=sum(d)/window_size
-							# print mavg_val
-							print "+"*(mavg_val/25)
-							if mavg_val>peak:
-								peak=mavg_val
-							d=d[1:]
-							i-=1
-						'''
 						peak += analog_read_value
 	
 				avg = peak/(t*100)
-				print avg
-				#print peak
+				# print avg
+
 			except:
 				if en_debug:
 					e = sys.exc_info()[1]
@@ -315,10 +301,8 @@ while True:
 			if en_debug:
 				print "Sound Sensor Reading: ",peak
 			if en_gpg:
-				# s.sensorupdate({'sound':peak})
 				s.sensorupdate({'sound':avg})
 
-			#print movingaverage(d,5)	
 		# Make sound from the buzzer connected to the D10 port by giving the power value
 		elif msg[:6]=="BUZZER":
 			print msg
@@ -359,6 +343,7 @@ while True:
 				s.sensorupdate({'motion':motion})
 				
 		# Get the value from the IR remote when a button is pressed
+		# IR Sensor goes on A1 Pin.
 		elif msg=="IR":
 			print "IR!"
 			pin=15
