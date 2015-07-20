@@ -8,7 +8,7 @@ Run the command:
 	sudo wget https://bitbucket.org/pypa/setuptools/raw/0.7.4/ez_setup.py -O - | sudo python
 Clone scratchpy:
 	cd Desktop/GoPiGo/Software/Scratch
-	git clone https://github.com/pilliq/scratchpy.git
+	git clone https://github.com/DexterInd/scratchpy.git
 Navigate to extracted directory and run:
 	sudo make install
 
