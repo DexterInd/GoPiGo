@@ -19,10 +19,10 @@ from gopigo import *
 
 en_gpg=1
 en_debug=1
-en_line_sensor=0
+en_line_sensor=1
 
 if en_line_sensor:
-	import line_sensor
+	import line_sensor as l
 	
 #360 roation is ~64 encoder pulses
 #or 5 deg/pulse
@@ -365,7 +365,7 @@ while True:
 			if en_line_sensor:
 				print "LINE!"
 				try:
-					line=line_sensor.read_sensor()
+					line=l.line_position()
 				except:
 					if en_debug:
 						e = sys.exc_info()[1]
@@ -374,6 +374,35 @@ while True:
 					print "Line Sensor Readings: " + str(line)
 				if en_gpg:
 					s.sensorupdate({'line':line})
+					
+		elif msg=="SET_BLACK_LINE":
+			if en_line_sensor:
+				print "SET_BLACK_LINE!"
+				try:
+					l.set_black_line()
+				except:
+					if en_debug:
+						e = sys.exc_info()[1]
+						print "Error reading Line sensor: " + str(l.black_line)
+				if en_debug:
+					print "Black Line Sensor Readings: " + str(l.black_line)
+				if en_gpg:
+					s.sensorupdate({'black_line':l.black_line})
+		
+		elif msg=="SET_WHITE_LINE":
+			if en_line_sensor:
+				print "SET_WHITE_LINE!"
+				try:
+					l.set_white_line()
+				except:
+					if en_debug:
+						e = sys.exc_info()[1]
+						print "Error reading Line sensor: " + str(l.white_line)
+				if en_debug:
+					print "White Line Sensor Readings: " + str(l.white_line)
+				if en_gpg:
+					s.sensorupdate({'white_line':l.white_line})		
+					
 		else:
 			if en_debug:
 				print "m",msg
