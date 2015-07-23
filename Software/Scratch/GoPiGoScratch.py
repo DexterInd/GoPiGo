@@ -47,22 +47,22 @@ def cm2pulse(dist):
     return pulses
 
 fw_version=fw_ver()
-print "Current firmware version:",fw_ver()
+print "GoPiGo Scratch: Current firmware version:",fw_ver()
 if fw_version > 1.2:
 	pass
 else:
-	print "Please Install the new firmware for the GoPiGo (v1.2+) to use GoPiGo with Scratch. \nPress enter to exit"
+	print "GoPiGo Scratch: Please Install the new firmware for the GoPiGo (v1.2+) to use GoPiGo with Scratch. \nPress enter to exit"
 	raw_input()
 	sys.exit()
 
 try:
     s = scratch.Scratch()
     if s.connected:
-        print "Connected to Scratch successfully"
+        print "GoPiGo Scratch: Connected to Scratch successfully"
 	#else:
     #sys.exit(0)
 except scratch.ScratchError:
-    print "Scratch is either not opened or remote sensor connections aren't enabled"
+    print "GoPiGo Scratch: Scratch is either not opened or remote sensor connections aren't enabled"
     #sys.exit(0)
 
 class myThread (threading.Thread):     
@@ -83,7 +83,7 @@ stop()
 try:
     s.broadcast('READY')
 except NameError:
-	print "Unable to Broadcast"
+	print "GoPiGo Scratch: Unable to Broadcast"
 while True:
     try:
 		m = s.receive()
@@ -93,12 +93,12 @@ while True:
 
 		msg = m[1]
 		if msg == 'SETUP' :
-			print "Setting up sensors done"
+			print "GoPiGo Scratch: Setting up sensors done"
 		elif msg == 'START' :
 			running = True
 			if thread1.is_alive() == False:
 				thread1.start()
-			print "Service Started"
+			print "GoPiGo Scratch: Service Started"
 		
 		# Stop the GoPiGo when "STOP" is received from scratch
 		elif msg == 'STOP' :
@@ -411,17 +411,17 @@ while True:
 		
     except KeyboardInterrupt:
         running= False
-        print "Disconnected from Scratch"
+        print "GoPiGo Scratch: Disconnected from Scratch"
         break
     except (scratch.scratch.ScratchConnectionError,NameError) as e:
 		while True:
 			#thread1.join(0)
-			print "Scratch connection error, Retrying"
+			print "GoPiGo Scratch: Scratch connection error, Retrying"
 			time.sleep(5)
 			try:
 				s = scratch.Scratch()
 				s.broadcast('READY')
-				print "Connected to Scratch successfully"
+				print "GoPiGo Scratch: Connected to Scratch successfully"
 				break;
 			except scratch.ScratchError:
-				print "Scratch is either not opened or remote sensor connections aren't enabled\n..............................\n"
+				print "GoPiGo Scratch: Scratch is either not opened or remote sensor connections aren't enabled\n..............................\n"
