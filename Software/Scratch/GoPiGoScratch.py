@@ -19,10 +19,10 @@ from gopigo import *
 
 en_gpg=1
 en_debug=1
-en_line_sensor=0
+en_line_sensor=1
 
 if en_line_sensor:
-	import line_sensor
+	import line_sensor as l
 	
 #360 roation is ~64 encoder pulses
 #or 5 deg/pulse
@@ -47,22 +47,22 @@ def cm2pulse(dist):
     return pulses
 
 fw_version=fw_ver()
-print "Current firmware version:",fw_ver()
+print "GoPiGo Scratch: Current firmware version:",fw_ver()
 if fw_version > 1.2:
 	pass
 else:
-	print "Please Install the new firmware for the GoPiGo (v1.2+) to use GoPiGo with Scratch. \nPress enter to exit"
+	print "GoPiGo Scratch: Please Install the new firmware for the GoPiGo (v1.2+) to use GoPiGo with Scratch. \nPress enter to exit"
 	raw_input()
 	sys.exit()
 
 try:
     s = scratch.Scratch()
     if s.connected:
-        print "Connected to Scratch successfully"
+        print "GoPiGo Scratch: Connected to Scratch successfully"
 	#else:
     #sys.exit(0)
 except scratch.ScratchError:
-    print "Scratch is either not opened or remote sensor connections aren't enabled"
+    print "GoPiGo Scratch: Scratch is either not opened or remote sensor connections aren't enabled"
     #sys.exit(0)
 
 class myThread (threading.Thread):     
@@ -83,7 +83,7 @@ stop()
 try:
     s.broadcast('READY')
 except NameError:
-	print "Unable to Broadcast"
+	print "GoPiGo Scratch: Unable to Broadcast"
 while True:
     try:
 		m = s.receive()
@@ -93,12 +93,12 @@ while True:
 
 		msg = m[1]
 		if msg == 'SETUP' :
-			print "Setting up sensors done"
+			print "GoPiGo Scratch: Setting up sensors done"
 		elif msg == 'START' :
 			running = True
 			if thread1.is_alive() == False:
 				thread1.start()
-			print "Service Started"
+			print "GoPiGo Scratch: Service Started"
 		
 		# Stop the GoPiGo when "STOP" is received from scratch
 		elif msg == 'STOP' :
@@ -151,6 +151,13 @@ while True:
 			if en_debug:
 				print msg
 				
+		# Turn the GoPiGo right when "RIGHT" is received from scratch
+		elif msg[:5]=="SPEED":
+			if en_gpg:
+				speed= int(msg[5:])
+				set_speed(speed)
+			if en_debug:
+				print msg
 		# Increase the speed of GoPiGo when "INCREASE SPEED" is received from scratch
 		elif msg=="INCREASE SPEED":
 			if en_gpg:
@@ -228,7 +235,7 @@ while True:
 				if en_debug:
 					e = sys.exc_info()[1]
 					print "Error reading light sensor: " + str(e)
-			time.sleep(0.1)
+			#time.sleep(0.1)
 			light = analogRead(pin)
 			if en_debug:
 				print "Light Reading: " + str(light)
@@ -254,20 +261,48 @@ while True:
 				s.sensorupdate({'button':button})
 				
 		# Get the value from the sound sensor connected to port A1
+		# elif msg=="SOUND":
+			# # print "LIGHTS!"
+			# pin = 1
+			# try:
+				# sound = analogRead(pin)
+			# except:
+				# if en_debug:
+					# e = sys.exc_info()[1]
+					# print "Error reading sound sensor: " + str(e)
+			# if en_debug:
+				# print "Sound Sensor Reading: " + str(sound)
+			# if en_gpg:
+				# s.sensorupdate({'sound':sound})
+			
 		elif msg=="SOUND":
-			# print "LIGHTS!"
 			pin = 1
+			print "Sound"
 			try:
-				sound = analogRead(pin)
+				d=[]
+				i=0
+				len=100
+				window_size=10
+				t=1
+				peak=0
+				for j in range(t*50):
+					analog_read_value=analogRead(1)
+					# Print non zero values
+					if analog_read_value<>0:
+						peak += analog_read_value
+	
+				avg = peak/(t*100)
+				# print avg
+
 			except:
 				if en_debug:
 					e = sys.exc_info()[1]
 					print "Error reading sound sensor: " + str(e)
 			if en_debug:
-				print "Sound Sensor Reading: " + str(sound)
+				print "Sound Sensor Reading: ",peak
 			if en_gpg:
-				s.sensorupdate({'sound':sound})
-				
+				s.sensorupdate({'sound':avg})
+
 		# Make sound from the buzzer connected to the D10 port by giving the power value
 		elif msg[:6]=="BUZZER":
 			print msg
@@ -308,6 +343,7 @@ while True:
 				s.sensorupdate({'motion':motion})
 				
 		# Get the value from the IR remote when a button is pressed
+		# IR Sensor goes on A1 Pin.
 		elif msg=="IR":
 			print "IR!"
 			pin=15
@@ -329,7 +365,7 @@ while True:
 			if en_line_sensor:
 				print "LINE!"
 				try:
-					line=line_sensor.read_sensor()
+					line=l.line_position()
 				except:
 					if en_debug:
 						e = sys.exc_info()[1]
@@ -338,6 +374,35 @@ while True:
 					print "Line Sensor Readings: " + str(line)
 				if en_gpg:
 					s.sensorupdate({'line':line})
+					
+		elif msg=="SET_BLACK_LINE":
+			if en_line_sensor:
+				print "SET_BLACK_LINE!"
+				try:
+					l.set_black_line()
+				except:
+					if en_debug:
+						e = sys.exc_info()[1]
+						print "Error reading Line sensor: " + str(l.black_line)
+				if en_debug:
+					print "Black Line Sensor Readings: " + str(l.black_line)
+				if en_gpg:
+					s.sensorupdate({'black_line':l.black_line})
+		
+		elif msg=="SET_WHITE_LINE":
+			if en_line_sensor:
+				print "SET_WHITE_LINE!"
+				try:
+					l.set_white_line()
+				except:
+					if en_debug:
+						e = sys.exc_info()[1]
+						print "Error reading Line sensor: " + str(l.white_line)
+				if en_debug:
+					print "White Line Sensor Readings: " + str(l.white_line)
+				if en_gpg:
+					s.sensorupdate({'white_line':l.white_line})		
+					
 		else:
 			if en_debug:
 				print "m",msg
@@ -346,17 +411,17 @@ while True:
 		
     except KeyboardInterrupt:
         running= False
-        print "Disconnected from Scratch"
+        print "GoPiGo Scratch: Disconnected from Scratch"
         break
     except (scratch.scratch.ScratchConnectionError,NameError) as e:
 		while True:
 			#thread1.join(0)
-			print "Scratch connection error, Retrying"
+			print "GoPiGo Scratch: Scratch connection error, Retrying"
 			time.sleep(5)
 			try:
 				s = scratch.Scratch()
 				s.broadcast('READY')
-				print "Connected to Scratch successfully"
+				print "GoPiGo Scratch: Connected to Scratch successfully"
 				break;
 			except scratch.ScratchError:
-				print "Scratch is either not opened or remote sensor connections aren't enabled\n..............................\n"
+				print "GoPiGo Scratch: Scratch is either not opened or remote sensor connections aren't enabled\n..............................\n"
