@@ -1,14 +1,18 @@
 #GoPiGo
 
-This is the install script for the GoPiGo which installs all the packages and libraries need for running the GoPiGo.
+The GoPiGo is a delightful and complete robot for the Raspberry Pi that turns your Pi into a fully operating robot.  GoPiGo is a mobile robotic platform for the Raspberry Pi developed by [Dexter Industries.](http://www.dexterindustries.com/GoPiGo)  
 
-To run the script, first make it executable:
-> chmod +x install.sh
+![ GoPiGo ](https://raw.githubusercontent.com/DexterInd/GoPiGo/master/GoPiGo_Chassis-300.jpg)
 
-and then run it:
-> ./install.sh
+This repository contains hardware designs and design materials for the GoPiGo.
 
-Make sure that you are connected to the internet before starting.
+![ GoPiGo ](https://raw.githubusercontent.com/DexterInd/GoPiGo/master/GoPiGo_Front_Facing_Camera300.jpg)
+
+#See Also
+
+- [Dexter Industries] (http://www.dexterindustries.com/GoPiGo)
+- [Kickstarter Campaign] (http://kck.st/Q6vVOP)
+- [Raspberry Pi] (http://www.raspberrypi.org/)
 
 ## License
 GoPiGo for the Raspberry Pi: an open source robotics platform for the Raspberry Pi.
