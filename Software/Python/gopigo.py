@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 ########################################################################                                                                  
 # This library is used for communicating with the GoPiGo.                                
 # http://www.dexterindustries.com/GoPiGo/                                                                
@@ -64,6 +64,7 @@ ispd_cmd			=[116]		#Increase the speed by 10
 dspd_cmd			=[103]		#Decrease the speed by 10
 m1_cmd      		=[111]     	#Control motor1
 m2_cmd    			=[112]     	#Control motor2
+read_motor_speed_cmd=[114]		#Get motor speed back
 
 volt_cmd			=[118]		#Read the voltage of the batteries
 us_cmd				=[117]		#Read the distance from the ultrasonic sensor
@@ -92,7 +93,7 @@ analog_read_cmd     =[14]      	#Analog read on a port
 analog_write_cmd    =[15]      	#Analog read on a port
 pin_mode_cmd        =[16]      	#Set up the pin mode on a port
 
-ir_read_cmd		=[21]
+ir_read_cmd			=[21]
 ir_recv_pin_cmd		=[22]
 #LED Pins
 #MAKE COMPATIBLE WITH OLD FIRMWARE
@@ -106,6 +107,8 @@ LED_R=0
 # This allows us to be more specific about which commands contain unused bytes
 unused = 0
 
+v16_thresh=790
+
 '''
 #Enable slow i2c (for better stability)
 def en_slow_i2c():
@@ -116,7 +119,9 @@ def en_slow_i2c():
 #Write I2C block
 def write_i2c_block(address,block):
 	try:
-		return bus.write_i2c_block_data(address,1,block)
+		op=bus.write_i2c_block_data(address,1,block)
+		time.sleep(.005)
+		return op
 	except IOError:
 		if debug:
 			print "IOError"
@@ -127,6 +132,7 @@ def write_i2c_block(address,block):
 def writeNumber(value):
 	try:
 		bus.write_byte(address, value)
+		time.sleep(.005)
 	except IOError:
 		if debug:
 			print "IOError"
@@ -137,6 +143,7 @@ def writeNumber(value):
 def readByte():
 	try:
 		number = bus.read_byte(address)
+		time.sleep(.005)
 	except IOError:
 		if debug:
 			print "IOError"
@@ -230,6 +237,7 @@ def trim_write(value):
 		value=-100
 	value+=100
 	write_i2c_block(address,trim_write_cmd+[value,0,0])
+	
 
 # Arduino Digital Read
 def digitalRead(pin):
@@ -268,7 +276,7 @@ def pinMode(pin, mode):
 def analogRead(pin):
 	#if pin == 1 :
 	write_i2c_block(address, analog_read_cmd + [pin, unused, unused])
-	time.sleep(.005)
+	time.sleep(.007)
 	try:
 		b1=bus.read_byte(address)
 		b2=bus.read_byte(address)
@@ -282,7 +290,6 @@ def analogRead(pin):
 def analogWrite(pin, value):
 	if pin == 10 :
 		write_i2c_block(address, analog_write_cmd + [pin, value, unused])
-		time.sleep(.005)	#Wait for 5 ms for the commands to complete
 		return 1
 	else:
 		return -2
@@ -335,19 +342,26 @@ def us_dist(pin):
 	else:
 		return -1
 
+def read_motor_speed():
+	write_i2c_block(address,read_motor_speed_cmd+[unused,unused,unused])
+	try:
+		s1=bus.read_byte(address)
+		s2=bus.read_byte(address)
+	except IOError:
+		return [-1,-1]
+	return [s1,s2]
+
+		
 #Turn led on
 #	arg:
 #		l_id: 1 for left LED and 0 for right LED
 def led_on(l_id):
-	vol=analogRead(7)
-	#GPG16
-	if vol > 700:
+	if version > 14:
 		r_led=16
 		l_led=17
 	else:
 		r_led=5
 		l_led=10
-		
 	
 	if l_id==LED_L or l_id==LED_R:
 		if l_id==LED_L:
@@ -364,9 +378,7 @@ def led_on(l_id):
 #	arg:
 #		l_id: 1 for left LED and 0 for right LED
 def led_off(l_id):
-	vol=analogRead(7)
-	#GPG16
-	if vol > 700:
+	if version>14:
 		r_led=16
 		l_led=17
 	else:
@@ -528,3 +540,11 @@ def ir_read_signal():
 # Grove - Infrared Receiver- set the pin on which the Grove IR sensor is connected
 def ir_recv_pin(pin):
 	write_i2c_block(address,ir_recv_pin_cmd+[pin,unused,unused])
+	
+for i in range(10):
+	raw=analogRead(7)
+	
+if raw>v16_thresh:
+	version=16
+else:
+	version=14
