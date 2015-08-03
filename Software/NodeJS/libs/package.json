@@ -1,6 +1,6 @@
 {
     "name": "node-gopigo",
-    "version": "2.0.2",
+    "version": "2.0.3",
     "description": "GoPiGo library for Node.js",
     "keywords": ["gopigo", "robot", "gpio", "i2c"],
     "dependencies": {
@@ -19,7 +19,7 @@
         "url": "git://github.com/marcellobarile/GoPiGo.git"
     },
     "author": "Marcello Barile <marcello.barile@gmail.com> (http://www.barile.eu)",
-    "license": "Creative Commons Attribution-ShareAlike 3.0",
+    "license": "GNU General Public License 3.0",
     "bugs": {
         "url": "https://github.com/marcellobarile/GoPiGo/issues"
     },
