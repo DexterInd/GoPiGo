@@ -95,6 +95,8 @@ pin_mode_cmd        =[16]      	#Set up the pin mode on a port
 
 ir_read_cmd			=[21]
 ir_recv_pin_cmd		=[22]
+cpu_speed_cmd		=[25]
+
 #LED Pins
 #MAKE COMPATIBLE WITH OLD FIRMWARE
 # LED_L_PIN=17
@@ -540,7 +542,17 @@ def ir_read_signal():
 # Grove - Infrared Receiver- set the pin on which the Grove IR sensor is connected
 def ir_recv_pin(pin):
 	write_i2c_block(address,ir_recv_pin_cmd+[pin,unused,unused])
-	
+
+def cpu_speed():
+	write_i2c_block(address,cpu_speed_cmd+[0,0,0])
+	time.sleep(.1)
+	try:
+		b1=bus.read_byte(address)
+		b2=bus.read_byte(address)
+	except IOError:
+		return -1	
+	return b1
+		
 for i in range(10):
 	raw=analogRead(7)
 	
