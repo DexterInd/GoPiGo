@@ -120,5 +120,7 @@ sudo ./setup.sh
 crontab -l > file; echo '@reboot ln -sf /dev/ttyAMA0 /dev/ttyS0' >> file; crontab file
 rm file
 
+sudo rm -r /tmp/di_update
+
 echo " "
 echo "Please restart the Raspberry Pi for the changes to take effect"
