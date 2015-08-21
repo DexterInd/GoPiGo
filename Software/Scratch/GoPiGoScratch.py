@@ -37,8 +37,9 @@ import scratch,sys,threading,math
 from gopigo import *
 
 en_gpg=1
-en_debug=1
+en_debug=0
 en_line_sensor=1
+en_ir_sensor=0
 
 if en_line_sensor:
 	import line_sensor as l
@@ -365,19 +366,22 @@ while True:
 		# IR Sensor goes on A1 Pin.
 		elif msg=="IR":
 			print "IR!"
-			pin=15
+			if en_ir_sensor==0:
+				import lirc
+				sockid = lirc.init("keyes", blocking = False)
+				en_ir_sensor=1
 			try:
-				#ir_recv_pin(pin)
-				time.sleep(0.1)
-				ir = ir_read_signal()
+				a= lirc.nextcode()  # press 1 
+				if len(a) !=0:
+					print a[0]
 			except:
 				if en_debug:
 					e = sys.exc_info()[1]
-					print "Error reading IR sensor: " + str(e)
+					print "Error reading IR sensor: " + str(a)
 			if en_debug:
-				print "IR Reading: " + str(ir)
+				print "IR Reading: " + str(a[0])
 			if en_gpg:
-				s.sensorupdate({'ir':ir})
+				s.sensorupdate({'ir':a[0]})
 				
 		# Get the value from the Dexter Industries line sensor
 		elif msg=="LINE":
@@ -421,7 +425,28 @@ while True:
 					print "White Line Sensor Readings: " + str(l.white_line)
 				if en_gpg:
 					s.sensorupdate({'white_line':l.white_line})		
-					
+		
+		elif msg=="READ_IR":
+			print "READ_IR!" 
+			if en_ir_sensor==0:
+				import lirc
+				sockid = lirc.init("keyes", blocking = False)
+				en_ir_sensor=1
+			try:
+				read_ir= lirc.nextcode()  # press 1 
+				if len(read_ir) !=0:
+					print read_ir[0]
+			except:
+				if en_debug:
+					e = sys.exc_info()[1]
+					print "Error reading IR sensor: " + str(read_ir)
+			if en_debug:
+				print "IR Recv Reading: " + str(read_ir)
+			if en_gpg:
+				if len(read_ir) !=0:
+					s.sensorupdate({'read_ir':read_ir[0]})		
+				else:
+					s.sensorupdate({'read_ir':""})
 		else:
 			if en_debug:
 				print "m",msg

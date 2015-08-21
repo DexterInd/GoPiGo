@@ -1,13 +1,21 @@
 ##IR remote control
 
-### Thisfolder contains the files to control the GoPiGo with and IR remote similar to the one used with TV and AC's 
+### This folder contains the files to setup and control the GoPiGo with and Keyes IR remote 
 
 **_Files:_**
-- **gopigo_ir_control_test.py** : Used to test and record the button presse on the remote
+- **ir_recv_example.py** : Used to test button press on the IR remote
 - **gopigo_ir_control_bot.py** : Program to control the GoPiGo using the IR Remote 
-- **setup.py** : Installation file for the GoPiGo (use only if you are not using Dexter Industries SD Card)
+- **/script/ir_install.sh** : Installation file for IR remote control
+
+**Connection:_**
+Connect the IR receiver to the Serial port on the GoPiGo. This will act as a pass through to the IR signals to the Serial pins. 
+IR receiver Hardware v1.0 and back have the IR receiver connected to white wire and v1.1 and v1.2 have it connected to the Yellow wire, so the GPIO changes
+
+**Installation:_**
+- Make the ir_install.sh executable: sudo chmod +x ir_install.sh
+- Run the install script: sudo ./ir_install.sh
 
 **Usage:_**
-First run the **gopigo_ir_control_test.py** and find out the IR codes for the button press on the remote.
+Run the **ir_recv_example.py** to check if the remote is working properly
 
-Once you have found the unique code in each of the button press, program them in the **gopigo_ir_control_bot.py** to control the GoPiGo when you press the buttons on the remote
+Then run **gopigo_ir_control_bot.py** to control the GoPiGo when you press the buttons on the remote
