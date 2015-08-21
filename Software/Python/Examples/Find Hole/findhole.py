@@ -14,21 +14,24 @@ Essentially, the gopigo should:
 '''
 
 from gopigo import *
+from control import *
 import math
 
-# Should move to gopigo.py
-CHASS_WID = 13.5 # Chassis is ~13.5 cm wide.
 STOP_DIST=20 # Dist, in cm, before an obstacle to stop.
 SAMPLES=2 # Number of sample readings to take for each reading.
 INF=250 # Distance, in cm, to be considered infinity.
+REPEAT=3
 
 def main():
-    move(STOP_DIST)
-    readings = scan_room()
-    #findhole
-    #verify
-    #turn
-    #repeat
+    for x in range(REPEAT):
+        move(STOP_DIST)
+        readings = scan_room()
+        holes = findholes(readings)
+        gaps = verify_holes(holes)
+        if len(gaps) == 0:
+            exit()
+        ## Choose the first gap found
+        turn_to(gaps[0][0])
 
 def move(min_dist):
     fwd()
@@ -40,14 +43,62 @@ def move(min_dist):
         time.sleep(.1)
     return
 
-def findhole(readings):
+def turn_to(angle):
+    '''
+    Turn the GoPiGo to a specified angle where angle=0 is 90deg 
+    the way to the left and angle=180 is 90deg to the right.
+    The GoPiGo is currently pointing forward at angle==90.
+    '''
+    ## <0 is turn left, >0 is turn right.
+    degs = angle-90
+    if degs < 0:
+        left_deg(degs)
+    else:
+        right_deg(degs)
+
+def verify_holes(holes):
+    '''
+    A hole is a list of (angle,distance) tuples.
+    To verify that a hole can fit the chassis,
+    we need to calculate the distance between the 
+    first and last tuple.
+    Returns a list of (angle,gap distance) tuples.
+    '''
+    gaps = []
+    for hole in holes:
+        xy1 = calc_xy(hole[0])
+        xy2 = calc_xy(hole[-1])
+        gap = calc_gap(xy1,xy2)
+        ang1 = hole[0][0]
+        ang2 = hole[-1][0]
+        middle_ang = (ang2 + ang1)/2
+        if gap >= CHASS_WID:
+            gaps.append((middle_ang,gap))
+    return gaps
+
+def findholes(readings):
+    '''
+    Each reading will be a (angle,dist) tuple giving
+    the distance to an obstacle at the given angle.
+    To find a hole, we want 3 consecutive INF readings.
+    '''
+    holes = []
     buf = []
     ## Previous non-INF reading
     prev = ()
     for (a,d) in readings:
-        if d == INF:
-        prev = (a,d)
-        
+        if d != INF:
+            ## If dist is not INF, then we've hit another
+            ## obstacle, so reset the buffer.
+            if len(buf) > 2:
+                ## If the buffer has at least 3 INF readings,
+                ## then record the hole.
+                holes.append(buf)
+            buf = []
+            continue
+        ## Add reading to buffer
+        buf.append((a,d))
+    return holes
 
 def scan_room():
     '''
