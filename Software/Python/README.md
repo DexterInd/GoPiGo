@@ -1,5 +1,7 @@
 ## Python Library
 
+[Video Playlist on Getting Started with the GoPiGo and Python](https://www.youtube.com/watch?v=ip0mYTLlldw&list=PLQVvvaa0QuDcG4wbhhCv_XTnexvWfjlBy&index=1)
+
 ### This repository contains the Python library for the GoPiGo, tests programs, projects and Examples
 **_Files:_**
 - **gopigo.py** : Main Python library to control the GoPiGo
