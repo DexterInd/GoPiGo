@@ -463,8 +463,8 @@ while True:
 				if en_debug:
 					e = sys.exc_info()[1]
 					print "Error taking picture"
-				s.sensorupdate({'read_ir':"Error"})	
-			s.sensorupdate({'read_ir':"Picture Taken"})	
+				s.sensorupdate({'camera':"Error"})	
+			s.sensorupdate({'camera':"Picture Taken"})	
 
 					
 		else:
