@@ -2,6 +2,9 @@
 
 This repository contains source code, firmware and design materials for the GoPiGo in the C Language.
 
+To Compile:  gcc gopigo.c [your_file_name.c] -o gopigo -Wall
+To run: sudo ./gopigo
+
 ![ GoPiGo ](https://raw.githubusercontent.com/DexterInd/GoPiGo/master/GoPiGo_Front_Facing_Camera300.jpg)
 
 #See Also
