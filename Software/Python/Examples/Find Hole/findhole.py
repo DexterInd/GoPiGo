@@ -16,29 +16,37 @@ Essentially, the gopigo should:
 from gopigo import *
 from control import *
 import math
+import time
 
 STOP_DIST=20 # Dist, in cm, before an obstacle to stop.
-SAMPLES=2 # Number of sample readings to take for each reading.
+SAMPLES=4 # Number of sample readings to take for each reading.
 INF=250 # Distance, in cm, to be considered infinity.
-REPEAT=3
+REPEAT=2
+DELAY=.2
 
 def main():
+    print "*** Starting Find Hole Example ***"
     for x in range(REPEAT):
         move(STOP_DIST)
         readings = scan_room()
         holes = findholes(readings)
         gaps = verify_holes(holes)
         if len(gaps) == 0:
+            print "Nowhere to go!!"
             exit()
         ## Choose the first gap found
         turn_to(gaps[0][0])
 
 def move(min_dist):
+    ## Set servo to point straight ahead
+    servo(90)
     fwd()
+    print "Moving Forward"
     while True:
         dist=us_dist(15)
         if dist<min_dist:
             stop()
+            print "Found obstacle"
             break
         time.sleep(.1)
     return
@@ -50,6 +58,7 @@ def turn_to(angle):
     The GoPiGo is currently pointing forward at angle==90.
     '''
     ## <0 is turn left, >0 is turn right.
+    print "Turning craft {} degrees".format(angle)
     degs = angle-90
     if degs < 0:
         left_deg(degs)
@@ -64,15 +73,19 @@ def verify_holes(holes):
     first and last tuple.
     Returns a list of (angle,gap distance) tuples.
     '''
+    print "Verifying holes ... "
     gaps = []
     for hole in holes:
+        print "  Hole:{}".format(hole),
         xy1 = calc_xy(hole[0])
         xy2 = calc_xy(hole[-1])
         gap = calc_gap(xy1,xy2)
         ang1 = hole[0][0]
         ang2 = hole[-1][0]
         middle_ang = (ang2 + ang1)/2
+        print "ang:{},gap:{}".format(middle_ang,gap)   
         if gap >= CHASS_WID:
+            print "    It's wide enough!"
             gaps.append((middle_ang,gap))
     return gaps
 
@@ -82,22 +95,30 @@ def findholes(readings):
     the distance to an obstacle at the given angle.
     To find a hole, we want 3 consecutive INF readings.
     '''
+    print "Processing readings to find holes...."
+    print readings
     holes = []
     buf = []
     ## Previous non-INF reading
     prev = ()
     for (a,d) in readings:
-        if d != INF:
+        print "  {}:{}".format(a,d)
+        if d < INF:
             ## If dist is not INF, then we've hit another
             ## obstacle, so reset the buffer.
             if len(buf) > 2:
                 ## If the buffer has at least 3 INF readings,
                 ## then record the hole.
                 holes.append(buf)
+                print "    Found a hole: {}:{}".format(a,d)
             buf = []
             continue
         ## Add reading to buffer
         buf.append((a,d))
+    ## In case the last reading was INF
+    if len(buf) > 2:
+        holes.append(buf)
+        print "    Found a hole: {}:{}".format(a,d)
     return holes
 
 def scan_room():
@@ -116,18 +137,33 @@ def scan_room():
     Return list of (angle,dist).
     '''
     ret = []
-    inc = math.degrees(math.atan(CHASS_WID/20))
+    inc = int(math.degrees(math.atan(CHASS_WID/20)))
+    print "Scanning room in {} degree increments".format(inc)
     for ang in range(0,180,inc):
+        print "  Setting angle to {} ... ".format(ang),
+        ## resetting ang because I've seen issues with 0 and 180
+        if ang == 0: ang = 1
+        if ang == 180: ang = 179
         servo(ang)
         buf=[]
         for i in range(SAMPLES):
             dist=us_dist(15)
+            print dist,
             if dist<INF and dist>=0:
-                buf.appen(dist)
+                buf.append(dist)
             else:
                 buf.append(INF)
+        print
         ave = math.fsum(buf)/len(buf)
+        print "  dist={}".format(ave)
         ret.append((ang,ave))
+        ## Still having issues with some readings being waaaay off.
+        ## e.g. 
+        ##  Setting angle to   0 ...    18   19 218 49
+        ##  Setting angle to 170 ...  1000 1000  45 46
+        time.sleep(DELAY)
+    ## Reset servo to face front
+    servo(90)
     return ret
 
 def calc_xy(meas):
@@ -153,3 +189,5 @@ def calc_gap(xy1,xy2):
     dist = math.hypot(xy1[0]-xy2[0],xy1[1]-xy2[1])
     return dist
 
+if __name__ == '__main__':
+    main()

@@ -7,7 +7,7 @@ This really needs to be moved to a GoPiGo package
 e.g. from gopigo.control import *
 '''
 
-from gopigo.base import *
+from gopigo import *
 
 en_debug=1
 
