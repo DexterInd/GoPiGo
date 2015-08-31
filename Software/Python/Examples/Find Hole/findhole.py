@@ -20,9 +20,9 @@ import time
 
 STOP_DIST=20 # Dist, in cm, before an obstacle to stop.
 SAMPLES=4 # Number of sample readings to take for each reading.
-INF=250 # Distance, in cm, to be considered infinity.
+INF=200 # Distance, in cm, to be considered infinity.
 REPEAT=2
-DELAY=.2
+DELAY=1
 
 def main():
     print "*** Starting Find Hole Example ***"
@@ -33,9 +33,12 @@ def main():
         gaps = verify_holes(holes)
         if len(gaps) == 0:
             print "Nowhere to go!!"
+            stop()
             exit()
         ## Choose the first gap found
         turn_to(gaps[0][0])
+    servo(90)
+    stop()
 
 def move(min_dist):
     ## Set servo to point straight ahead
