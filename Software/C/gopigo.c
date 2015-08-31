@@ -1,22 +1,11 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <linux/i2c-dev.h>
-#include <fcntl.h>
-#include <string.h>
-#include <sys/ioctl.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <unistd.h>
+#include "gopigo.h"
+
 int fd;													
 char *fileName = "/dev/i2c-1";								
 int  address = 0x08;									
 unsigned char w_buf[5],r_buf[32];	
 unsigned long reg_addr=0;    
 
-#define fw_ver_cmd 20
-#define volt_cmd 118
-#define fwd_cmd 119
-#define stop_cmd 120
 
 //Write a register
 long write_block(char cmd,char v1,char v2,char v3)
@@ -69,24 +58,4 @@ int fwd()
 int stop()
 {
     return write_block(stop_cmd,0,0,0);
-}
-int main(void)
-{									// Buffer for data being read/ written on the i2c bus
-
-	if ((fd = open(fileName, O_RDWR)) < 0) {					// Open port for reading and writing
-		printf("Failed to open i2c port\n");
-		exit(1);
-	}
-	
-	if (ioctl(fd, I2C_SLAVE, address) < 0) {					// Set the port options and set the address of the device 
-		printf("Unable to get bus access to talk to slave\n");
-		exit(1);
-	}
-
-    printf("%f\n",volt());
-
-    fwd();
-    usleep(1000*1000);
-    stop();
-    return 0;
 }
