@@ -22,7 +22,7 @@ STOP_DIST=20 # Dist, in cm, before an obstacle to stop.
 SAMPLES=4 # Number of sample readings to take for each reading.
 INF=200 # Distance, in cm, to be considered infinity.
 REPEAT=2
-DELAY=1
+DELAY=.02
 
 def main():
     print "*** Starting Find Hole Example ***"
@@ -43,30 +43,31 @@ def main():
 def move(min_dist):
     ## Set servo to point straight ahead
     servo(90)
-    fwd()
     print "Moving Forward"
-    while True:
-        dist=us_dist(15)
-        if dist<min_dist:
-            stop()
-            print "Found obstacle"
-            break
-        time.sleep(.1)
+    while us_dist(15) > min_dist:
+        fwd()
+        time.sleep(.02)
+    stop()
+    print "Found obstacle"
     return
 
 def turn_to(angle):
     '''
     Turn the GoPiGo to a specified angle where angle=0 is 90deg 
-    the way to the left and angle=180 is 90deg to the right.
+    the way to the right and angle=180 is 90deg to the left.
     The GoPiGo is currently pointing forward at angle==90.
     '''
     ## <0 is turn left, >0 is turn right.
-    print "Turning craft {} degrees".format(angle)
     degs = angle-90
-    if degs < 0:
+    print "Turning craft {} degrees".format(degs),
+    if degs > 0:
+        print "to the left"
         left_deg(degs)
     else:
+        print "to the right"
         right_deg(degs)
+    ## This sleep is really just for debugging so I can verify that it turned properly
+    time.sleep(1)
 
 def verify_holes(holes):
     '''
@@ -160,7 +161,7 @@ def scan_room():
         ave = math.fsum(buf)/len(buf)
         print "  dist={}".format(ave)
         ret.append((ang,ave))
-        ## Still having issues with some readings being waaaay off.
+        ## Still having issues with inconsistent readings.
         ## e.g. 
         ##  Setting angle to   0 ...    18   19 218 49
         ##  Setting angle to 170 ...  1000 1000  45 46
