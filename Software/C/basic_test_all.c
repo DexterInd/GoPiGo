@@ -1,10 +1,10 @@
-// ####################################################################################                                                                  
-// This is the basic example to use the GoPiGo.                                
-// http://www.dexterindustries.com/GoPiGo/                                                                
+// ####################################################################################                                                             
+// This is the basic example to use the GoPiGo.
+// http://www.dexterindustries.com/GoPiGo/
 // History
 // ------------------------------------------------
-// Date      		Comments
-// 30 Aug 15	  	Initial Authoring
+// Date                 Comments
+// 30 Aug 15            Initial Authoring
 
 // ## License
 //
@@ -40,10 +40,105 @@ int main(void)
 		exit(1);
 	}
 
-    printf("%f\n",volt());
+    	printf("%f\n",volt());
 
-    fwd();
-    usleep(1000*1000);
-    stop();
-    return 0;
+    	while(1){
+	   char input[2];                    /* Store 2 input characters */
+
+	   printf("Enter cmd: ");
+	   scanf(" %c", input);
+
+	   switch (input[0])
+	   {
+	    	case 'w': case 'W':
+	       		fwd();
+	       		break;
+
+	    	case 'a': case 'A':
+	       		left();
+	       		break;
+
+	    	case 'd': case 'D':
+	       		right();
+	       		break;
+
+	       	case 's': case 'S':
+	       		bwd();
+	       		break;
+
+	       	case 'e': case 'E':
+	       		increase_speed();
+	       		break;
+
+	       	case 'g': case 'G':
+	       		decrease_speed();
+	       		break;
+
+	       	case 'z': case 'Z':
+	       		exit(0);
+	       		break;
+
+	       	case 'x': case 'X':
+	       		stop();
+	       		break;
+
+	       	case 'i': case 'I':
+	       		motor_fwd();
+	       		break;
+
+	       	case 'k': case 'K':
+	       		motor_bwd();
+	       		break;
+
+	       	case 'n': case 'N':
+	       		left_rot();
+	       		break;
+
+	       	case 'm': case 'M':
+	       		right_rot();
+	       		break;
+
+	       	case 't': case 'T':
+	       		switch(input[1]){
+	       			case 'r': case 'R':
+	       				;
+					int val = trim_read();
+	       				if(val == -3){
+	       					printf("-3, Trim Value Not set\n");
+	       				}
+	       				else{
+	       					printf("%d\n", val-100);
+	       				}
+	       				break;
+	       			case 'w': case 'W':
+	       				;
+					int val2;
+	       				printf("Enter trim value to write to EEPROM(-100 to 100):\n");
+	   					scanf(" %d", &val2);
+	   					trim_write(val2);
+	   					usleep(1000*100);
+	   					printf("Value in EEPROM: %d\n", trim_read()-100);
+	   					break;
+	   				case 't': case 'T':
+	       				;
+					int val3;
+	       				printf("Enter trim value to test(-100 to 100):\n");
+	   					scanf(" %d", &val3);
+	   					trim_test(val3);
+	   					usleep(1000*100);
+	   					printf("Value in EEPROM: %d\n", trim_read()-100);
+	   					break;
+	   				default:
+			       		printf("invalid trim command...\n");
+			       		break;
+	       		}
+	       		break;
+
+	     	default:
+	       		printf("invalid command...\n");
+	       		break;
+	   }
+
+	}
+   	return 0;
 }

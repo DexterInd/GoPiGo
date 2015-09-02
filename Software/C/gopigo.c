@@ -70,7 +70,7 @@ float volt(void)
     int v[2];
     float voltage;
     write_block(volt_cmd,0,0,0);
-    sleep(100);
+    pi_sleep(100);
     v[0]=read_byte();
     v[1]=read_byte();
     voltage=v[0]*256+v[1];
@@ -87,7 +87,7 @@ int stop()
     return write_block(stop_cmd,0,0,0);
 }
 
-int sleep(int t)
+int pi_sleep(int t)
 {
 	usleep(t*1000);
 }
@@ -174,7 +174,7 @@ int trim_read(void)
 	int b1,b2,trim;
 	if(write_block(trim_read_cmd,0,0,0)==-1)
 		return -1;
-	sleep(80);
+	pi_sleep(80);
 	b1=read_byte();
     b2=read_byte();
 	if(b1==-1 || b2==-1)
@@ -204,7 +204,7 @@ int digitalRead(int pin)
 	{
 		if(write_block(digital_read_cmd,pin,0,0)==-1)
 			return -1;
-		sleep(100);
+		pi_sleep(100);
 		dRead=read_byte();
 		read_byte();
 		if(dRead==-1)
@@ -217,7 +217,7 @@ int digitalRead(int pin)
 // Arduino Digital Write
 int digitalWrite(int pin, int value)
 {
-	if(value==0 or value==1)
+	if(value==0 || value==1)
 		return write_block(digital_write_cmd,pin,0,0);
 	else
 		return -2;
