@@ -102,19 +102,15 @@ long write_block(char cmd,char v1,char v2,char v3);
 char read_byte(void);
 //Get voltage
 float volt(void);
-//Move forward
-int fwd();
-//Stop
-int stop();
 
 //Sleep in ms
-int sleep(int t);
+int pi_sleep(int t);
 
 //Control Motor 1
 int motor1(int direction,int speed);
 
 //Control Motor 2
-int motor2(direction,speed);
+int motor2(int direction,int speed);
 
 //Move the GoPiGo forward
 int fwd(void);

@@ -87,7 +87,7 @@ int stop()
     return write_block(stop_cmd,0,0,0);
 }
 
-int sleep(int t)
+int pi_sleep(int t)
 {
 	usleep(t*1000);
 }
@@ -217,7 +217,7 @@ int digitalRead(int pin)
 // Arduino Digital Write
 int digitalWrite(int pin, int value)
 {
-	if(value==0 or value==1)
+	if(value==0 || value==1)
 		return write_block(digital_write_cmd,pin,0,0);
 	else
 		return -2;
