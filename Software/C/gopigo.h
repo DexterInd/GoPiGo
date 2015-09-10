@@ -96,15 +96,17 @@ extern unsigned long reg_addr;
 #define ir_recv_pin_cmd		 22
 #define cpu_speed_cmd		 25
 
+//Initialize
+int init(void);
 //Write a register
-long write_block(char cmd,char v1,char v2,char v3);
+int write_block(char cmd,char v1,char v2,char v3);
 //Read 1 byte of data
 char read_byte(void);
 //Get voltage
 float volt(void);
 
-//Sleep in ms
-int pi_sleep(int t);
+//Sleep in ms 
+void pi_sleep(int t);
 
 //Control Motor 1
 int motor1(int direction,int speed);
@@ -159,5 +161,58 @@ int digitalRead(int pin);
 
 // Arduino Digital Write
 int digitalWrite(int pin, int value);
+
+// Setting Up Pin mode on Arduino
+int pinMode(int pin, char * mode);
+
+// Read analog value from Pin
+int analogRead(int pin);
+
+// Write PWM
+int analogWrite(int pin, int value);
+
+//Read board revision
+//	return:	voltage in V
+int brd_rev(void);
+
+//Read ultrasonic sensor
+//	arg:
+//		pin -> 	Pin number on which the US sensor is connected
+//	return:		distance in cm
+int us_dist(int pin);
+
+//Turn led on
+//	arg:
+//		l_id: 1 for left LED and 0 for right LED
+int led_on(int l_id);
+
+//Turn led off
+//	arg:
+//		l_id: 1 for left LED and 0 for right LED
+int led_off(int l_id);
+
+//Set servo position
+//	arg:
+//		position: angle in degrees to set the servo at
+int servo(int position);
+
+//Returns the firmware version
+int fw_ver(void);
+
+//Set speed of the left motor
+//	arg:
+//		speed-> 0-255
+int set_left_speed(int speed);
+
+//Set speed of the right motor
+//	arg:
+//		speed-> 0-255
+int set_right_speed(int speed);
+
+//Set speed of the both motors
+//	arg:
+//		speed-> 0-255
+int set_speed(int speed);
+
 
 #endif /*GOPIGO_H */
