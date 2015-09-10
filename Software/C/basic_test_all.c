@@ -29,20 +29,12 @@
 
 int main(void)
 {									// Buffer for data being read/ written on the i2c bus
-
-	if ((fd = open(fileName, O_RDWR)) < 0) {					// Open port for reading and writing
-		printf("Failed to open i2c port\n");
+	if(init()==-1)
 		exit(1);
-	}
-	
-	if (ioctl(fd, I2C_SLAVE, address) < 0) {					// Set the port options and set the address of the device 
-		printf("Unable to get bus access to talk to slave\n");
-		exit(1);
-	}
 
-    	printf("%f\n",volt());
 
-    	while(1){
+	while(1)
+	{
 	   char input[2];                    /* Store 2 input characters */
 
 	   printf("Enter cmd: ");
@@ -97,9 +89,14 @@ int main(void)
 	       	case 'm': case 'M':
 	       		right_rot();
 	       		break;
-
+			
+			case 'u': case 'U':
+	       		printf("Ultrasonic Dist: %d\n",us_dist(15));
+	       		break;
+				
 	       	case 't': case 'T':
-	       		switch(input[1]){
+	       		switch(input[1])
+				{
 	       			case 'r': case 'R':
 	       				;
 					int val = trim_read();

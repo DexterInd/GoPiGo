@@ -32,10 +32,34 @@ char *fileName = "/dev/i2c-1";
 int  address = 0x08;									
 unsigned char w_buf[5],r_buf[32];	
 unsigned long reg_addr=0;    
+int version=200;	//Initialized with invalid version
+int v16_thresh=790;
+int LED_L=1,LED_R=0;
 
-
+int init(void)
+{
+	int i,raw;
+	if ((fd = open(fileName, O_RDWR)) < 0) 
+	{					// Open port for reading and writing
+		printf("Failed to open i2c port\n");
+		return -1;
+	}
+	
+	if (ioctl(fd, I2C_SLAVE, address) < 0) 
+	{					// Set the port options and set the address of the device 
+		printf("Unable to get bus access to talk to slave\n");
+		return -1;
+	}
+	for(i=0;i<10;i++)
+		raw=analogRead(7);
+	if(raw>v16_thresh)
+		version=16;
+	else
+		version=14;
+	return 1;
+}
 //Write a register
-long write_block(char cmd,char v1,char v2,char v3)
+int write_block(char cmd,char v1,char v2,char v3)
 {
     w_buf[0]=1;													
 	w_buf[1]=cmd;
@@ -45,7 +69,7 @@ long write_block(char cmd,char v1,char v2,char v3)
     
     if ((write(fd, w_buf, 5)) != 5) 
     {								
-        printf("Error writing to i2c slave\n");
+        printf("Error writing to GoPiGo\n");
         return -1;
     }
     return 1; 
@@ -57,7 +81,7 @@ char read_byte(void)
     int reg_size=1;
     
 	if (read(fd, r_buf, reg_size) != reg_size) {								
-		printf("Unable to read from slave\n");
+		printf("Unable to read from GoPiGo\n");
 		exit(1);
         return -1;
 	}
@@ -87,7 +111,7 @@ int stop()
     return write_block(stop_cmd,0,0,0);
 }
 
-int pi_sleep(int t)
+void pi_sleep(int t) 
 {
 	usleep(t*1000);
 }
@@ -221,4 +245,183 @@ int digitalWrite(int pin, int value)
 		return write_block(digital_write_cmd,pin,0,0);
 	else
 		return -2;
+}
+
+// Setting Up Pin mode on Arduino
+int pinMode(int pin, char * mode)
+{
+	if(strcmp(mode,"ÏNPUT")==0)
+		return write_block(pin_mode_cmd,pin,0,0);
+	else if(strcmp(mode,"OUTPUT")==0)
+		return write_block(pin_mode_cmd,pin,1,0);
+	return -1;
+}
+
+// Read analog value from Pin
+int analogRead(int pin)
+{
+	int b1,b2;
+	write_block(analog_read_cmd,pin,0,0);
+	pi_sleep(70);
+	b1=read_byte();
+	b2=read_byte();
+	if(b1==-1 || b2==-1)
+		return -1;
+	return b1* 256 + b2;
+}
+
+// Write PWM
+int analogWrite(int pin, int value)
+{
+	if(pin==10)
+	{
+		write_block(analog_write_cmd,pin,value,0);
+		return 1;
+	}
+	return -2;
+}
+
+//Read board hardware revision
+int brd_rev(void)
+{
+	return version;
+}
+//Read ultrasonic sensor
+//	arg:
+//		pin -> 	Pin number on which the US sensor is connected
+//	return:		distance in cm
+int us_dist(int pin)
+{
+	int b1,b2;
+	write_block(us_cmd,pin,0,0);
+	pi_sleep(80);
+	b1=read_byte();
+	b2=read_byte();
+	if(b1==-1 || b2==-1)
+		return -1;
+	return b1* 256 + b2;
+}
+//Turn led on
+//	arg:
+//		l_id: 1 for left LED and 0 for right LED
+int led_on(int l_id)
+{
+	int r_led,l_led;
+	if (version>14)
+	{
+		r_led=16;
+		l_led=17;
+	}
+	else
+	{
+		r_led=5;
+		l_led=10;
+	}
+	
+	if(l_id==LED_L || l_id==LED_R)
+	{
+		if(l_id==LED_L)
+		{
+			pinMode(l_led,"OUTPUT");
+			digitalWrite(l_led,1);
+		}
+		else if(l_id==LED_R)
+		{
+			pinMode(r_led,"OUTPUT");
+			digitalWrite(r_led,1);
+		}
+		return 1;
+	}
+	else
+		return -1;
+}
+//Turn led off
+//	arg:
+//		l_id: 1 for left LED and 0 for right LED
+int led_off(int l_id)
+{
+	int r_led,l_led;
+	if (version>14)
+	{
+		r_led=16;
+		l_led=17;
+	}
+	else
+	{
+		r_led=5;
+		l_led=10;
+	}
+	
+	if(l_id==LED_L || l_id==LED_R)
+	{
+		if(l_id==LED_L)
+		{
+			pinMode(l_led,"OUTPUT");
+			digitalWrite(l_led,0);
+		}
+		else if(l_id==LED_R)
+		{
+			pinMode(r_led,"OUTPUT");
+			digitalWrite(r_led,0);
+		}
+		return 1;
+	}
+	else
+		return -1;
+}
+//Set servo position
+//	arg:
+//		position: angle in degrees to set the servo at
+int servo(int position)
+{
+	return write_block(servo_cmd,position,0,0);
+}
+
+//Returns the firmware version
+int fw_ver(void)
+{
+	int ver;
+	write_block(fw_ver_cmd,0,0,0);
+	pi_sleep(100);
+	ver=read_byte();
+	read_byte();
+	if(ver==-1)
+		return -1;
+	return ver;
+}
+//Set speed of the left motor
+//	arg:
+//		speed-> 0-255
+int set_left_speed(int speed)
+{
+	if(speed >255)
+		speed =255;
+	else if(speed <0)
+		speed =0;
+	return write_block(set_left_speed_cmd,speed,0,0);
+}
+//Set speed of the right motor
+//	arg:
+//		speed-> 0-255
+int set_right_speed(int speed)
+{
+	if(speed >255)
+		speed =255;
+	else if(speed <0)
+		speed =0;
+	return write_block(set_right_speed_cmd,speed,0,0);
+}
+//Set speed of the both motors
+//	arg:
+//		speed-> 0-255
+int set_speed(int speed)
+{
+	if(speed >255)
+		speed =255;
+	else if(speed <0)
+		speed =0;
+	set_left_speed(speed);
+	pi_sleep(100);
+	set_right_speed(speed);
+	return 1;
 }
