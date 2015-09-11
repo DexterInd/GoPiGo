@@ -89,7 +89,7 @@ robot = None
 
 cameraStreamer = None
 scriptPath = os.path.dirname( __file__ )
-webPath = os.path.abspath( scriptPath + file_location)
+webPath = os.path.abspath( file_location)
 print webPath
 robotConnectionResultQueue = Queue.Queue()
 isClosing = False
