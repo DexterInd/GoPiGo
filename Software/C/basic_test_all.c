@@ -148,7 +148,7 @@ int main(void)
 		       				printf("Enter trim value to write to EEPROM(-100 to 100):\n");
 		   				scanf(" %d", &val2);
 		   				trim_write(val2);
-		   				pi_sleep(1);
+		   				pi_sleep(100);
 		   				printf("Value in EEPROM: %d\n", trim_read()-100);
 		   				break;
 		   			case 't': case 'T':
@@ -157,7 +157,7 @@ int main(void)
 		       				printf("Enter trim value to test(-100 to 100):\n");
 		   				scanf(" %d", &val3);
 		   				trim_test(val3);
-		   				pi_sleep(1);
+		   				pi_sleep(100);
 		   				printf("Value in EEPROM: %d\n", trim_read()-100);
 		   				break;
 		   			default:
