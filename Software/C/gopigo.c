@@ -70,8 +70,10 @@ int write_block(char cmd,char v1,char v2,char v3)
     if ((write(fd, w_buf, 5)) != 5) 
     {								
         printf("Error writing to GoPiGo\n");
+		usleep(10000);
         return -1;
     }
+	usleep(10000);
     return 1; 
 }
 
@@ -80,12 +82,13 @@ char read_byte(void)
 {
     int reg_size=1;
     
-	if (read(fd, r_buf, reg_size) != reg_size) {								
+	if (read(fd, r_buf, reg_size) != reg_size) {
+		usleep(10000);		
 		printf("Unable to read from GoPiGo\n");
 		exit(1);
         return -1;
 	}
-    
+    usleep(10000);
     return r_buf[0];
 }
 
@@ -203,7 +206,7 @@ int trim_read(void)
     b2=read_byte();
 	if(b1==-1 || b2==-1)
 		return -1;
-	trim=b1*256+b1;
+	trim=b1*256+b2;
 	if (trim ==255)
 		return -3;
 	return trim;
@@ -242,7 +245,7 @@ int digitalRead(int pin)
 int digitalWrite(int pin, int value)
 {
 	if(value==0 || value==1)
-		return write_block(digital_write_cmd,pin,0,0);
+		return write_block(digital_write_cmd,pin,value,0);
 	else
 		return -2;
 }
@@ -321,7 +324,7 @@ int led_on(int l_id)
 	if(l_id==LED_L || l_id==LED_R)
 	{
 		if(l_id==LED_L)
-		{
+		{ 
 			pinMode(l_led,"OUTPUT");
 			digitalWrite(l_led,1);
 		}
