@@ -3,7 +3,13 @@
 This repository contains source code, firmware and design materials for the GoPiGo in the C Language.
 
 #####To Compile:  gcc gopigo.c [your_file_name.c] -o gopigo -Wall
-#####To run: sudo ./gopigo
+#####To run: ./gopigo
+
+**Notes:**
+- The compile command uses the basic commands from gopigo.c library 
+- The output exectuable is the one followed by the -o argument, which is gopigo here (You can change it to something else if oyu want)
+- the -Wall argument enable's all compiler warnings and is necessary for compiling the GoPiGo C example. Read more about it here: http://www.rapidtables.com/code/linux/gcc/gcc-wall.htm 
+
 
 ![ GoPiGo ](https://raw.githubusercontent.com/DexterInd/GoPiGo/master/GoPiGo_Front_Facing_Camera300.jpg)
 
