@@ -37,7 +37,7 @@ import scratch,sys,threading,math
 from gopigo import *
 
 en_gpg=1
-en_debug=0
+en_debug=1
 en_line_sensor=1
 en_ir_sensor=0
 
@@ -112,7 +112,7 @@ while True:
 			m = s.receive()
 
 		msg = m[1]
-		if msg == 'SETUP' :
+		if msg.lower() == 'SETUP'.lower() :
 			print "GoPiGo Scratch: Setting up sensors done"
 		elif msg == 'START' :
 			running = True
@@ -121,14 +121,14 @@ while True:
 			print "GoPiGo Scratch: Service Started"
 		
 		# Stop the GoPiGo when "STOP" is received from scratch
-		elif msg == 'STOP' :
+		elif msg.lower() == 'STOP'.lower() :
 			if en_gpg:
 				stop()
 			if en_debug:
 				print msg
 				
 		# Move the GoPiGo forward when "FORWARD" is received from scratch
-		elif msg[:7]=="FORWARD":
+		elif msg[:7].lower()=="FORWARD".lower():
 			if en_gpg:
 				if len(msg) > 7:
 					dist = int(msg[7:])
@@ -139,7 +139,7 @@ while True:
 				print msg
 				
 		# Move the GoPiGo back when "BACKWARD" is received from scratch
-		elif msg[:8]=="BACKWARD":
+		elif msg[:8].lower()=="BACKWARD".lower():
 			if en_gpg:
 				if len(msg) > 8:
 					dist = int(msg[8:])
@@ -150,7 +150,7 @@ while True:
 				print msg
 				
 		# Turn the GoPiGo left when "LEFT" is received from scratch
-		elif msg[:4]=="LEFT":
+		elif msg[:4].lower()=="LEFT".lower():
 			if en_gpg:
 				if len(msg) > 4:
 					deg= int(msg[4:])
@@ -161,7 +161,7 @@ while True:
 				print msg
 				
 		# Turn the GoPiGo right when "RIGHT" is received from scratch
-		elif msg[:5]=="RIGHT":
+		elif msg[:5].lower()=="RIGHT".lower():
 			if en_gpg:
 				if len(msg) > 5:
 					deg= int(msg[5:])
@@ -172,28 +172,28 @@ while True:
 				print msg
 				
 		# Turn the GoPiGo right when "RIGHT" is received from scratch
-		elif msg[:5]=="SPEED":
+		elif msg[:5].lower()=="SPEED".lower():
 			if en_gpg:
 				speed= int(msg[5:])
 				set_speed(speed)
 			if en_debug:
 				print msg
 		# Increase the speed of GoPiGo when "INCREASE SPEED" is received from scratch
-		elif msg=="INCREASE SPEED":
+		elif msg.lower()=="INCREASE SPEED".lower():
 			if en_gpg:
 				increase_speed()
 			if en_debug:
 				print msg
 				
 		# Decrease the speed of GoPiGo when "DECREASE SPEED" is received from scratch
-		elif msg=="DECREASE SPEED":
+		elif msg.lower()=="DECREASE SPEED".lower():
 			if en_gpg:
 				decrease_speed()
 			if en_debug:
 				print msg
 		
 		# Turn On or Off the left LED
-		elif msg[:4]=="LEDL":
+		elif msg[:4].lower()=="LEDL".lower():
 			if en_debug:
 				print msg
 			l_led_pow=int(msg[4:])
@@ -204,7 +204,7 @@ while True:
 					led_off(1)
 					
 		# Turn On or Off the Right LED
-		elif msg[:4]=="LEDR":
+		elif msg[:4].lower()=="LEDR".lower():
 			if en_debug:
 				print msg
 			r_led_pow=int(msg[4:])
@@ -213,7 +213,7 @@ while True:
 					led_on(0)
 				else:
 					led_off(0)
-		elif msg[:9]=="WHEEL ROT":
+		elif msg[:9].lower()=="WHEEL ROT".lower():
 			if en_debug:
 				print msg
 			dist= int(msg[9:])
@@ -224,7 +224,7 @@ while True:
 		## helper or convenience fcns
 		## in the gopigo package.
 		## and then below would just reference them.
-		elif msg[:3]=="SER":
+		elif msg[:3].lower()=="SER".lower():
 			if en_debug:
 				print msg
 			srv_pos=int(msg[3:])
@@ -236,7 +236,7 @@ while True:
 				servo(srv_pos)
 				
 		# Get distance from the ultrasonic sensor connected to port A1
-		elif msg=="GET_DIST":
+		elif msg.lower()=="GET_DIST".lower():
 			if en_debug:
 				print "Received distance request."
 				print msg
@@ -245,7 +245,7 @@ while True:
 				s.sensorupdate({'distance':dist})
 
 		# Get value from the light sensor connected to Port A1
-		elif msg=="LIGHT":
+		elif msg.lower()=="LIGHT".lower():
 			# print "LIGHTS!"
 			pin = 1
 			mode = "INPUT"
@@ -263,10 +263,12 @@ while True:
 				s.sensorupdate({'light':light})
 				
 		# Get value from the button connected to the port (A1 or D10) specified in the message
-		elif msg[:6]=="BUTTON":
+		elif msg[:6].lower()=="BUTTON".lower():
 			print "BUTTON!",msg
 			try:
 				pin = int(msg[6:])
+				if pin ==11:
+					pin=10
 				mode = "OUTPUT"
 				a = pinMode(pin, mode)
 			except:
@@ -295,7 +297,7 @@ while True:
 			# if en_gpg:
 				# s.sensorupdate({'sound':sound})
 			
-		elif msg=="SOUND":
+		elif msg.lower()=="SOUND".lower():
 			pin = 1
 			print "Sound"
 			try:
@@ -324,7 +326,7 @@ while True:
 				s.sensorupdate({'sound':avg})
 
 		# Make sound from the buzzer connected to the D10 port by giving the power value
-		elif msg[:6]=="BUZZER":
+		elif msg[:6].lower()=="BUZZER".lower():
 			print msg
 			pin = 10
 			try:
@@ -336,7 +338,7 @@ while True:
 					print "Error with buzzer: " + str(e)
 					
 		# Set the power in the LED (0-255) connected to port D10
-		elif msg[:3]=="LED":
+		elif msg[:3].lower()=="LED".lower():
 			if en_debug:
 				print msg
 			led_pow=int(msg[3:])
@@ -345,7 +347,7 @@ while True:
 				analogWrite(pin,led_pow)
 				
 		# Get the value from the motion sensor connected to Port D10
-		elif msg=="MOTION":
+		elif msg.lower()=="MOTION".lower():
 			print "MOTION!"
 			pin=10
 			try:
@@ -364,7 +366,7 @@ while True:
 				
 		# Get the value from the IR remote when a button is pressed
 		# IR Sensor goes on A1 Pin.
-		elif msg=="IR":
+		elif msg.lower()=="IR".lower():
 			print "IR!"
 			if en_ir_sensor==0:
 				import lirc
@@ -384,7 +386,7 @@ while True:
 				s.sensorupdate({'ir':a[0]})
 				
 		# Get the value from the Dexter Industries line sensor
-		elif msg=="LINE":
+		elif msg.lower()=="LINE".lower():
 			if en_line_sensor:
 				print "LINE!"
 				try:
@@ -398,7 +400,7 @@ while True:
 				if en_gpg:
 					s.sensorupdate({'line':line})
 					
-		elif msg=="SET_BLACK_LINE":
+		elif msg.lower()=="SET_BLACK_LINE".lower():
 			if en_line_sensor:
 				print "SET_BLACK_LINE!"
 				try:
@@ -412,7 +414,7 @@ while True:
 				if en_gpg:
 					s.sensorupdate({'black_line':l.black_line})
 		
-		elif msg=="SET_WHITE_LINE":
+		elif msg.lower()=="SET_WHITE_LINE".lower():
 			if en_line_sensor:
 				print "SET_WHITE_LINE!"
 				try:
@@ -426,7 +428,7 @@ while True:
 				if en_gpg:
 					s.sensorupdate({'white_line':l.white_line})		
 		
-		elif msg=="READ_IR":
+		elif msg.lower()=="READ_IR".lower():
 			print "READ_IR!" 
 			if en_ir_sensor==0:
 				import lirc
@@ -448,7 +450,7 @@ while True:
 				else:
 					s.sensorupdate({'read_ir':""})
 					
-		elif msg=="TAKE_PICTURE":
+		elif msg.lower()=="TAKE_PICTURE".lower():
 			print "TAKE_PICTURE!" 
 			try:
 				from subprocess import call
@@ -467,7 +469,7 @@ while True:
 			s.sensorupdate({'camera':"Picture Taken"})	
 
 					
-		else:
+		else: 
 			if en_debug:
 				print "m",msg
 				print "Wrong Command"
