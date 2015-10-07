@@ -89,9 +89,11 @@ while true ; do
 		break
 		
 	elif [ $INPUT -eq 2 ] ; then
+		echo "Check Lib Rpi GPIO"
 		if grep -q "lirc_rpi gpio_in_pin=14" /etc/modules; then
 			echo "Lib Rpi GPIO already present"
-			
+		
+		echo "Check Pin 15"
 		elif grep -q "lirc_rpi gpio_in_pin=15" /etc/modules; then
 			sed -e s/"lirc_rpi gpio_in_pin=15"//g -i /etc/modules
 			sudo echo "lirc_rpi gpio_in_pin=14" >> /etc/modules
@@ -102,9 +104,10 @@ while true ; do
 			echo "Lib Rpi GPIO added"
 		fi
 
+		echo "Check Kernel Version."
 		if grep -q "dtoverlay=lirc-rpi,gpio_in_pin=14" /boot/config.txt; then
 			echo "LIRC for Kernel 3.18 already present"
-			
+		echo "Check Kernel pin 15"
 		elif grep -q "dtoverlay=lirc-rpi,gpio_in_pin=15" /boot/config.txt; then
 			sed -e s/"dtoverlay=lirc-rpi,gpio_in_pin=15"//g -i /boot/config.txt
 			sudo echo "dtoverlay=lirc-rpi,gpio_in_pin=14" >> /boot/config.txt
