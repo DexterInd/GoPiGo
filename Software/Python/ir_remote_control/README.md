@@ -6,6 +6,7 @@
 - **ir_recv_example.py** : Used to test button press on the IR remote
 - **gopigo_ir_control_bot.py** : Program to control the GoPiGo using the IR Remote 
 - **/script/ir_install.sh** : Installation file for IR remote control
+- **/script/setup_older_version.sh** : Installation file for older IR receiver
 
 **Connection:_**
 Connect the IR receiver to the Serial port on the GoPiGo. This will act as a pass through to the IR signals to the Serial pins. 
@@ -14,6 +15,7 @@ IR receiver Hardware v1.0 and back have the IR receiver connected to white wire 
 **Installation:_**
 - Make the ir_install.sh executable: sudo chmod +x ir_install.sh
 - Run the install script: sudo ./ir_install.sh
+- If you have an IR receiver which is v1.0 or back, then run the setup_older_version script too: sudo chmod +x ir_install.sh and sudo ./ir_install.sh
 
 **Usage:_**
 Run the **ir_recv_example.py** to check if the remote is working properly
