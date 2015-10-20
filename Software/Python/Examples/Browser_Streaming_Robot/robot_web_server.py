@@ -60,7 +60,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/gpl-3.0.txt>.
 import logging
 
 LOG_FILENAME = "/tmp/robot_web_server_log.txt"
-file_location = "/home/pi/Desktop/GoPiGo/Software/Python/Examples/Browser Streaming Robot/www/"
+file_location = "/home/pi/Desktop/GoPiGo/Software/Python/Examples/Browser_Streaming_Robot/www/"
 logging.basicConfig( filename=LOG_FILENAME, level=logging.DEBUG )
 
 # Also log to stdout

@@ -122,6 +122,9 @@ rm file
 
 sudo rm -r /tmp/di_update
 
+sudo adduser pi i2c
+sudo chmod +x /home/pi/Desktop/GoPiGo/Software/Scratch/GoPiGo_Scratch_Scripts/*.sh
+
 echo " "
 echo "Please restart the Raspberry Pi for the changes to take effect"
 echo " "

@@ -1,7 +1,7 @@
 ## Office Cannon
 ### This example controls the GoPiGo and Office Cannon with a wireless mouse on the USB port.
 
-![A Mobile Office cannon with the Raspberry Pi robot](https://raw.githubusercontent.com/DexterInd/GoPiGo/master/Software/Python/Examples/Office%20Cannon/Office-cannon-with-raspberry-pi.jpg "Office cannon with the Raspberry Pi robot")
+![A Mobile Office cannon with the Raspberry Pi robot](https://raw.githubusercontent.com/DexterInd/GoPiGo/master/Software/Python/Examples/Office_Cannon/Office-cannon-with-raspberry-pi.jpg "Office cannon with the Raspberry Pi robot")
 
 **Control:**
 

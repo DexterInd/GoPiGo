@@ -2,13 +2,11 @@
 ### This example is for streaming video and controlling the GoPiGo from a web browser
 
 
-![Mobile control of the GoPiGo Raspberry Pi Robot](https://raw.githubusercontent.com/DexterInd/GoPiGo/master/Software/Python/Examples/Browser%20Streaming%20Robot/Raspberry_Pi_Camera_controlled-by-mobile-browser.jpg "Control of the GoPiGo Raspberry Pi Robot with a mobile phone.")
+![Mobile control of the GoPiGo Raspberry Pi Robot](https://raw.githubusercontent.com/DexterInd/GoPiGo/master/Software/Python/Examples/Browser_Streaming_Robot/Raspberry_Pi_Camera_controlled-by-mobile-browser.jpg "Control of the GoPiGo Raspberry Pi Robot with a mobile phone.")
 
-![Robot Control and streaming through the browser](https://raw.githubusercontent.com/DexterInd/GoPiGo/master/Software/Python/Examples/Browser%20Streaming%20Robot/Raspberry_Pi_Camera_streaming-to-computer-browser.jpg "Streaming video through the browser of the GoPiGo")
+![Robot Control and streaming through the browser](https://raw.githubusercontent.com/DexterInd/GoPiGo/master/Software/Python/Examples/Browser_Streaming_Robot/Raspberry_Pi_Camera_streaming-to-computer-browser.jpg "Streaming video through the browser of the GoPiGo")
 
-![Controlling the GoPiGo robot with a mobile phone](https://raw.githubusercontent.com/DexterInd/GoPiGo/master/Software/Python/Examples/Browser%20Streaming%20Robot/Raspberry_Pi_Camera_controlled-by-mobile-browser.jpg "Streaming video from your Raspberry Pi Robot to your mobile phone.")
-
-
+![Controlling the GoPiGo robot with a mobile phone](https://raw.githubusercontent.com/DexterInd/GoPiGo/master/Software/Python/Examples/Browser_Streaming_Robot/Raspberry_Pi_Camera_controlled-by-mobile-browser.jpg "Streaming video from your Raspberry Pi Robot to your mobile phone.")
 
 **Usage:**
 - Make robot_web_server.py executable
