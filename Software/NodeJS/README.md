@@ -17,7 +17,7 @@ $ npm install node-gopigo
 
 Now you can include the module inside your application as usual:
 ```javascript
-var Gopigo = require('node-gopigo')
+var Gopigo = require('node-gopigo').Gopigo
 ```
 
 At this point you may need to include the GoPiGo base classes:
