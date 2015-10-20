@@ -1,7 +1,7 @@
 ## PS3 Controller Example
 ### This example controls the GoPiGo and using a PS3 Dualshock 3 controller
 
-![PS3 Controller and the Raspberry Pi Robot](https://raw.githubusercontent.com/DexterInd/GoPiGo/master/Software/Python/Examples/PS3%20Control/PS3-controller-for-raspberry-pi.jpg "GoPiGo Raspberry Pi Robot controlled with a Playstation3 controller")
+![PS3 Controller and the Raspberry Pi Robot](https://raw.githubusercontent.com/DexterInd/GoPiGo/master/Software/Python/Examples/PS3_Control/PS3-controller-for-raspberry-pi.jpg "GoPiGo Raspberry Pi Robot controlled with a Playstation3 controller")
 
 
 **Files:**

@@ -1,7 +1,7 @@
 ## Mouse Control
 ### This example controls the GoPiGo with a wireless mouse on the USB port.
 
-![Control the Raspberry Pi Robot with a mouse. ](https://raw.githubusercontent.com/DexterInd/GoPiGo/master/Software/Python/Examples/Mouse%20Control/GoPiGo-Mouse-Control-with-Raspberry-Pi.jpg
+![Control the Raspberry Pi Robot with a mouse. ](https://raw.githubusercontent.com/DexterInd/GoPiGo/master/Software/Python/Examples/Mouse_Control/GoPiGo-Mouse-Control-with-Raspberry-Pi.jpg
  "Control the Raspberry Pi Robot with a mouse.")
 
 
