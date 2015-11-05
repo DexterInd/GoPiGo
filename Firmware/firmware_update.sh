@@ -29,5 +29,5 @@ if [ $motors = $y ]; then
    avrdude -c gpio -p m328p -U flash:w:fw_ver_13.cpp.hex
    echo "============================="
 else
-  echo "Disconect your motors and retry!"
+  echo "Disconnect your motors and retry!"
 fi
