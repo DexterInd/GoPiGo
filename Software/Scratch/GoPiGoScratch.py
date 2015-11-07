@@ -471,7 +471,7 @@ while True:
 					
 		else: 
 			if en_debug:
-				print "Ignoring Command: ", msg[1]
+				print "Ignoring Command: ", msg
 				
 		
     except KeyboardInterrupt:
