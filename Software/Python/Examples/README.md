@@ -12,6 +12,10 @@
 - **Basic Servo** : Control the servo motor on the GoPiGo with basic keyboard commands.  This example demonstrates servo control with the GoPiGo.
 - **PS3 Control** : Control the GoPiGo with the PS3 controller.  This example demonstrates how to connect the Playstation 3 controller to the GoPiGo.
 - **Ultrasonic Basic Obstacle Avoider** : Make an obstacle avoiding robot with the GoPiGo.  This is a basic demonstration of how to use the Ultrasonic Sensor with the GoPiGo.
+- **Find_Hole** : Uses the ultrasonic sensor to scan the room and navigate through it
+- **Gamepad** : Control the GoPiGo with the Logitech F710 Gamepad
+- **LED_Blink** : Blink the LED's on the GoPigo
+- **Ultrasonic Servo** : Use the ultrasonic ranger and a servo to scan a room and make a map of it
 
 ![ GoPiGo ](https://raw.githubusercontent.com/DexterInd/GoPiGo/master/GoPiGo_Chassis-300.jpg)
 
