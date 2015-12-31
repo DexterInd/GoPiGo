@@ -128,7 +128,7 @@ def get_black_line():
 			black_line = pickle.load(f)
 	except:
 		black_line=[0]*5
-	print black_line
+	return black_line
 	
 def set_white_line():
 	global white_line,black_line,range_col
@@ -153,8 +153,18 @@ def get_white_line():
 			white_line = pickle.load(f)
 	except:
 		white_line=[0]*5
-	print white_line
+	return white_line
 		
+def get_range():
+	global range_col
+	#load default values from files
+	try:
+		with open(file_r, 'rb') as f:
+			range_col = pickle.load(f)
+	except:
+		range_col=[0]*5
+	return range_col
+	
 def line_position():
 	global black_line,white_line,range_col
 	#load default values from files
