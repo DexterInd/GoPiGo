@@ -14,7 +14,7 @@
 # History
 # ------------------------------------------------
 # Author     	Date      		Comments  
-# Karan			27 June 14		Code cleanup                                                    
+# Karan		27 June 14		Code cleanup                                                    
 # Casten		31 Dec  15		Added async io, action until keyup
 '''
 ## License
@@ -43,34 +43,44 @@ import pygame #Gives access to KEYUP/KEYDOWN events
 
 #Initialization for pygame
 pygame.init()
-screen = pygame.display.set_mode((468, 60))
-pygame.display.set_caption('Remote Control')
-pygame.mouse.set_visible(0)
+screen = pygame.display.set_mode((300, 60))
+pygame.display.set_caption('Remote Control Window')
 
+instructions = '''
+This is a basic example for the GoPiGo Robot control 
+(Be sure to put focus on Remote Control Window!)
+Press:
+	w: Move GoPiGo Robot forward
+	a: Turn GoPiGo Robot left
+	d: Turn GoPiGo Robot right
+	s: Move GoPiGo Robot backward
+	t: Increase speed
+	g: Decrease speed
+	z: Exit
+''';
 
-print "This is a basic example for the GoPiGo Robot control"
-print "Press:\n\tw: Move GoPiGo Robot forward\n\ta: Turn GoPiGo Robot left\n\td: Turn GoPiGo Robot right\n\ts: Move GoPiGo Robot backward\n\tt: Increase speed\n\tg: Decrease speed\n\tz: Exit\n"
+print instructions;
 
 while True:
-	event = pygame.event.wait()
+	event = pygame.event.wait();
 	if (event.type == pygame.KEYUP):
-        	stop();
+		stop();
 		continue;
 	if (event.type != pygame.KEYDOWN):
 		continue;	
- 	char = event.unicode
+	char = event.unicode;
 	if char=='w':
-		fwd()	# Move forward
+		fwd()	;# Move forward
 	elif char=='a':
-		left()	# Turn left
+		left();	# Turn left
 	elif char=='d':
-		right()	# Turn Right
+		right();# Turn Right
 	elif char=='s':
-		bwd()	# Move back
+		bwd();# Move back
 	elif char=='t':
-		increase_speed()	# Increase speed
+		increase_speed();	# Increase speed
 	elif char=='g':
-		decrease_speed()	# Decrease speed
+		decrease_speed();	# Decrease speed
 	elif char=='z':
-		print "Exiting"		# Exit
-		sys.exit()
+		print "\nExiting";		# Exit
+		sys.exit();
