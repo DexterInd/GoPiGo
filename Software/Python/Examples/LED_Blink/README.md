@@ -1,6 +1,8 @@
 ## LED Blink
 ### This example is to show how to use the LED's with the GoPiGo
-
+There are 2 examples in this project:
+* **led_blink.py**: Blink the LED's built in on the GoPiGo
+* **grove_port_led_blink.py**: Example to blink Grove LED's connected to the Analog and digital Grove ports on the GoPiGo
 
 
 ![ GoPiGo ](https://raw.githubusercontent.com/DexterInd/GoPiGo/master/GoPiGo_Chassis-300.jpg)
