@@ -46,6 +46,7 @@ def absolute_line_pos():
 	return line_pos
 	
 	
+#Action to run when a line is detected
 def line_sensor_vals():
 	#if the line is in the middle, keep moving straight
 	#if the line is slightly left of right, keep moving straight
