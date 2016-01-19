@@ -38,11 +38,8 @@ from gopigo import *
 
 en_gpg=1
 en_debug=1
-en_line_sensor=1
 en_ir_sensor=0
 
-if en_line_sensor:
-	import line_sensor as l
 	
 #360 roation is ~64 encoder pulses
 #or 5 deg/pulse
@@ -387,46 +384,25 @@ while True:
 				
 		# Get the value from the Dexter Industries line sensor
 		elif msg.lower()=="LINE".lower():
-			if en_line_sensor:
-				print "LINE!"
-				try:
-					line=l.line_position()
-				except:
-					if en_debug:
-						e = sys.exc_info()[1]
-						print "Error reading Line sensor: " + str(e)
+			try:
+				import sys
+				sys.path.insert(0, '/home/pi/Desktop/GoPiGo/Software/Python/line_follower')
+				import line_sensor
+				import scratch_line
+			except ImportError:
+				print "Line sensor libraries not found"
+				s.sensorupdate({'line':-3})
+			print "LINE!"
+			try:
+				line=scratch_line.line_sensor_vals()
+			except:
 				if en_debug:
-					print "Line Sensor Readings: " + str(line)
-				if en_gpg:
-					s.sensorupdate({'line':line})
-					
-		elif msg.lower()=="SET_BLACK_LINE".lower():
-			if en_line_sensor:
-				print "SET_BLACK_LINE!"
-				try:
-					l.set_black_line()
-				except:
-					if en_debug:
-						e = sys.exc_info()[1]
-						print "Error reading Line sensor: " + str(l.black_line)
-				if en_debug:
-					print "Black Line Sensor Readings: " + str(l.black_line)
-				if en_gpg:
-					s.sensorupdate({'black_line':l.black_line})
-		
-		elif msg.lower()=="SET_WHITE_LINE".lower():
-			if en_line_sensor:
-				print "SET_WHITE_LINE!"
-				try:
-					l.set_white_line()
-				except:
-					if en_debug:
-						e = sys.exc_info()[1]
-						print "Error reading Line sensor: " + str(l.white_line)
-				if en_debug:
-					print "White Line Sensor Readings: " + str(l.white_line)
-				if en_gpg:
-					s.sensorupdate({'white_line':l.white_line})		
+					e = sys.exc_info()[1]
+					print "Error reading Line sensor: " + str(e)
+			if en_debug:
+				print "Line Sensor Readings: " + str(line)
+			if en_gpg:
+				s.sensorupdate({'line':line})	
 		
 		elif msg.lower()=="READ_IR".lower():
 			print "READ_IR!" 
