@@ -379,7 +379,7 @@ while True:
 					print "Error reading IR sensor: " + str(a)
 			if en_debug:
 				print "IR Reading: " + str(a[0])
-			if en_gpg:
+			if en_gpg: 
 				s.sensorupdate({'ir':a[0]})
 				
 		# Get the value from the Dexter Industries line sensor
@@ -394,7 +394,7 @@ while True:
 				s.sensorupdate({'line':-3})
 			print "LINE!"
 			try:
-				line=scratch_line.line_sensor_vals()
+				line=scratch_line.line_sensor_val_scratch()
 			except:
 				if en_debug:
 					e = sys.exc_info()[1]

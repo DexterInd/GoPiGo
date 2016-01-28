@@ -13,10 +13,11 @@ try:
     import scratch_line
 except ImportError:
     raise ImportError,"Line sensor libraries not found"
-    
+  
+y=175 
 class line_sensor_app(wx.Frame):
     def __init__(self,parent,id,title):
-        wx.Frame.__init__(self,parent,id,title,size=(400,300))
+        wx.Frame.__init__(self,parent,id,title,size=(550,400))
         self.parent = parent
         self.initialize()
 
@@ -24,22 +25,22 @@ class line_sensor_app(wx.Frame):
         sizer = wx.GridBagSizer()
 
         # Set up buttons
-        black_line_set_button = wx.Button(self,-1,label="Black Line sensor set", pos=(25,75))
+        black_line_set_button = wx.Button(self,-1,label="Black Line sensor set", pos=(25,y))
         sizer.Add(black_line_set_button, (0,1))
         self.Bind(wx.EVT_BUTTON, self.black_line_set_OnButtonClick, black_line_set_button)
 
-        white_line_set_button = wx.Button(self,-1,label="White Line sensor set", pos=(25,125))
+        white_line_set_button = wx.Button(self,-1,label="White Line sensor set", pos=(25,y+50))
         sizer.Add(white_line_set_button, (0,1))
         self.Bind(wx.EVT_BUTTON, self.white_line_set_button_OnButtonClick, white_line_set_button)
 
-        line_position_set_button = wx.Button(self,-1,label="Read Line Position", pos=(25,175))
+        line_position_set_button = wx.Button(self,-1,label="Read Line Position", pos=(25,y+100))
         sizer.Add(line_position_set_button, (0,1))
         self.Bind(wx.EVT_BUTTON, self.line_position_set_button_OnButtonClick, line_position_set_button)
         
         # Set up labels
-        self.label = wx.StaticText(self,-1,label=u'Hello !',pos=(25,225))
+        self.label = wx.StaticText(self,-1,label=u'->',pos=(25,y+150))
         
-        self.label_top = wx.StaticText(self,-1,label=u'LINE SENSOR SETUP !\nKeep the line sensor over white and black line \nand select the button to set the treshold',pos=(25,0))
+        self.label_top = wx.StaticText(self,-1,label=u'INSTRUCTIONS:\n*\tPlace the line sensor so that all of the black sensors are over your black line.\n\tThen press the button "Black Line Sensor Set".\n\n*\tThen place the line sensor so that all of the black sensors are NOT over your black line,\n\tbut on the white background surface.\n\tThen press "White Line Sensor Set".\n\n*\tThen test the sensor by pressing "Read Line Position"',pos=(25,0))
 
         sizer.Add( self.label, (1,0),(1,2), wx.EXPAND )
         sizer.Add( self.label_top, (1,0),(1,2), wx.EXPAND )
@@ -68,5 +69,5 @@ class line_sensor_app(wx.Frame):
 
 if __name__ == "__main__":
     app = wx.App()
-    frame = line_sensor_app(None,-1,'Line Follower setup')
+    frame = line_sensor_app(None,-1,'Line Follower SETUP')
     app.MainLoop()
