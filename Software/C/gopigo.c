@@ -5,6 +5,7 @@
 // ------------------------------------------------
 // Date      		Comments
 // 30 Aug 15	  	Initial Authoring
+// 02 Feb 16	  	Support Encoders
 
 // ## License
 //
@@ -424,4 +425,61 @@ int set_speed(int speed)
 	pi_sleep(100);
 	set_right_speed(speed);
 	return 1;
+}
+
+int enc_read(int motor)
+{
+	write_block(enc_read_cmd, motor, 0, 0);
+	pi_sleep(80);
+	int b1 = read_byte();
+	int b2 = read_byte();
+
+	if (b1!=-1 && b2!=-1)
+		return b1*256 + b2;
+	else
+		return -1;
+}
+
+// Enable the encoders (enabled by default)
+int enable_encoders(void)
+{
+	return write_block(en_enc_cmd, 0,0,0);
+}
+
+// Disable the encoders (use this if you don't want to use the encoders)
+int disable_encoders(void)
+{
+	return write_block(dis_enc_cmd,0,0,0);
+}
+
+//Set encoder targeting on
+//arg:
+//	m1: 0 to disable targeting for m1, 1 to enable it
+//	m2:	1 to disable targeting for m2, 1 to enable it
+//	target: number of encoder pulses to target (18 per revolution)
+int enc_tgt(int m1, int m2, int target)
+{
+	if( m1>1 || m1<0 || m2>1 || m2<0 )
+		return -1;
+	int m_sel = m1*2+m2;
+	write_block(enc_tgt_cmd, m_sel, target/256, target%256);
+	return 1;
+}
+
+//Read encoder status
+//	return:	0 if encoder target is reached
+int read_enc_status(void)
+{
+	int st=read_byte();
+	read_byte();
+	return st;
+}
+
+//Read timeout status
+//	return:	0 if timeout is reached
+int read_timeout_status(void)
+{
+	read_byte();
+	int st=read_byte();
+	return st;
 }

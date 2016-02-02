@@ -5,6 +5,7 @@
 // ------------------------------------------------
 // Date                 Comments
 // 30 Aug 15            Initial Authoring
+// 02 Feb 16            Support Encoders
 
 // ## License
 //
@@ -165,6 +166,11 @@ int main(void)
 			       			break;
 	       			}
 	       		break;
+
+			case 'c': case 'C':
+				printf("Motor 0 (left) travelled %i cm\n", enc_read(0));
+				printf("Motor 1 (right) travelled %i cm\n", enc_read(1));
+				break;
 
 	     	default:
 	       		printf("invalid command...\n");

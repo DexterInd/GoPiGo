@@ -5,6 +5,7 @@
 // ------------------------------------------------
 // Date      		Comments
 // 30 Aug 15	  	Initial Authoring
+// 02 Feb 16	  	Support Encoders
 
 // ## License
 //
@@ -214,5 +215,31 @@ int set_right_speed(int speed);
 //		speed-> 0-255
 int set_speed(int speed);
 
+//Read encoder value
+//	arg:
+//		motor -> 	0 for motor1 and 1 for motor2
+//	return:		distance in cm
+int enc_read(int motor);
+
+// Enable the encoders (enabled by default)
+int enable_encoders(void);
+
+// Disable the encoders (use this if you don't want to use the encoders)
+int disable_encoders(void);
+
+//Set encoder targeting on
+//arg:
+//	m1: 0 to disable targeting for m1, 1 to enable it
+//	m2:	1 to disable targeting for m2, 1 to enable it
+//	target: number of encoder pulses to target (18 per revolution)
+int enc_tgt(int m1, int m2, int target);
+
+//Read encoder status
+//	return:	0 if encoder target is reached
+int read_enc_status(void);
+
+//Read timeout status
+//	return:	0 if timeout is reached
+int read_timeout_status(void);
 
 #endif /*GOPIGO_H */
