@@ -1,0 +1,10 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+
+Name: @PACKAGE_NAME@
+Version: @GOPIGO_VERSION@
+Description: Communicates with the GoPiGo
+Libs: -L${libdir} @LIBS@
+Cflags: -I${includedir}
