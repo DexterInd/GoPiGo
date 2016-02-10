@@ -1,0 +1,10 @@
+# - Config file for the GoPiGo package
+# It defines the following variables
+#  @PACKAGE_NAME@_INCLUDE_DIRS - include directories for gopigo
+#  @PACKAGE_NAME@_LIBRARY_DIRS - library directories for gopigo
+#  @PACKAGE_NAME@_LIBRARIES    - libraries to link against
+
+ 
+set(@PACKAGE_NAME@_INCLUDE_DIRS @includedir@)
+set(@PACKAGE_NAME@_LIBRARIES @LIBS@)
+set(@PACKAGE_NAME@_LIBRARY_DIRS @libdir@)
