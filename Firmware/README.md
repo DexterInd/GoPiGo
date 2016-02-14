@@ -1,3 +1,10 @@
+## Uploading a new firmware to the GoPiGo
+First make the update script executable
+> sudo chmod + firmware_update.sh
+
+Make sure that the motors are disconnected from the GoPiGo and then run the firmware update:
+> sudo ./firmware_update.sh
+
 ## Making changes to the GoPiGo Firmware
 
 The GoPiGo uses software servo to control the Servo's so when making changes to the code, do remember to add the **Software Servo library** to the Arduino Libraries folder

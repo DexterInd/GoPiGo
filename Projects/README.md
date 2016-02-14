@@ -1,13 +1,10 @@
-## LED Blink
-### This example is to show how to use the LED's with the GoPiGo
-There are 2 examples in this project:
-* **led_blink.py**: Blink the LED's built in on the GoPiGo
-* **grove_port_led_blink.py**: Example to blink Grove LED's connected to the Analog and digital Grove ports on the GoPiGo
+# GoPiGo
 
+The GoPiGo is a delightful and complete robot for the Raspberry Pi that turns your Pi into a fully operating robot.  GoPiGo is a mobile robotic platform for the Raspberry Pi developed by [Dexter Industries.](http://www.dexterindustries.com/GoPiGo)  
 
 ![ GoPiGo ](https://raw.githubusercontent.com/DexterInd/GoPiGo/master/GoPiGo_Chassis-300.jpg)
 
-This repository contains source code, firmware and design materials for the GoPiGo.
+This repository contains project examples for the GoPiGo.
 
 ![ GoPiGo ](https://raw.githubusercontent.com/DexterInd/GoPiGo/master/GoPiGo_Front_Facing_Camera300.jpg)
 
@@ -17,10 +14,9 @@ This repository contains source code, firmware and design materials for the GoPi
 - [Kickstarter Campaign] (http://kck.st/Q6vVOP)
 - [Raspberry Pi] (http://www.raspberrypi.org/)
 
-
 ## License
 GoPiGo for the Raspberry Pi: an open source robotics platform for the Raspberry Pi.
-Copyright (C) 2015  Dexter Industries
+Copyright (C) 2016  Dexter Industries
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

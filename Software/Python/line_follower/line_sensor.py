@@ -1,25 +1,16 @@
 #!/usr/bin/env python
+# Dexter Industries line sensor python library
 #
-# GrovePi Python library
-# v1.2.2
-#
-# This file provides the basic functions for using the GrovePi
-#
-# The GrovePi connects the Raspberry Pi and Grove sensors.  You can learn more about GrovePi here:  http://www.dexterindustries.com/GrovePi
+# This library provides the basic functions to access the sensor data from the line sensor
 #
 # Have a question about this example?  Ask on the forums here:  http://www.dexterindustries.com/forum/?forum=grovepi
 #
-# LICENSE: 
-# These files have been made available online through a [Creative Commons Attribution-ShareAlike 3.0](http://creativecommons.org/licenses/by-sa/3.0/) license.
-#
 # Karan Nayan
-# Initial Date: 13 Feb 2014
-# Last Updated: 22 Jan 2015
+# Initial Date: 13 Dec 2015
+# Last Updated: 13 Dec 2015
 # http://www.dexterindustries.com/
-#
 '''
 ## License
- GoPiGo for the Raspberry Pi: an open source robotics platform for the Raspberry Pi.
  Copyright (C) 2015  Dexter Industries
 
 This program is free software: you can redistribute it and/or modify
@@ -129,6 +120,16 @@ def set_black_line():
 	with open(file_r, 'wb') as f:
 		pickle.dump(range_col, f)
 		
+def get_black_line():
+	global black_line
+	#load default values from files
+	try:
+		with open(file_b, 'rb') as f:
+			black_line = pickle.load(f)
+	except:
+		black_line=[0]*5
+	return black_line
+	
 def set_white_line():
 	global white_line,black_line,range_col
 	for i in range(5):
@@ -143,7 +144,27 @@ def set_white_line():
 		pickle.dump(white_line, f)
 	with open(file_r, 'wb') as f:
 		pickle.dump(range_col, f)
-			
+	
+def get_white_line():
+	global white_line
+	#load default values from files
+	try:
+		with open(file_w, 'rb') as f:
+			white_line = pickle.load(f)
+	except:
+		white_line=[0]*5
+	return white_line
+		
+def get_range():
+	global range_col
+	#load default values from files
+	try:
+		with open(file_r, 'rb') as f:
+			range_col = pickle.load(f)
+	except:
+		range_col=[0]*5
+	return range_col
+	
 def line_position():
 	global black_line,white_line,range_col
 	#load default values from files

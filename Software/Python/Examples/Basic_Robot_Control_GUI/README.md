@@ -1,9 +1,31 @@
-## LED Blink
-### This example is to show how to use the LED's with the GoPiGo
-There are 2 examples in this project:
-* **led_blink.py**: Blink the LED's built in on the GoPiGo
-* **grove_port_led_blink.py**: Example to blink Grove LED's connected to the Analog and digital Grove ports on the GoPiGo
+## Basic Robot Control GUI
+### Basic example for controlling the GoPiGo using the Keyboard and a GUI on VNC
 
+![Basic Robot Control GUI](https://raw.githubusercontent.com/karan259/GoPiGo-1/master/Software/Python/Examples/Basic_Robot_Control_GUI/Basic_Raspberry_Pi_Robot_Control_GUI.jpg "GoPiGo Rasberry Pi Robot Controlled with a GUI")
+
+Contributed by casten on Gitub https://github.com/DexterInd/GoPiGo/pull/112
+
+**Control:**
+
+- w:	Move forward
+- a:	Turn left
+- d:	Turn right
+- s:	Move back
+- x:	Stop
+- t:	Increase speed
+- g:	Decrease speed
+- z: 	Exit
+
+**Usage:**
+Open LXTerminal in VNC or Pi Desktop
+
+Go to the example folder:
+
+`cd Desktop/GoPiGo/Software/Python/Examples/Basic_Robot_Control/GUI`
+
+Run the example:
+
+`python basic_robot_gui.py`
 
 ![ GoPiGo ](https://raw.githubusercontent.com/DexterInd/GoPiGo/master/GoPiGo_Chassis-300.jpg)
 
