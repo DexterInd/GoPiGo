@@ -2,14 +2,14 @@
 
 Build and program this little GoPiGo to protect your wardrobe, your closet, or even your whole room! Hide GoPiGo behind a closed door and when the door is opened, it will attack your siblings, scaring them, and even taking a picture as trespassing proof! That way, even mom will have to be on your side! 
 
-![ GoPiGo ](http://www.dexterindustries.com/shop/gopigo-starter-kit-2/)
+![GoPiGo](ReadyToGuardYourDoor.png)
 
 This repository contains the code for this project in both Python and Scratch. 
 The sound effect comes from https://www.freesound.org/
 
-The project is documented at 
-![AgentKK](http://www.dexterindustries.com/projects/agent-kk-2/)
-![ GoPiGo ](https://raw.githubusercontent.com/DexterInd/GoPiGo/master/GoPiGo_Front_Facing_Camera300.jpg)
+The project is documented at [AgentKK](http://www.dexterindustries.com/projects/agent-kk-2/)
+
+GoPiGo is documented at [GoPiGo](http://www.dexterindustries.com/shop/gopigo-starter-kit-2/)
 
 # See Also
 
