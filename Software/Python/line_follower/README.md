@@ -1,16 +1,26 @@
 # GoPiGo Line Follower
 
-This Python library is for the GoPiGo Line follower
+This Python library is for the (GoPiGo Line follower)(http://www.dexterindustries.com/shop/line-follower-for-gopigo/)
 
 ## Files
-- test.py: Basic test for the line sensor
-- line_sensor.py: Library for the line sensor
-- line_follow.py: Basic GoPiGo example to use the line sensor
+###Calibration and Utilities
+- <strong>line_threshold_set.py:</strong>  Use this program to set the black/white values.  Run once.
+- <strong>black_line.txt:</strong>  Holds the black line values.
+- <strong>white_line.txt:</strong>  Holds the white line values.
+- <strong>range_line.txt:</strong>  Holds the range of values.
+- <strong>line_sensor.py:</strong> Library for the line sensor
+- <strong>line_follow.py:</strong> Basic GoPiGo example to use the line sensor.
+###Examples
+- <strong>basic_example.py:</strong>  This example shows a basic example to read sensor data from the line sensor.
+- <strong>check_line_sensor.py:</strong> Checks the I2C bus for the line follower.
+- <strong>line_follow.py:</strong>  A very basic example using bang-bang control.
+- <strong>line_follow1.py:</strong>  An advanced example of line following using arrays and proportional response.
+- <strong>line_position.py:</strong>  This example reads the position of the line the sensor is positioned over.
+- 
 
 ## See Also
 
 - [Dexter Industries] (http://www.dexterindustries.com/GoPiGo)
-- [Kickstarter Campaign] (http://kck.st/Q6vVOP)
 - [Raspberry Pi] (http://www.raspberrypi.org/)
 
 ![ GoPiGo ](https://raw.githubusercontent.com/DexterInd/GoPiGo/master/GoPiGo_Chassis-300.jpg)
