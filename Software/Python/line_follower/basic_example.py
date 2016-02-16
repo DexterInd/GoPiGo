@@ -1,13 +1,13 @@
 #!/usr/bin/env python
 # Dexter Industries line sensor basic example
 #
-# This example shows a bsic example to read sensor data from the line sensor
+# This example shows a basic example to read sensor data from the line sensor.  Most basic example prints out the data from the 5 sensors on the line follower.
 #
-# Have a question about this example?  Ask on the forums here:  http://www.dexterindustries.com/forum/?forum=grovepi
+# Have a question about this example?  Ask on the forums here:  http://www.dexterindustries.com/forum/?forum=gopigo
 #
-# Karan Nayan
-# Initial Date: 13 Dec 2015
-# Last Updated: 13 Dec 2015
+# 
+# Initial Date: 13 Dec 2015  Karan Nayan
+# Last Updated: 16 Feb 2016  John Cole
 # http://www.dexterindustries.com/
 '''
 ## License
