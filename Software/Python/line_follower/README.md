@@ -1,6 +1,6 @@
 # GoPiGo Line Follower
 
-This Python library is for the (GoPiGo Line follower)(http://www.dexterindustries.com/shop/line-follower-for-gopigo/)
+This Python library is for the [GoPiGo Line follower](http://www.dexterindustries.com/shop/line-follower-for-gopigo/).
 
 ## Files
 ###Calibration and Utilities
