@@ -1,3 +1,12 @@
+#!/usr/bin/env python
+# Dexter Industries Line sensor Python Library
+#
+# This is and example to make the GoPiGo follow the line using the Dexter Industries Line follower.
+#
+# Have a question about this example?  Ask on the forums here:  http://www.dexterindustries.com/forum/
+#
+# http://www.dexterindustries.com/
+
 import line_sensor
 import time
 import operator
