@@ -1,25 +1,25 @@
+# Scratch_Line.  This file adapts the line follower to Scratch.  
+
 import line_sensor
 import time
+import pickle
 
 poll_time=0.01
 
-# fwd_speed=100
-# slight_turn_speed=int(.5*fwd_speed)
-# turn_speed=int(.7*fwd_speed)
-# poll_time=0.01
+# Calibration Files.  These are fixed positions because we assume
+# The user is using Raspbian for Robots.
+file_b="/home/pi/Desktop/GoPiGo/Software/Python/line_follower/black_line.txt"
+file_w="/home/pi/Desktop/GoPiGo/Software/Python/line_follower/white_line.txt"
+file_r="/home/pi/Desktop/GoPiGo/Software/Python/line_follower/range_line.txt"
 
 last_val=[0]*5
 curr=[0]*5
 
-#Enable messages on scree
+#Enable messages on screen
 msg_en=1
 
 #Get line parameters
 line_pos=[0]*5
-white_line=line_sensor.get_white_line()
-black_line=line_sensor.get_black_line()
-range_sensor= line_sensor.get_range()
-threshold=[a+b/2 for a,b in zip(white_line,range_sensor)]
 
 #Position to take action on
 mid 	=[0,0,1,0,0]
@@ -35,8 +35,54 @@ right1	=[0,0,0,0,1]
 stop	=[1,1,1,1,1]
 stop1	=[0,0,0,0,0]
 
+def get_black_line():
+	global black_line
+	#load default values from files
+	try:
+		with open(file_b, 'rb') as f:
+			black_line = pickle.load(f)
+	except Exception, e:
+		# print e
+		black_line=[0]*5
+	return black_line
+
+def get_white_line():
+	global white_line
+	#load default values from files
+	try:
+		with open(file_w, 'rb') as f:
+			white_line = pickle.load(f)
+	except Exception, e:
+		# print e
+		white_line=[0]*5
+	return white_line
+
+def get_range():
+	global range_col
+	#load default values from files
+	try:
+		with open(file_r, 'rb') as f:
+			range_col = pickle.load(f)
+	except Exception, e:
+		# print e
+		range_col=[0]*5
+	return range_col
+
 #Converts the raw values to absolute 0 and 1 depending on the threshold set
 def absolute_line_pos():
+
+	# line_pos=[0]*5
+	# white_line=line_sensor.get_white_line()
+	white_line = get_white_line()
+	# print "White: " + str(white_line)
+	black_line=get_black_line()
+	# print "Black: " + str(black_line)
+	range_sensor= get_range()
+	# print "Range: " + str(range_sensor)
+	threshold=[a+b/2 for a,b in zip(white_line,range_sensor)]
+
+	# print "Threshold:" + str(threshold)
+
 	raw_vals=line_sensor.get_sensorval()
 	for i in range(5):
 		if raw_vals[i]>threshold[i]:

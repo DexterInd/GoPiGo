@@ -99,6 +99,7 @@ def read_sensor():
 def get_sensorval():
 	while True: 
 		val=read_sensor()
+		print val
 		if val[0]<>-1:
 			return val
 		else:
@@ -126,7 +127,9 @@ def get_black_line():
 	try:
 		with open(file_b, 'rb') as f:
 			black_line = pickle.load(f)
-	except:
+	except Exception, e:
+		print "FAIL!"
+		print e
 		black_line=[0]*5
 	return black_line
 	

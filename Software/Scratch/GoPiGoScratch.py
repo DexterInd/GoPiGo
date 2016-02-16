@@ -387,12 +387,13 @@ while True:
 			try:
 				import sys
 				sys.path.insert(0, '/home/pi/Desktop/GoPiGo/Software/Python/line_follower')
-				import line_sensor
+				# import line_sensor
 				import scratch_line
 			except ImportError:
 				print "Line sensor libraries not found"
 				s.sensorupdate({'line':-3})
-			print "LINE!"
+			if en_debug:
+				print "LINE!"
 			try:
 				line=scratch_line.line_sensor_val_scratch()
 			except:
