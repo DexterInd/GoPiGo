@@ -19,6 +19,11 @@ This Python library is for the [GoPiGo Line follower](http://www.dexterindustrie
 - <strong>line_follow1.py:</strong>  An advanced example of line following using arrays and proportional response.
 - <strong>line_position.py:</strong>  This example reads the position of the line the sensor is positioned over.
 
+###Scratch
+- <strong>scratch_line.py:</strong>  Runs the sensor in Scratch in the background.
+- <strong>line_sensor_gui.py:</strong> The GUI program for calibration.  A visual form of the line_threshold_set.py program.
+
+
 ## See Also
 
 - [Dexter Industries] (http://www.dexterindustries.com/GoPiGo)
