@@ -3,13 +3,15 @@
 This Python library is for the [GoPiGo Line follower](http://www.dexterindustries.com/shop/line-follower-for-gopigo/).
 
 ## Files
+
 ###Calibration and Utilities
 - <strong>line_threshold_set.py:</strong>  Use this program to set the black/white values.  Run once.
 - <strong>black_line.txt:</strong>  Holds the black line values.
 - <strong>white_line.txt:</strong>  Holds the white line values.
 - <strong>range_line.txt:</strong>  Holds the range of values.
-- <strong>line_sensor.py:</strong> Library for the line sensor
+- <strong>line_sensor.py:</strong> Library for the line sensor.
 - <strong>line_follow.py:</strong> Basic GoPiGo example to use the line sensor.
+
 ###Examples
 - <strong>basic_example.py:</strong>  This example shows a basic example to read sensor data from the line sensor.
 - <strong>check_line_sensor.py:</strong> Checks the I2C bus for the line follower.
