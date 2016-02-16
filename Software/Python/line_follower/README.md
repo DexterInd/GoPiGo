@@ -16,7 +16,6 @@ This Python library is for the (GoPiGo Line follower)(http://www.dexterindustrie
 - <strong>line_follow.py:</strong>  A very basic example using bang-bang control.
 - <strong>line_follow1.py:</strong>  An advanced example of line following using arrays and proportional response.
 - <strong>line_position.py:</strong>  This example reads the position of the line the sensor is positioned over.
-- 
 
 ## See Also
 
