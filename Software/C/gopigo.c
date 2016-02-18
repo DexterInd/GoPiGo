@@ -245,7 +245,7 @@ int digitalRead(int pin)
 int digitalWrite(int pin, int value)
 {
     if(value==0 || value==1)
-        return write_block(digital_write_cmd,pin,0,0);
+        return write_block(digital_write_cmd,pin,value,0);
     else
         return -2;
 }

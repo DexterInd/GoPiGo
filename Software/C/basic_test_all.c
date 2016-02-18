@@ -110,7 +110,7 @@ int main(void)
                         led_off(led_val2);
                         break;
                     default:
-                        printf("invalid led command... (n for ON, f for OFF)\n");
+                        printf("invalid led command... (o for ON, f for OFF)\n");
                         break;
                 }
                 break;
