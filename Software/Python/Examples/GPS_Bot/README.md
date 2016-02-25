@@ -1,9 +1,7 @@
 ## GPS Bot
 - This example is for using the GoPiGo to move around and get the Latitude and Longitude coordinates and save them to a file
 - You can run the **basic_robot_control** program to control the GoPiGo robot 
-
-
-
+- Use the file "gps_hardware_test.py" to test your GPS hardware on the GoPiGo or GrovePi.
 
 ![ GoPiGo ](https://raw.githubusercontent.com/DexterInd/GoPiGo/master/GoPiGo_Chassis-300.jpg)
 
@@ -14,13 +12,12 @@ This repository contains source code, firmware and design materials for the GoPi
 # See Also
 
 - [Dexter Industries] (http://www.dexterindustries.com/GoPiGo)
-- [Kickstarter Campaign] (http://kck.st/Q6vVOP)
 - [Raspberry Pi] (http://www.raspberrypi.org/)
 
 
 ## License
 GoPiGo for the Raspberry Pi: an open source robotics platform for the Raspberry Pi.
-Copyright (C) 2015  Dexter Industries
+Copyright (C) 2016  Dexter Industries
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
