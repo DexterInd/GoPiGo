@@ -220,7 +220,7 @@ int trim_write(int value)
     else if(value<-100)
         value=-100;
     value+=100;
-    return write_block(trim_write_cmd,0,0,0);
+    return write_block(trim_write_cmd,value,0,0);
 }
 
 // Arduino Digital Read
