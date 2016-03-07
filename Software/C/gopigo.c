@@ -294,8 +294,7 @@ int analogWrite(int pin, int value)
 {
     if(pin==10)
     {
-        write_block(analog_write_cmd,pin,value,0);
-        return 1;
+        return write_block(analog_write_cmd,pin,value,0);
     }
     return -2;
 }
@@ -320,10 +319,11 @@ int us_dist(int pin)
         return -1;
     return b1* 256 + b2;
 }
-//Turn led on
+//Turn led on or off
 //    arg:
 //        l_id: 1 for left LED and 0 for right LED
-int led_on(int l_id)
+//        onoff: 0 off, 1 on
+int led_toggle(int l_id, bool onoff)
 {
     int r_led,l_led;
     if (version>14)
@@ -337,56 +337,37 @@ int led_on(int l_id)
         l_led=10;
     }
     
-    if(l_id==LED_L || l_id==LED_R)
-    {
-        if(l_id==LED_L)
-        {
-            pinMode(l_led,"OUTPUT");
-            digitalWrite(l_led,1);
-        }
-        else if(l_id==LED_R)
-        {
-            pinMode(r_led,"OUTPUT");
-            digitalWrite(r_led,1);
-        }
-        return 1;
-    }
+    // set led pin
+    int led_pin;
+    if (l_id==LED_L)
+        led_pin = l_led;
+    else if (l_id==LED_R)
+        led_pin = r_led;
     else
         return -1;
+    
+    // write
+    pinMode(l_led,"OUTPUT");
+    int ret = digitalWrite(l_led, onoff);
+    
+    if (ret<=0)
+        return -1;
+    else
+        return 1;
+}
+//Turn led on
+//    arg:
+//        l_id: 1 for left LED and 0 for right LED
+int led_on(int l_id)
+{
+    return led_toggle(l_id, 1);
 }
 //Turn led off
 //    arg:
 //        l_id: 1 for left LED and 0 for right LED
 int led_off(int l_id)
 {
-    int r_led,l_led;
-    if (version>14)
-    {
-        r_led=16;
-        l_led=17;
-    }
-    else
-    {
-        r_led=5;
-        l_led=10;
-    }
-    
-    if(l_id==LED_L || l_id==LED_R)
-    {
-        if(l_id==LED_L)
-        {
-            pinMode(l_led,"OUTPUT");
-            digitalWrite(l_led,0);
-        }
-        else if(l_id==LED_R)
-        {
-            pinMode(r_led,"OUTPUT");
-            digitalWrite(r_led,0);
-        }
-        return 1;
-    }
-    else
-        return -1;
+    return led_toggle(l_id, 0);
 }
 //Set servo position
 //    arg:

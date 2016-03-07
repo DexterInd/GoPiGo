@@ -40,6 +40,7 @@
 #include <sys/stat.h>
 #include <unistd.h>
 #include <errno.h>
+#include <stdbool.h>
 
 extern int fd;
 extern char *fileName;
