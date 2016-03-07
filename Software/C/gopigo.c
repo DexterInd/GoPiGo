@@ -28,10 +28,13 @@
 // ####################################################################################
 #include "gopigo.h"
 
+#define WRITE_BUF_SIZE 5
+#define READ_BUF_SIZE 32
+
 int fd;
 char *fileName = "/dev/i2c-1";
 int  address = 0x08;
-unsigned char w_buf[5],r_buf[32];
+unsigned char w_buf[WRITE_BUF_SIZE],r_buf[READ_BUF_SIZE];
 unsigned long reg_addr=0;
 int version=200;    //Initialized with invalid version
 int v16_thresh=790;
@@ -70,12 +73,18 @@ int write_block(char cmd,char v1,char v2,char v3)
     w_buf[3]=v2;
     w_buf[4]=v3;
     
-    if ((write(fd, w_buf, 5)) != 5) 
-    {
-        printf("Error writing to GoPiGo\n");
-        return -1;
+    ssize_t ret = write(fd, w_buf, WRITE_BUF_SIZE);
+    
+    if (ret != WRITE_BUF_SIZE) {
+        if (ret == -1) {
+            printf("Error writing to GoPiGo (errno %i): %s\n", errno, strerror(errno));
+        }
+        else {
+            printf("Error writing to GoPiGo\n");
+        }
+        return ret;
     }
-    return 1; 
+    return 1;
 }
 
 //Read 1 byte of data
@@ -83,8 +92,15 @@ char read_byte(void)
 {
     int reg_size=1;
     
-    if (read(fd, r_buf, reg_size) != reg_size) {
-        printf("Unable to read from GoPiGo\n");
+    ssize_t ret = read(fd, r_buf, reg_size);
+    
+    if (ret != reg_size) {
+        if (ret == -1) {
+            printf("Unable to read from GoPiGo (errno %i): %s\n", errno, strerror(errno));
+        }
+        else {
+            printf("Unable to read from GoPiGo\n");
+        }
         exit(1);
         return -1;
     }
