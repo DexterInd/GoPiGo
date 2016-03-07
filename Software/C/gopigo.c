@@ -75,6 +75,9 @@ int write_block(char cmd,char v1,char v2,char v3)
     
     ssize_t ret = write(fd, w_buf, WRITE_BUF_SIZE);
     
+    // sleep for 1 ms to prevent too fast writing
+    pi_sleep(1);
+    
     if (ret != WRITE_BUF_SIZE) {
         if (ret == -1) {
             printf("Error writing to GoPiGo (errno %i): %s\n", errno, strerror(errno));
