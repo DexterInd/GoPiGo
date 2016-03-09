@@ -28,10 +28,13 @@
 // ####################################################################################
 #include "gopigo.h"
 
+#define WRITE_BUF_SIZE 5
+#define READ_BUF_SIZE 32
+
 int fd;
 char *fileName = "/dev/i2c-1";
 int  address = 0x08;
-unsigned char w_buf[5],r_buf[32];
+unsigned char w_buf[WRITE_BUF_SIZE],r_buf[READ_BUF_SIZE];
 unsigned long reg_addr=0;
 int version=200;    //Initialized with invalid version
 int v16_thresh=790;
@@ -70,12 +73,21 @@ int write_block(char cmd,char v1,char v2,char v3)
     w_buf[3]=v2;
     w_buf[4]=v3;
     
-    if ((write(fd, w_buf, 5)) != 5) 
-    {
-        printf("Error writing to GoPiGo\n");
-        return -1;
+    ssize_t ret = write(fd, w_buf, WRITE_BUF_SIZE);
+    
+    // sleep for 1 ms to prevent too fast writing
+    pi_sleep(1);
+    
+    if (ret != WRITE_BUF_SIZE) {
+        if (ret == -1) {
+            printf("Error writing to GoPiGo (errno %i): %s\n", errno, strerror(errno));
+        }
+        else {
+            printf("Error writing to GoPiGo\n");
+        }
+        return ret;
     }
-    return 1; 
+    return 1;
 }
 
 //Read 1 byte of data
@@ -83,8 +95,15 @@ char read_byte(void)
 {
     int reg_size=1;
     
-    if (read(fd, r_buf, reg_size) != reg_size) {
-        printf("Unable to read from GoPiGo\n");
+    ssize_t ret = read(fd, r_buf, reg_size);
+    
+    if (ret != reg_size) {
+        if (ret == -1) {
+            printf("Unable to read from GoPiGo (errno %i): %s\n", errno, strerror(errno));
+        }
+        else {
+            printf("Unable to read from GoPiGo\n");
+        }
         exit(1);
         return -1;
     }
@@ -278,8 +297,7 @@ int analogWrite(int pin, int value)
 {
     if(pin==10)
     {
-        write_block(analog_write_cmd,pin,value,0);
-        return 1;
+        return write_block(analog_write_cmd,pin,value,0);
     }
     return -2;
 }
@@ -304,10 +322,11 @@ int us_dist(int pin)
         return -1;
     return b1* 256 + b2;
 }
-//Turn led on
+//Turn led on or off
 //    arg:
 //        l_id: 1 for left LED and 0 for right LED
-int led_on(int l_id)
+//        onoff: 0 off, 1 on
+int led_toggle(int l_id, bool onoff)
 {
     int r_led,l_led;
     if (version>14)
@@ -321,56 +340,37 @@ int led_on(int l_id)
         l_led=10;
     }
     
-    if(l_id==LED_L || l_id==LED_R)
-    {
-        if(l_id==LED_L)
-        {
-            pinMode(l_led,"OUTPUT");
-            digitalWrite(l_led,1);
-        }
-        else if(l_id==LED_R)
-        {
-            pinMode(r_led,"OUTPUT");
-            digitalWrite(r_led,1);
-        }
-        return 1;
-    }
+    // set led pin
+    int led_pin;
+    if (l_id==LED_L)
+        led_pin = l_led;
+    else if (l_id==LED_R)
+        led_pin = r_led;
     else
         return -1;
+    
+    // write
+    pinMode(l_led,"OUTPUT");
+    int ret = digitalWrite(l_led, onoff);
+    
+    if (ret<=0)
+        return -1;
+    else
+        return 1;
+}
+//Turn led on
+//    arg:
+//        l_id: 1 for left LED and 0 for right LED
+int led_on(int l_id)
+{
+    return led_toggle(l_id, 1);
 }
 //Turn led off
 //    arg:
 //        l_id: 1 for left LED and 0 for right LED
 int led_off(int l_id)
 {
-    int r_led,l_led;
-    if (version>14)
-    {
-        r_led=16;
-        l_led=17;
-    }
-    else
-    {
-        r_led=5;
-        l_led=10;
-    }
-    
-    if(l_id==LED_L || l_id==LED_R)
-    {
-        if(l_id==LED_L)
-        {
-            pinMode(l_led,"OUTPUT");
-            digitalWrite(l_led,0);
-        }
-        else if(l_id==LED_R)
-        {
-            pinMode(r_led,"OUTPUT");
-            digitalWrite(r_led,0);
-        }
-        return 1;
-    }
-    else
-        return -1;
+    return led_toggle(l_id, 0);
 }
 //Set servo position
 //    arg:
