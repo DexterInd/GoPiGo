@@ -339,7 +339,7 @@ int led_toggle(int l_id, bool onoff)
         r_led=5;
         l_led=10;
     }
-    
+
     // set led pin
     int led_pin;
     if (l_id==LED_L)
@@ -348,11 +348,11 @@ int led_toggle(int l_id, bool onoff)
         led_pin = r_led;
     else
         return -1;
-    
+
     // write
-    pinMode(l_led,"OUTPUT");
-    int ret = digitalWrite(l_led, onoff);
-    
+    pinMode(led_pin,"OUTPUT");
+    int ret = digitalWrite(led_pin, onoff);
+
     if (ret<=0)
         return -1;
     else
