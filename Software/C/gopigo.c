@@ -1,6 +1,6 @@
-// ####################################################################################                                                                  
-// This library is used for communicating with the GoPiGo.                                
-// http://www.dexterindustries.com/GoPiGo/                                                                
+// ####################################################################################
+// This library is used for communicating with the GoPiGo.
+// http://www.dexterindustries.com/GoPiGo/
 // History
 // ------------------------------------------------
 // Date               Comments
@@ -43,16 +43,16 @@ int LED_L=1,LED_R=0;
 int init(void)
 {
     int i,raw;
-    if ((fd = open(fileName, O_RDWR)) < 0) 
+    if ((fd = open(fileName, O_RDWR)) < 0)
     {
         // Open port for reading and writing
         printf("Failed to open i2c port\n");
         return -1;
     }
-    
-    if (ioctl(fd, I2C_SLAVE, address) < 0) 
+
+    if (ioctl(fd, I2C_SLAVE, address) < 0)
     {
-        // Set the port options and set the address of the device 
+        // Set the port options and set the address of the device
         printf("Unable to get bus access to talk to slave\n");
         return -1;
     }
@@ -72,12 +72,12 @@ int write_block(char cmd,char v1,char v2,char v3)
     w_buf[2]=v1;
     w_buf[3]=v2;
     w_buf[4]=v3;
-    
+
     ssize_t ret = write(fd, w_buf, WRITE_BUF_SIZE);
-    
+
     // sleep for 1 ms to prevent too fast writing
     pi_sleep(1);
-    
+
     if (ret != WRITE_BUF_SIZE) {
         if (ret == -1) {
             printf("Error writing to GoPiGo (errno %i): %s\n", errno, strerror(errno));
@@ -94,9 +94,9 @@ int write_block(char cmd,char v1,char v2,char v3)
 char read_byte(void)
 {
     int reg_size=1;
-    
+
     ssize_t ret = read(fd, r_buf, reg_size);
-    
+
     if (ret != reg_size) {
         if (ret == -1) {
             printf("Unable to read from GoPiGo (errno %i): %s\n", errno, strerror(errno));
@@ -107,7 +107,7 @@ char read_byte(void)
         exit(1);
         return -1;
     }
-    
+
     return r_buf[0];
 }
 
@@ -133,7 +133,7 @@ int stop()
     return write_block(stop_cmd,0,0,0);
 }
 
-void pi_sleep(int t) 
+void pi_sleep(int t)
 {
     usleep(t*1000);
 }
@@ -339,7 +339,7 @@ int led_toggle(int l_id, bool onoff)
         r_led=5;
         l_led=10;
     }
-    
+
     // set led pin
     int led_pin;
     if (l_id==LED_L)
@@ -348,11 +348,11 @@ int led_toggle(int l_id, bool onoff)
         led_pin = r_led;
     else
         return -1;
-    
+
     // write
-    pinMode(l_led,"OUTPUT");
-    int ret = digitalWrite(l_led, onoff);
-    
+    pinMode(led_pin,"OUTPUT");
+    int ret = digitalWrite(led_pin, onoff);
+
     if (ret<=0)
         return -1;
     else
