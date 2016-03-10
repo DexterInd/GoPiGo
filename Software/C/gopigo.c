@@ -104,7 +104,6 @@ char read_byte(void)
         else {
             printf("Unable to read from GoPiGo\n");
         }
-        exit(1);
         return -1;
     }
 
