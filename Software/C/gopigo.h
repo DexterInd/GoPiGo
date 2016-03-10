@@ -179,6 +179,11 @@ int brd_rev(void);
 //    return:        distance in cm
 int us_dist(int pin);
 
+//Read motor speed (0-255)
+//    arg:
+//        speed -> pointer to array of 2 bytes [motor1, motor2], allocated before
+void read_motor_speed(unsigned char* speed);
+
 //Turn led on
 //    arg:
 //        l_id: 1 for left LED and 0 for right LED
