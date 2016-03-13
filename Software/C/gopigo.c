@@ -104,7 +104,6 @@ char read_byte(void)
         else {
             printf("Unable to read from GoPiGo\n");
         }
-        exit(1);
         return -1;
     }
 
@@ -322,6 +321,19 @@ int us_dist(int pin)
         return -1;
     return b1* 256 + b2;
 }
+
+//Read motor speed (0-255)
+//    arg:
+//        speed -> pointer to array of 2 bytes [motor1, motor2], allocated before
+void read_motor_speed(unsigned char* speed)
+{
+    write_block(read_motor_speed_cmd,0,0,0);
+    pi_sleep(1);
+    speed[0]=read_byte();
+    speed[1]=read_byte();
+    return;
+}
+
 //Turn led on or off
 //    arg:
 //        l_id: 1 for left LED and 0 for right LED
