@@ -119,10 +119,10 @@ class RobotController:
 			#print self.speed_l*joystickY
         #gopigo.set_left_speed(int(self.speed_l*joystickY))
         #gopigo.fwd()
-        if joystickX > .5:
+        if joystickX <-.5:
 			print "Left"
 			gopigo.left()
-        elif joystickX <-.5:
+        elif joystickX > .5:
 			print "Right"
 			gopigo.right()
         elif joystickY > .5:
