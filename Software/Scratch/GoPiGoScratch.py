@@ -467,5 +467,5 @@ while True:
 				break;
 			except scratch.ScratchError:
 				print "GoPiGo Scratch: Scratch is either not opened or remote sensor connections aren't enabled\n..............................\n"
-	except ValueError as e:
-		print e
+    except ValueError as e:
+        print e
