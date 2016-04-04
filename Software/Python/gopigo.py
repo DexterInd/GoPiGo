@@ -102,6 +102,10 @@ cpu_speed_cmd		=[25]
 # LED_L_PIN=17
 # LED_R_PIN=16
 
+#port definition
+analogPort=15
+digitalPort=10
+
 #LED setup
 LED_L=1
 LED_R=0
