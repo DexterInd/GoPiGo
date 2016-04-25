@@ -41,6 +41,49 @@ sudo cp lircrc_keyes /etc/lirc/lircrc
 echo "Files copied"
 
 echo " "
+echo "Enabling LIRC"
+echo "======================="
+
+if grep -q "lirc_dev" /etc/modules; then
+	echo "Lib dev already present"
+else
+	sudo echo "lirc_dev" >> /etc/modules
+	echo "Lib dev added"
+fi
+
+
+echo "Check Lib Rpi GPIO"
+if grep -q "lirc_rpi gpio_in_pin=14" /etc/modules; then
+	echo "Lib Rpi GPIO already present"
+
+echo "Check Pin 15"
+elif grep -q "lirc_rpi gpio_in_pin=15" /etc/modules; then
+	sed -e s/"lirc_rpi gpio_in_pin=15"//g -i /etc/modules
+	sudo echo "lirc_rpi gpio_in_pin=14" >> /etc/modules
+	echo "Lib Rpi GPIO changed from pin 15 to 14"
+	
+else
+	sudo echo "lirc_rpi gpio_in_pin=14" >> /etc/modules
+	echo "Lib Rpi GPIO added"
+fi
+
+echo "Check Kernel Version."
+if grep -q "dtoverlay=lirc-rpi,gpio_in_pin=14" /boot/config.txt; then
+	echo "LIRC for Kernel 3.18 already present"
+echo "Check Kernel pin 15"
+	elif grep -q "dtoverlay=lirc-rpi,gpio_in_pin=15" /boot/config.txt; then
+	sed -e s/"dtoverlay=lirc-rpi,gpio_in_pin=15"//g -i /boot/config.txt
+	sudo echo "dtoverlay=lirc-rpi,gpio_in_pin=14" >> /boot/config.txt
+	echo "LIRC for Kernel 3.18 changed from pin 15 to 14"
+	
+else
+	sudo echo "dtoverlay=lirc-rpi,gpio_in_pin=14" >> /boot/config.txt
+	echo "LIRC for Kernel 3.18 added"
+fi
+
+
+
+echo " "
 echo "Please restart the Raspberry Pi for the changes to take effect"
 echo "  _____  ______  _____ _______       _____ _______ "
 echo " |  __ \|  ____|/ ____|__   __|/\   |  __ \__   __|"
