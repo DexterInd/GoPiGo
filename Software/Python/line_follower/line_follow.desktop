@@ -1,0 +1,8 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Application
+Name=Line Follower Calibration
+Comment=Line Follower Calibration
+Icon=/home/pi/Desktop/GoPiGo/Software/Python/line_follower/obconf.xpm
+Exec=lxterminal  --title "Line Follower Calibration - Do not close this window!" --command "gksu python /home/pi/Desktop/GoPiGo/Software/Python/line_follower/line_sensor_gui.py"
+NoDisplay=true

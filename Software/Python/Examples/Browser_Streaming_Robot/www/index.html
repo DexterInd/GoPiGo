@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Pi Robot</title>
+
+    <style type="text/css">
+        .joystick {
+            position: relative;
+            width: 230px;
+            height: 230px;
+            -webkit-border-radius: 100%;
+            -moz-border-radius: 100%;
+            border-radius: 100%; 
+            /*background-color: #eee;*/
+        }
+        .joystick .inner_circle {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            -webkit-border-radius: 100%;
+            -moz-border-radius: 100%;
+            border-radius: 100%; 
+            background-color: #ccc;
+        }
+        .joystick .handle {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            background-color: rgb(201, 44, 44);
+            border: 1px solid rgb(107, 35, 35);
+            border-radius: 5px;
+        }
+        
+        #camera {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            width: 640px;
+        }
+        
+        #motor_stick {
+            position: fixed;
+            top: 200px;
+            left: -30px;
+        }
+        
+        #pan_tilt_stick {
+            position: fixed;
+            top: 200px;
+            left: 400px;
+        }
+    </style>
+    
+    <link href="css/style.css" rel="stylesheet">
+    <link href="css/modal.css" rel="stylesheet">
+    
+    <script src="js/jquery.js"></script>
+    <script src="js/jquery.joystick.js"></script>
+    <script src="js/sockjs-0.3.min.js"></script>
+    
+    <script>
+        function layoutControls() {
+        
+            var motorStick = $('#motor_stick');
+            var panTiltStick = $('#pan_tilt_stick');
+            var cameraImage = $('#camera');
+            var btnShutdown = $( "#btnShutdown" );
+        
+            console.log( screen.width + " " + screen.height );
+        
+            if ( screen.width > screen.height )
+            {
+                // In landscape mode
+                motorStick.css( 'left', 0.5*screen.width - motorStick.width()/2 );
+                motorStick.css( 'top', 0.5*screen.height - motorStick.height()/2 );
+                panTiltStick.css( 'left', 0.9*screen.width - panTiltStick.width()/2 );
+                panTiltStick.css( 'top', 0.5*screen.height - panTiltStick.height()/2 );
+                btnShutdown.css( 'position', 'fixed' );
+                btnShutdown.css( 'left', 0.9*screen.width - btnShutdown.width()/2 );
+                btnShutdown.css( 'top', 0.1*screen.height );
+            }
+            else
+            {
+                // In portrait mode
+                motorStick.css( 'left', 0.2*screen.width - motorStick.width()/2 );
+                motorStick.css( 'top', 0.7*screen.height - motorStick.height()/2 );
+                panTiltStick.css( 'left', 0.8*screen.width - panTiltStick.width()/2 );
+                panTiltStick.css( 'top', 0.7*screen.height - panTiltStick.height()/2 );
+                btnShutdown.css( 'position', 'fixed' );
+                btnShutdown.css( 'left', 0.5*screen.width - btnShutdown.width()/2 );
+                btnShutdown.css( 'top', 0.6*screen.height - btnShutdown.height()/2 );
+            }
+            
+            cameraImage.css( 'max-width', screen.width );
+        }
+    
+        $( window ).on( "orientationchange", function() {
+            setTimeout( layoutControls, 300 ); } );
+    
+        $(document).ready(function() { 
+        
+             webSocketURL = "http://" + window.location.hostname + ":98/robot_control";
+             cameraURL = "http://" + window.location.hostname + ":8080/?action=stream";
+             socket = new SockJS( webSocketURL );
+             var shutdownComplete = false;
+         
+             $("#camera").attr( "src", cameraURL );
+   
+             $('#motor_stick').joystick({
+                 xSnap: true,
+                 ySnap: true,
+                 moveEvent: function(pos) { 
+                    if ( socket.readyState == SockJS.OPEN ) {
+                        socket.send( "Move " + pos.x + " " + pos.y ); } },
+                 endEvent: function(pos) { 
+                    if ( socket.readyState == SockJS.OPEN ) {
+                        socket.send( "Move " + pos.x + " " + pos.y ); } },
+                 updateIntervalMS: 500,
+                 updateEvent: function(pos) { 
+                    if ( socket.readyState == SockJS.OPEN
+                        && ( 0.0 != pos.x || 0.0 != pos.y ) ) {
+                        socket.send( "Move " + pos.x + " " + pos.y ); } }
+             });
+             $('#pan_tilt_stick').joystick({
+                 xSnap: true,
+                 ySnap: true,
+                 moveEvent: function(pos) { 
+                    if ( socket.readyState == SockJS.OPEN ) {
+                        socket.send( "PanTilt " + pos.x + " " + pos.y ); } },
+                 endEvent: function(pos) { 
+                    if ( socket.readyState == SockJS.OPEN ) {
+                        socket.send( "PanTilt " + pos.x + " " + pos.y ); } },
+                 clickEvent: function(clickPos) { 
+                    if ( socket.readyState == SockJS.OPEN 
+                        && Math.abs( clickPos.x ) < 0.3 && Math.abs( clickPos.y ) < 0.3 ) 
+                    {
+                        socket.send( "Centre" ); 
+                    } },
+                 updateIntervalMS: 500,
+                 updateEvent: function(pos) { 
+                    if ( socket.readyState == SockJS.OPEN 
+                        && ( 0.0 != pos.x || 0.0 != pos.y ) ) {
+                        socket.send( "PanTilt " + pos.x + " " + pos.y ); } }
+             });
+             $('#motor_stick').joystick( 'value', 0.0, 0.0 );
+             $('#pan_tilt_stick').joystick( 'value', 0.0, 0.0 );
+             
+             $( "#btnShutdown" ).click( function() {
+             
+                var SHUTDOWN_TIME_MS = 25000;
+             
+                if ( socket.readyState == SockJS.OPEN ) 
+                {
+                    socket.send( "Shutdown" );
+                }
+                
+                $( "#shutdownProgress" ).removeAttr('style');
+                $( "#shutdownText" ).text( "Shutting Down" );
+                
+                var modalShutdownDialog = $( "#modalShutdownDialog" );
+                modalShutdownDialog.css( "opacity", 1 );
+                modalShutdownDialog.css( "top", "10%" );
+                modalShutdownDialog.css( "visibility", "visible" );
+                
+                // Wait for the Pi to shutdown. The wait time is determined experimentally with an extra couple of seconds
+                // added on for safety
+                setTimeout( function() {
+                    $( "#shutdownProgress" ).css( "visibility", "hidden" );
+                    $( "#shutdownText" ).text( "It is now safe to switch off the power to the Pi" );
+                    shutdownComplete = true;
+                }, SHUTDOWN_TIME_MS );
+                
+              } );
+            
+            // Add a periodic function to keep the camera and socket alive
+            setInterval( function() { 
+                if ( socket.readyState == SockJS.OPEN ) {
+                    socket.send( "StartStreaming" );
+                    $("#camera").attr( "src", cameraURL );
+                    
+                    if ( shutdownComplete )
+                    {
+                        $( "#modalShutdownDialog" ).removeAttr('style');    // Reset the shutdown dialog by removing the style attribute added by jQuery
+                        shutdownComplete = false;
+                    }
+                    
+                } else {
+                    socket = new SockJS( webSocketURL );
+                } }, 1000 );
+            
+            layoutControls();
+        }); 
+    </script>
+
+  </head>
+
+  <body>
+    <p><img id="camera" src=""/></p>
+    
+    <div class="joystick" id="motor_stick">
+      <div class="inner_circle"></div>
+      <div class="handle"></div>
+    </div>
+    <!--
+    <div class="joystick" id="pan_tilt_stick">
+      <div class="inner_circle"></div>
+      <div class="handle"></div>
+    </div>
+    //-->
+    <button id="btnShutdown" type="button" class="btn">Shutdown</button>
+    
+    <div id="modalShutdownDialog">
+        <div class="modal-content">
+            
+            <div class="copy">
+                <p id="shutdownText">Shutting Down</p>
+                <img id="shutdownProgress" src="images/ajax-loader.gif"/>
+            </div>
+        </div>
+        <div class="overlay"></div>
+    </div>
+    
+  </body>
+</html>

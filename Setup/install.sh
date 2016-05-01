@@ -20,13 +20,13 @@ printf " "
 echo "Must be running as Root user"
 echo " "
 echo "Press ENTER to begin..."
-read
+# read
 
 echo " "
 echo "Check for internet connectivity..."
 echo "=================================="
-wget -q --tries=2 --timeout=20 http://google.com
-if [[ $? -eq 0 ]];then
+wget -q --tries=2 --timeout=20 http://raspberrypi.org
+if [ $? -eq 0 ];then
 	echo "Connected"
 else
 	echo "Unable to Connect, try again !!!"
@@ -36,7 +36,7 @@ fi
 echo " "
 echo "Installing Dependencies"
 echo "======================="
-sudo apt-get install python-pip git libi2c-dev python-serial python-rpi.gpio i2c-tools python-smbus arduino minicom libnss-mdns python-dev
+sudo apt-get install python-pip git libi2c-dev python-serial python-rpi.gpio i2c-tools python-smbus arduino minicom libnss-mdns python-dev -y
 sudo pip install -U RPi.GPIO
 
 echo "Dependencies installed"
@@ -120,5 +120,21 @@ sudo ./setup.sh
 crontab -l > file; echo '@reboot ln -sf /dev/ttyAMA0 /dev/ttyS0' >> file; crontab file
 rm file
 
+sudo rm -r /tmp/di_update
+
+sudo adduser pi i2c
+sudo chmod +x /home/pi/Desktop/GoPiGo/Software/Scratch/GoPiGo_Scratch_Scripts/*.sh
+
 echo " "
 echo "Please restart the Raspberry Pi for the changes to take effect"
+echo " "
+echo "Please restart to implement changes!"
+echo "  _____  ______  _____ _______       _____ _______ "
+echo " |  __ \|  ____|/ ____|__   __|/\   |  __ \__   __|"
+echo " | |__) | |__  | (___    | |  /  \  | |__) | | |   "
+echo " |  _  /|  __|  \___ \   | | / /\ \ |  _  /  | |   "
+echo " | | \ \| |____ ____) |  | |/ ____ \| | \ \  | |   "
+echo " |_|  \_\______|_____/   |_/_/    \_\_|  \_\ |_|   "
+echo " "
+echo "Please restart to implement changes!"
+echo "To Restart type sudo reboot"

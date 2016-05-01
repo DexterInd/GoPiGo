@@ -25,6 +25,37 @@ import sys
 import atexit
 atexit.register(stop)
 
+def print_menu():
+	print "  w	:	Move the GoPiGo forward"
+	print "  a	:	Turn the GoPiGo left"
+	print "  s	:	Move the GoPiGo back"
+	print "  d	:	Turn the GoPiGo right"
+	print "  n	:	Rotate the GoPiGo left in place"
+	print "  m	:	Rotate the GoPiGo right in place"
+	print "  x	:	Stop the GoPiGo"
+	print "  t	:	Increase the speed by 10 (default 200, min:0 max 255)"
+	print "  g	:	Reduce the speed by 10"
+	print "  v	:	Print the voltage of the batteries (should be greater than 10)"
+	print "  st	:	Set servo position"
+	print "  b	:	Run a servo 180 degree sweep"
+	print "  u	:	Get the distance from the ultrasonic ranger"
+	print "  l	:	Turn the LED's on and off"
+	print "  f	:	Print the firmware version on the GoPiGo"
+	print "  tr	:	Read the trim value on the GoPiGo"
+	print "  tw	:	Write the trim value to the GoPiGo"
+	print "  tt	:	Test the trim value to the GoPiGo"
+	print "  ?	:	Print the menu again"
+	print "  z	:	Exit"
+	print "Please type a command and press ENTER: "
+	
+print "  ____       ____  _  ____       "
+print " / ___| ___ |  _ \(_)/ ___| ___  "
+print "| |  _ / _ \| |_) | | |  _ / _ \ "
+print "| |_| | (_) |  __/| | |_| | (_) |"
+print " \____|\___/|_|   |_|\____|\___/ "
+print ""
+print "Welcome to GoPiGo Basic test program\nYou can use this to try out the various features of your GoPiGo\n"
+print_menu()
 while True:
 	print "\nCmd:",
 	a=raw_input()
@@ -93,4 +124,6 @@ while True:
 		print "Enter Servo position:",
 		val=int(raw_input())
 		servo(val)
+	elif a=='?':
+		print_menu()
 	time.sleep(.1)

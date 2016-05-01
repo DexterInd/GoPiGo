@@ -22,6 +22,14 @@ You can add a number of Grove sensors to the GoPiGo.  Sensors must be placed in 
 ![Top View of GoPiGo Sensors](GoPiGo_Ports-Top.jpg "Top View of GoPiGo Sensor Ports.")
 ![Bottom View of GoPiGo Sensors](GoPiGo_Ports-Bottom.jpg "Bottom View of GoPiGo Sensor Ports.")
 
+## Getting Started Examples
+Please see our Examples folder for examples on how to get started with programming the GoPiGo in Scratch!
+
+Here are a list of example commands.
+![Scratch Functions](scratch_functions.png "Overview of functions in Scratch.")
+
+
+
 ## See Also
 
 - [Dexter Industries] (http://www.dexterindustries.com/GoPiGo)
