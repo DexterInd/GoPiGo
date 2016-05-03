@@ -61,6 +61,7 @@ class gopigo_control_app(wx.Frame):
         self.Bind(wx.EVT_BUTTON, self.left_button_OnButtonClick, left_button)
 
         stop_button = wx.Button(self,-1,label="Stop", pos=(x+dist*2,y))
+        stop_button.SetBackgroundColour('red')
         sizer.Add(stop_button, (0,1))
         self.Bind(wx.EVT_BUTTON, self.stop_button_OnButtonClick, stop_button)
 
@@ -85,14 +86,14 @@ class gopigo_control_app(wx.Frame):
 
         right_led_button = wx.Button(self,-1,label="Right LED", pos=(x+dist*4,y))
         sizer.Add(right_led_button, (0,1))
-        self.Bind(wx.EVT_BUTTON, self.right_led_button_OnButtonClick, right_led_button)        
+        self.Bind(wx.EVT_BUTTON, self.right_led_button_OnButtonClick, right_led_button)       
         
         y=320
-        battery_button = wx.Button(self,-1,label="  Battery Voltage\t  ", pos=(x,y))
+        battery_button = wx.Button(self,-1,label="Check Battery Voltage\t ", pos=(x,y))
         sizer.Add(battery_button, (0,1))
         self.Bind(wx.EVT_BUTTON, self.battery_button_OnButtonClick, battery_button)
 
-        firmware_button = wx.Button(self,-1,label="Firmware version ", pos=(x,y+dist/2))
+        firmware_button = wx.Button(self,-1,label="Check Firmware Version\t", pos=(x,y+dist/2))
         sizer.Add(firmware_button, (0,1))
         self.Bind(wx.EVT_BUTTON, self.firmware_button_OnButtonClick, firmware_button)        
         # Set up labels
@@ -101,14 +102,16 @@ class gopigo_control_app(wx.Frame):
         # sizer.Add( self.label, (1,0),(1,2), wx.EXPAND )
         # sizer.Add( self.label_top, (1,0),(1,2), wx.EXPAND )
         
-        self.battery_label = wx.StaticText(self,-1,label=str(v)+"V",pos=(x+dist*2,y+6))
+        self.battery_label = wx.StaticText(self,-1,label=str(v)+"V",pos=(x+dist*2+45,y+6))
         sizer.Add( self.battery_label, (1,0),(1,2), wx.EXPAND )
         
-        self.firmware_label = wx.StaticText(self,-1,label=str(f),pos=(x+dist*2,y+6+dist/2))
+        self.firmware_label = wx.StaticText(self,-1,label=str(f),pos=(x+dist*2+45,y+6+dist/2))
         sizer.Add( self.firmware_label, (1,0),(1,2), wx.EXPAND )
         
+        self.trim_label = wx.StaticText(self,-1,label="You can adjust the trim of your GoPiGo to help it go straight forward.\nUse the slider below to adjust the trim difference between the left\nand right motors.",pos=(x,y+6+dist/2+40))
+        sizer.Add( self.firmware_label, (1,0),(1,2), wx.EXPAND )
         
-        y=420
+        y=460
         self.trim_label = wx.StaticText(self,-1,label=str(trim_val),pos=(x+dist*2,y+6))
         sizer.Add( self.trim_label, (1,0),(1,2), wx.EXPAND )
         
