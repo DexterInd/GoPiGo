@@ -130,7 +130,7 @@ def write_i2c_block(address,block):
 		return op
 	except IOError:
 		if debug:
-			print "IOError"
+			print ("IOError")
 		return -1
 	return 1
 
@@ -141,7 +141,7 @@ def writeNumber(value):
 		time.sleep(.005)
 	except IOError:
 		if debug:
-			print "IOError"
+			print ("IOError")
 		return -1	
 	return 1
 
@@ -152,7 +152,7 @@ def readByte():
 		time.sleep(.005)
 	except IOError:
 		if debug:
-			print "IOError"
+			print ("IOError")
 		return -1	
 	return number
 
@@ -537,7 +537,7 @@ def ir_read_signal():
 		write_i2c_block(address,ir_read_cmd+[unused,unused,unused])
 		time.sleep(.1)
 		data_back= bus.read_i2c_block_data(address, 1)[0:21]
-		if data_back[1]<>255:
+		if data_back[1]!=255:
 			return data_back
 		return [-1]*21
 	except IOError:
