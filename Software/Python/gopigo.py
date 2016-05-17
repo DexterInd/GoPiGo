@@ -30,22 +30,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/gpl-3.0.txt>.
 #
 ########################################################################
 
-import serial, time
-import smbus
-import math
-import RPi.GPIO as GPIO
-import struct
-
-import smbus
+import sys
 import time
+import math
+import struct
 import subprocess
 
-# for RPI version 1, use "bus = smbus.SMBus(0)"
-rev = GPIO.RPI_REVISION
-if rev == 2 or rev == 3:
-	bus = smbus.SMBus(1) 
+if sys.platform == 'uwp':
+	import winrt_smbus as smbus
+	bus = smbus.SMBus(1)
 else:
-	bus = smbus.SMBus(0) 
+	import RPi.GPIO as GPIO
+	import smbus
+
+	# for RPI version 1, use "bus = smbus.SMBus(0)"
+	rev = GPIO.RPI_REVISION
+	if rev == 2 or rev == 3:
+		bus = smbus.SMBus(1)
+	else:
+		bus = smbus.SMBus(0)
 
 # This is the address for the GoPiGo
 address = 0x08
@@ -418,7 +421,7 @@ def enc_tgt(m1,m2,target):
 	if m1>1 or m1<0 or m2>1 or m2<0:
 		return -1
 	m_sel=m1*2+m2
-	write_i2c_block(address,enc_tgt_cmd+[m_sel,target/256,target%256])
+	write_i2c_block(address,enc_tgt_cmd+[m_sel,target//256,target%256])
 	return 1
 	
 #Read encoder value
@@ -502,7 +505,7 @@ def set_speed(speed):
 #	arg:
 #		timeout-> 0-65535 (timeout in ms)
 def enable_com_timeout(timeout):
-	return write_i2c_block(address,en_com_timeout_cmd+[timeout/256,timeout%256,0]) 
+	return write_i2c_block(address,en_com_timeout_cmd+[timeout//256,timeout%256,0])
 
 #Disable communication time-out
 def disable_com_timeout():
