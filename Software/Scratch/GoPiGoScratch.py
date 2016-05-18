@@ -300,7 +300,7 @@ while True:
 			try:
 				d=[]
 				i=0
-				len=100
+				sound_len=100
 				window_size=10
 				t=1
 				peak=0
