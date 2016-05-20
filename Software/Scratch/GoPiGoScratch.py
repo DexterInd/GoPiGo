@@ -313,7 +313,7 @@ while True:
 					e = sys.exc_info()[1]
 					print "Error reading sound sensor: " + str(e)
 			if en_debug:
-				print "Sound Sensor Reading:(peak,average) ",peak,average
+				print "Sound Sensor Reading:(peak,average) ",peak,avg
 			if en_gpg:
 				s.sensorupdate({'sound':avg})
 
