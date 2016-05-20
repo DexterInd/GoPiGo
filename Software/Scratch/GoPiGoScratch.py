@@ -300,9 +300,6 @@ while True:
 			try:
 				d=[]
 				i=0
-				sound_len=100
-				window_size=10
-				t=1
 				peak=0
 				for j in range(t*50):
 					analog_read_value=analogRead(1)
@@ -310,7 +307,7 @@ while True:
 					if analog_read_value<>0:
 						peak += analog_read_value
 	
-				avg = peak/(t*100)
+				avg = peak/(100)
 				# print avg
 
 			except:
