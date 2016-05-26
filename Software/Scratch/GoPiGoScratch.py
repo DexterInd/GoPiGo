@@ -105,7 +105,7 @@ while True:
     try:
 		m = s.receive()
 
-		while m[0] == 'sensor-update' :
+		while m==None or m[0] == 'sensor-update' :
 			m = s.receive()
 
 		msg = m[1]
