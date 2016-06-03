@@ -357,7 +357,7 @@ while True:
 				s.sensorupdate({'motion':motion})
 				
 		# Get the value from the IR remote when a button is pressed
-		# IR Sensor goes on A1 Pin.
+		# IR Sensor goes on Serial Port.
 		elif msg.lower()=="IR".lower():
 			print "IR!"
 			if en_ir_sensor==0:
@@ -365,9 +365,11 @@ while True:
 				sockid = lirc.init("keyes", blocking = False)
 				en_ir_sensor=1
 			try:
-				a= lirc.nextcode()  # press 1 
+				a= lirc.nextcode()  # press a button on the remote 
 				if len(a) !=0:
 					print a[0]
+				else:
+					a.append(0)		#return 0 if no keypress found 
 			except:
 				if en_debug:
 					e = sys.exc_info()[1]
