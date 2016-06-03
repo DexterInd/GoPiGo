@@ -44,8 +44,8 @@ echo "Dependencies installed"
 #Copy Software Servo
 cp -R ../Firmware/SoftwareServo/ /usr/share/arduino/libraries/
 
-chmod +x gpg 
-cp gpg /usr/bin
+chmod +x gopigo 
+cp gopigo /usr/bin
 
 cd ../Software/Python
 python setup.py install
