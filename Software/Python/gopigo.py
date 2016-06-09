@@ -8,7 +8,7 @@
 # Karan		30 March 14  	Initial Authoring
 # 			02 July  14		Removed bugs and some features added (v0.9) 
 #			26 Aug	 14		Code commenting and cleanup
-																		
+#			07 June  16		DHT example added																		
 '''
 ## License
  GoPiGo for the Raspberry Pi: an open source robotics platform for the Raspberry Pi.
@@ -559,6 +559,23 @@ def cpu_speed():
 	except IOError:
 		return -1	
 	return b1
+
+# Read the DHT sensor connected to the serial port	
+def dht(sensor_type=0):
+	try:
+		import Adafruit_DHT
+		if sensor_type==0: #blue sensor
+			sensor = Adafruit_DHT.DHT11
+		elif sensor_type==1: #white sensor
+			sensor = Adafruit_DHT.DHT22
+		pin = 15 #connected to the serial port on the GoPiGo, RX pin
+		humidity, temperature = Adafruit_DHT.read_retry(sensor, pin,retries=3,delay_seconds=.1)
+		if humidity is not None and temperature is not None:
+			return [temperature,humidity]
+		else:
+			return [-2.0,-2.0]
+	except RuntimeError: 
+		return [-3.0,-3.0]
 		
 for i in range(10):
 	raw=analogRead(7)
