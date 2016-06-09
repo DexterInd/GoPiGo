@@ -576,8 +576,6 @@ def dht(sensor_type=0):
 			return [-2.0,-2.0]
 	except RuntimeError: 
 		return [-3.0,-3.0]
-	except:
-		return [-1.0,-1.0]
 		
 for i in range(10):
 	raw=analogRead(7)
