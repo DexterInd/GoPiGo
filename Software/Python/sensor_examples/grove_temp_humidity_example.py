@@ -35,6 +35,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 '''
 import gopigo
+import sys
 
 # Connect the Grove Temperature & Humidity Sensor to the Serial Port on the GoPiGo
 # This example uses the blue colored sensor.
@@ -48,12 +49,11 @@ while True:
 		# This example uses the blue colored sensor. 
 		# The first parameter is the port, the second parameter is the type of sensor.
 		[temp,humidity] = gopigo.dht(blue)  
-		if temp == -1.0 or humidity == -1.0:
-			print ("Problem with the sensor, library")
-		elif temp ==-2.0 or humidity == -2.0:
+		if temp ==-2.0 or humidity == -2.0:
 			print ("Bad reading, trying again")
 		elif temp ==-3.0 or humidity == -3.0:
 			print ("Run the program as sudo")
+			sys.exit()
 		print("temp = %.02f C humidity =%.02f%%"%(temp, humidity))
 
 	except IOError:
