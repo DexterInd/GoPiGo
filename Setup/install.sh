@@ -1,34 +1,17 @@
 #! /bin/bash
-
-#check if there's an argument on the command line
-if [ -n "$1" ]
-then
-    quiet_mode=1
-else
-    quiet_mode=0
-fi
-
-if [ "$quiet_mode" -eq 0 ]
-then
-    echo "  _____            _                                ";
-    echo " |  __ \          | |                               ";
-    echo " | |  | | _____  _| |_ ___ _ __                     ";
-    echo " | |  | |/ _ \ \/ / __/ _ \ '__|                    ";
-    echo " | |__| |  __/>  <| ||  __/ |                       ";
-    echo " |_____/ \___/_/\_\\__\___|_| _        _            ";
-    echo " |_   _|         | |         | |      (_)           ";
-    echo "   | |  _ __   __| |_   _ ___| |_ _ __ _  ___  ___  ";
-    echo "   | | | '_ \ / _\ | | | / __| __| '__| |/ _ \/ __|";
-    echo "  _| |_| | | | (_| | |_| \__ \ |_| |  | |  __/\__ \ ";
-    echo " |_____|_| |_|\__,_|\__,_|___/\__|_|  |_|\___||___/ ";
-    echo "                                                    ";
-    echo "                                                    ";
-    echo " "
-fi
-
-echo "  ______  _____   _____  _____  ______  _____ "
-echo " |  ____ |     | |_____]   |   |  ____ |     |"
-echo " |_____| |_____| |       __|__ |_____| |_____|"
+echo "  _____            _                                ";
+echo " |  __ \          | |                               ";
+echo " | |  | | _____  _| |_ ___ _ __                     ";
+echo " | |  | |/ _ \ \/ / __/ _ \ '__|                    ";
+echo " | |__| |  __/>  <| ||  __/ |                       ";
+echo " |_____/ \___/_/\_\\__\___|_| _        _            ";
+echo " |_   _|         | |         | |      (_)           ";
+echo "   | |  _ __   __| |_   _ ___| |_ _ __ _  ___  ___  ";
+echo "   | | | '_ \ / _\` | | | / __| __| '__| |/ _ \/ __|";
+echo "  _| |_| | | | (_| | |_| \__ \ |_| |  | |  __/\__ \ ";
+echo " |_____|_| |_|\__,_|\__,_|___/\__|_|  |_|\___||___/ ";
+echo "                                                    ";
+echo "                                                    ";
 echo " "
 printf "Welcome to GoPiGo Installer.\nPlease ensure internet connectivity before running this script.\n
 NOTE: Raspberry Pi wil reboot after completion."
@@ -36,10 +19,7 @@ printf "Special thanks to Joe Sanford at Tufts University.  This script was deri
 printf " "
 echo "Must be running as Root user"
 echo " "
-if [ "$quiet_mode" -eq 0 ]
-then
-    echo "Press ENTER to begin..."
-fi
+echo "Press ENTER to begin..."
 # read
 
 echo " "
@@ -64,12 +44,17 @@ echo "Dependencies installed"
 #Copy Software Servo
 cp -R ../Firmware/SoftwareServo/ /usr/share/arduino/libraries/
 
-chmod +x gopigo 
-cp gopigo /usr/bin
+chmod +x gpg 
+cp gpg /usr/bin
 
 cd ../Software/Python
 python setup.py install
-cd ../../Setup
+
+# Install the DHT library
+cd sensor_examples/dht/Adafruit_Python_DHT
+sudo python setup.py install
+
+cd ../../../../../Setup/
 
 git clone git://git.drogon.net/wiringPi
 cd wiringPi
@@ -145,19 +130,16 @@ sudo rm -r /tmp/di_update
 sudo adduser pi i2c
 sudo chmod +x /home/pi/Desktop/GoPiGo/Software/Scratch/GoPiGo_Scratch_Scripts/*.sh
 
-if [ "$quiet_mode" -eq 0 ]
-then
-    echo " "
-    echo "Please restart the Raspberry Pi for the changes to take effect"
-    echo " "
-    echo "Please restart to implement changes!"
-    echo "  _____  ______  _____ _______       _____ _______ "
-    echo " |  __ \|  ____|/ ____|__   __|/\   |  __ \__   __|"
-    echo " | |__) | |__  | (___    | |  /  \  | |__) | | |   "
-    echo " |  _  /|  __|  \___ \   | | / /\ \ |  _  /  | |   "
-    echo " | | \ \| |____ ____) |  | |/ ____ \| | \ \  | |   "
-    echo " |_|  \_\______|_____/   |_/_/    \_\_|  \_\ |_|   "
-    echo " "
-    echo "Please restart to implement changes!"
-    echo "To Restart type sudo reboot"
-fi
+echo " "
+echo "Please restart the Raspberry Pi for the changes to take effect"
+echo " "
+echo "Please restart to implement changes!"
+echo "  _____  ______  _____ _______       _____ _______ "
+echo " |  __ \|  ____|/ ____|__   __|/\   |  __ \__   __|"
+echo " | |__) | |__  | (___    | |  /  \  | |__) | | |   "
+echo " |  _  /|  __|  \___ \   | | / /\ \ |  _  /  | |   "
+echo " | | \ \| |____ ____) |  | |/ ____ \| | \ \  | |   "
+echo " |_|  \_\______|_____/   |_/_/    \_\_|  \_\ |_|   "
+echo " "
+echo "Please restart to implement changes!"
+echo "To Restart type sudo reboot"
