@@ -49,7 +49,12 @@ cp gpg /usr/bin
 
 cd ../Software/Python
 python setup.py install
-cd ../../Setup
+
+# Install the DHT library
+cd sensor_examples/dht/Adafruit_Python_DHT
+sudo python setup.py install
+
+cd ../../../../../Setup/
 
 git clone git://git.drogon.net/wiringPi
 cd wiringPi

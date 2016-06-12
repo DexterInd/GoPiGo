@@ -8,7 +8,7 @@
 # Karan		30 March 14  	Initial Authoring
 # 			02 July  14		Removed bugs and some features added (v0.9) 
 #			26 Aug	 14		Code commenting and cleanup
-																		
+#			07 June  16		DHT example added																		
 '''
 ## License
  GoPiGo for the Raspberry Pi: an open source robotics platform for the Raspberry Pi.
@@ -30,22 +30,25 @@ along with this program.  If not, see <http://www.gnu.org/licenses/gpl-3.0.txt>.
 #
 ########################################################################
 
-import serial, time
-import smbus
-import math
-import RPi.GPIO as GPIO
-import struct
-
-import smbus
+import sys
 import time
+import math
+import struct
 import subprocess
 
-# for RPI version 1, use "bus = smbus.SMBus(0)"
-rev = GPIO.RPI_REVISION
-if rev == 2 or rev == 3:
-	bus = smbus.SMBus(1) 
+if sys.platform == 'uwp':
+	import winrt_smbus as smbus
+	bus = smbus.SMBus(1)
 else:
-	bus = smbus.SMBus(0) 
+	import RPi.GPIO as GPIO
+	import smbus
+
+	# for RPI version 1, use "bus = smbus.SMBus(0)"
+	rev = GPIO.RPI_REVISION
+	if rev == 2 or rev == 3:
+		bus = smbus.SMBus(1)
+	else:
+		bus = smbus.SMBus(0)
 
 # This is the address for the GoPiGo
 address = 0x08
@@ -130,7 +133,7 @@ def write_i2c_block(address,block):
 		return op
 	except IOError:
 		if debug:
-			print "IOError"
+			print ("IOError")
 		return -1
 	return 1
 
@@ -141,7 +144,7 @@ def writeNumber(value):
 		time.sleep(.005)
 	except IOError:
 		if debug:
-			print "IOError"
+			print ("IOError")
 		return -1	
 	return 1
 
@@ -152,7 +155,7 @@ def readByte():
 		time.sleep(.005)
 	except IOError:
 		if debug:
-			print "IOError"
+			print ("IOError")
 		return -1	
 	return number
 
@@ -418,7 +421,7 @@ def enc_tgt(m1,m2,target):
 	if m1>1 or m1<0 or m2>1 or m2<0:
 		return -1
 	m_sel=m1*2+m2
-	write_i2c_block(address,enc_tgt_cmd+[m_sel,target/256,target%256])
+	write_i2c_block(address,enc_tgt_cmd+[m_sel,target//256,target%256])
 	return 1
 	
 #Read encoder value
@@ -502,7 +505,7 @@ def set_speed(speed):
 #	arg:
 #		timeout-> 0-65535 (timeout in ms)
 def enable_com_timeout(timeout):
-	return write_i2c_block(address,en_com_timeout_cmd+[timeout/256,timeout%256,0]) 
+	return write_i2c_block(address,en_com_timeout_cmd+[timeout//256,timeout%256,0])
 
 #Disable communication time-out
 def disable_com_timeout():
@@ -537,7 +540,7 @@ def ir_read_signal():
 		write_i2c_block(address,ir_read_cmd+[unused,unused,unused])
 		time.sleep(.1)
 		data_back= bus.read_i2c_block_data(address, 1)[0:21]
-		if data_back[1]<>255:
+		if data_back[1]!=255:
 			return data_back
 		return [-1]*21
 	except IOError:
@@ -556,6 +559,23 @@ def cpu_speed():
 	except IOError:
 		return -1	
 	return b1
+
+# Read the DHT sensor connected to the serial port	
+def dht(sensor_type=0):
+	try:
+		import Adafruit_DHT
+		if sensor_type==0: #blue sensor
+			sensor = Adafruit_DHT.DHT11
+		elif sensor_type==1: #white sensor
+			sensor = Adafruit_DHT.DHT22
+		pin = 15 #connected to the serial port on the GoPiGo, RX pin
+		humidity, temperature = Adafruit_DHT.read_retry(sensor, pin,retries=3,delay_seconds=.1)
+		if humidity is not None and temperature is not None:
+			return [temperature,humidity]
+		else:
+			return [-2.0,-2.0]
+	except RuntimeError: 
+		return [-3.0,-3.0]
 		
 for i in range(10):
 	raw=analogRead(7)

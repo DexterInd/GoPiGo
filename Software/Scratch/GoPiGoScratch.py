@@ -105,7 +105,7 @@ while True:
     try:
 		m = s.receive()
 
-		while m[0] == 'sensor-update' :
+		while m==None or m[0] == 'sensor-update' :
 			m = s.receive()
 
 		msg = m[1]
@@ -296,21 +296,16 @@ while True:
 			
 		elif msg.lower()=="SOUND".lower():
 			pin = 1
+			sample = 50
 			print "Sound"
 			try:
-				d=[]
-				i=0
-				len=100
-				window_size=10
-				t=1
 				peak=0
-				for j in range(t*50):
-					analog_read_value=analogRead(1)
+				for j in range(sample):
+					analog_read_value=analogRead(pin)
 					# Print non zero values
-					if analog_read_value<>0:
-						peak += analog_read_value
+					peak += analog_read_value
 	
-				avg = peak/(t*100)
+				avg = peak/(sample*2)
 				# print avg
 
 			except:
@@ -318,7 +313,7 @@ while True:
 					e = sys.exc_info()[1]
 					print "Error reading sound sensor: " + str(e)
 			if en_debug:
-				print "Sound Sensor Reading: ",peak
+				print "Sound Sensor Reading:(peak,average) ",peak,avg
 			if en_gpg:
 				s.sensorupdate({'sound':avg})
 
@@ -362,7 +357,7 @@ while True:
 				s.sensorupdate({'motion':motion})
 				
 		# Get the value from the IR remote when a button is pressed
-		# IR Sensor goes on A1 Pin.
+		# IR Sensor goes on Serial Port.
 		elif msg.lower()=="IR".lower():
 			print "IR!"
 			if en_ir_sensor==0:
@@ -370,9 +365,11 @@ while True:
 				sockid = lirc.init("keyes", blocking = False)
 				en_ir_sensor=1
 			try:
-				a= lirc.nextcode()  # press 1 
+				a= lirc.nextcode()  # press a button on the remote 
 				if len(a) !=0:
 					print a[0]
+				else:
+					a.append(0)		#return 0 if no keypress found 
 			except:
 				if en_debug:
 					e = sys.exc_info()[1]
