@@ -1,13 +1,13 @@
 #!/usr/bin/python
-###############################################################################################################                                                               
+###############################################################################################################	
 # This library is for using the GoPiGo with Scratch
-# http://www.dexterindustries.com/GoPiGo/                                                                
+# http://www.dexterindustries.com/GoPiGo/
 # History
 # ------------------------------------------------
-# Author     Date      		Comments
-# Karan      28 July 14  	Initial Authoring                                                            
+# Author	 Date	  		Comments
+# Karan	  28 July 14  	Initial Authoring
 # These files have been made available online through a Creative Commons Attribution-ShareAlike 3.0  license.
-# (http://creativecommons.org/licenses/by-sa/3.0/)           
+# (http://creativecommons.org/licenses/by-sa/3.0/)		   
 # 
 # Based on the BrickPi Scratch Library written by Jaikrishna
 #
@@ -50,18 +50,18 @@ CHASS_WID = 13.5 # Chassis is ~13.5 cm wide.
 
 ## This should probably be moved into a gopigo python module.
 def cm2pulse(dist):
-    '''
-    Calculate the number of pulses to move the chassis dist cm.
-    pulses = dist * [pulses/revolution]/[dist/revolution]
-    '''
-    wheel_circ = 2*math.pi*WHEEL_RAD # [cm/rev] cm traveled per revolution of wheel
-    print 'WHEEL_RAD',WHEEL_RAD
-    revs = dist/wheel_circ
-    print 'revs',revs
-    PPR = 18 # [p/rev] encoder Pulses Per wheel Revolution
-    pulses = PPR*revs # [p] encoder pulses required to move dist cm.
-    print 'pulses',pulses
-    return pulses
+	'''
+	Calculate the number of pulses to move the chassis dist cm.
+	pulses = dist * [pulses/revolution]/[dist/revolution]
+	'''
+	wheel_circ = 2*math.pi*WHEEL_RAD # [cm/rev] cm traveled per revolution of wheel
+	print 'WHEEL_RAD',WHEEL_RAD
+	revs = dist/wheel_circ
+	print 'revs',revs
+	PPR = 18 # [p/rev] encoder Pulses Per wheel Revolution
+	pulses = PPR*revs # [p] encoder pulses required to move dist cm.
+	print 'pulses',pulses
+	return pulses
 
 fw_version=fw_ver()
 print "GoPiGo Scratch: Current firmware version:",fw_ver()
@@ -73,36 +73,36 @@ else:
 	sys.exit()
 
 try:
-    s = scratch.Scratch()
-    if s.connected:
-        print "GoPiGo Scratch: Connected to Scratch successfully"
+	s = scratch.Scratch()
+	if s.connected:
+		print "GoPiGo Scratch: Connected to Scratch successfully"
 	#else:
-    #sys.exit(0)
+	#sys.exit(0)
 except scratch.ScratchError:
-    print "GoPiGo Scratch: Scratch is either not opened or remote sensor connections aren't enabled"
-    #sys.exit(0)
+	print "GoPiGo Scratch: Scratch is either not opened or remote sensor connections aren't enabled"
+	#sys.exit(0)
 
-class myThread (threading.Thread):     
-    def __init__(self, threadID, name, counter):
-        threading.Thread.__init__(self)
-        self.threadID = threadID
-        self.name = name
-        self.counter = counter
-    def run(self):
-        while running:
-            time.sleep(.2)              # sleep for 200 ms
+class myThread (threading.Thread):	 
+	def __init__(self, threadID, name, counter):
+		threading.Thread.__init__(self)
+		self.threadID = threadID
+		self.name = name
+		self.counter = counter
+	def run(self):
+		while running:
+			time.sleep(.2)			  # sleep for 200 ms
 
-thread1 = myThread(1, "Thread-1", 1)        #Setup and start the thread
+thread1 = myThread(1, "Thread-1", 1)		#Setup and start the thread
 thread1.setDaemon(True)
 
 stop()
 
 try:
-    s.broadcast('READY')
+	s.broadcast('READY')
 except NameError:
 	print "GoPiGo Scratch: Unable to Broadcast"
 while True:
-    try:
+	try:
 		m = s.receive()
 
 		while m==None or m[0] == 'sensor-update' :
@@ -443,16 +443,31 @@ while True:
 			s.sensorupdate({'camera':"Picture Taken"})	
 
 					
+		elif msg.lower() =="DHT".lower():
+			BLUE = 0  # currently only supporting the blue DHT sensor
+			if en_debug:
+				print "DHT" 
+			if en_gpg:
+				[dht_temp, dht_humidity] = dht(BLUE)
+				if dht_temp == -2.0 or dht_humidity == -2.0:
+					print("DHT sensor: bad reading, trying again" )
+				elif dht_temp == -3.0 or dht_humidity == -3.0:
+					print("DHT sensor: not sudo" )
+				else:
+					s.sensorupdate({'temperature':dht_temp})
+					s.sensorupdate({'humidity':dht_humidity})
+
+				
 		else: 
 			if en_debug:
 				print "Ignoring Command: ", msg
 				
 		
-    except KeyboardInterrupt:
-        running= False
-        print "GoPiGo Scratch: Disconnected from Scratch"
-        break
-    except (scratch.scratch.ScratchConnectionError,NameError) as e:
+	except KeyboardInterrupt:
+		running= False
+		print "GoPiGo Scratch: Disconnected from Scratch"
+		break
+	except (scratch.scratch.ScratchConnectionError,NameError) as e:
 		while True:
 			#thread1.join(0)
 			print "GoPiGo Scratch: Scratch connection error, Retrying"
@@ -464,5 +479,5 @@ while True:
 				break;
 			except scratch.ScratchError:
 				print "GoPiGo Scratch: Scratch is either not opened or remote sensor connections aren't enabled\n..............................\n"
-    except ValueError as e:
-        print e
+	except ValueError as e:
+		print e
