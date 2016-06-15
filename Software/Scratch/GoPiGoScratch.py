@@ -450,7 +450,11 @@ while True:
 			if en_gpg:
 				[dht_temp, dht_humidity] = dht(BLUE)
 				if dht_temp == -2.0 or dht_humidity == -2.0:
+<<<<<<< HEAD
 					print("DHT sensor: bad reading" )
+=======
+					print("DHT sensor: bad reading, trying again" )
+>>>>>>> f6ec9d4c1201445c8925009d16248cfd5b0c0631
 				elif dht_temp == -3.0 or dht_humidity == -3.0:
 					print("DHT sensor: not sudo" )
 				else:
