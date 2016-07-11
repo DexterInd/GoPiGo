@@ -1,13 +1,16 @@
 #!/usr/bin/env bash
 # setting quiet mode
-if [ -f /home/pi/quiet_mode ]
+if [[ -f /home/pi/quiet_mode ]]
 then
         quiet_mode=1
 else
         quiet_mode=0
 fi
 
-if [[ "$quiet_mode" -eq "0" ]]
+#######
+# if we are NOT in quiet mode, then identify ourselves
+#######
+if [[ $quiet_mode -eq 0 ]]
 then
 	echo "  _____            _                                ";
 	echo " |  __ \          | |                               ";
@@ -51,7 +54,12 @@ sudo cp /home/pi/Desktop/GoPiGo/Software/Python/ir_remote_control/script/lircd_k
 sudo cp /home/pi/Desktop/GoPiGo/Software/Python/ir_remote_control/script/lircrc_keyes /etc/lirc/lircrc
 echo "Files copied"
 
-if [[ "$quiet_mode" -eq "0" ]]
+
+#####
+# if we are not in quiet mode, then tell the user to restart
+#####
+
+if [[ $quiet_mode -eq 0 ]]
 then
 	echo " "
 	echo "Please restart the Raspberry Pi for the changes to take effect"
