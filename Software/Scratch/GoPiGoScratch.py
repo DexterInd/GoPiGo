@@ -51,6 +51,7 @@ CHASS_WID = 13.5 # Chassis is ~13.5 cm wide.
 
 # Regex patterns
 # GET Distance for ultrasonic sensor
+# valid commands: GET_DIST, GET DIST, GET_DISTANCE and GET DISTANCE
 regexUSsensor = "^GET(\s|_)DIST(ANCE)?"   
 comp_regexUSsensor = re.compile(regexUSsensor, re.IGNORECASE)
 
