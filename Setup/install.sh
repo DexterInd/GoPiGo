@@ -1,14 +1,14 @@
 #! /bin/bash
 
 #check if there's an argument on the command line
-if [ -n "$1" ]
+if [[ -f /home/pi/quiet_mode ]]
 then
     quiet_mode=1
 else
     quiet_mode=0
 fi
 
-if [ "$quiet_mode" -eq 0 ]
+if [[ "$quiet_mode" -eq "0" ]]
 then
     echo "  _____            _                                ";
     echo " |  __ \          | |                               ";
@@ -26,17 +26,26 @@ then
     echo " "
 fi
 
+
 echo "  ______  _____   _____  _____  ______  _____ "
 echo " |  ____ |     | |_____]   |   |  ____ |     |"
 echo " |_____| |_____| |       __|__ |_____| |_____|"
 echo " "
-printf "Welcome to GoPiGo Installer.\nPlease ensure internet connectivity before running this script.\n
-NOTE: Raspberry Pi wil reboot after completion."
-printf "Special thanks to Joe Sanford at Tufts University.  This script was derived from his work.  Thank you Joe!"
-printf " "
-echo "Must be running as Root user"
+echo "Welcome to GoPiGo Installer."
+echo "Please ensure internet connectivity before running this script."
+if [[ "$quiet_mode" -eq "0" ]]
+then
+echo "NOTE: Raspberry Pi wil reboot after completion."
+fi
+echo "Special thanks to Joe Sanford at Tufts University.  This script was derived from his work.  Thank you Joe!"
 echo " "
-if [ "$quiet_mode" -eq 0 ]
+
+if [[ $EUID -ne 0 ]]; then
+	echo "Must be running as Root user"
+	exit 1
+fi
+echo " "
+if [[ "$quiet_mode" -eq 0 ]]
 then
     echo "Press ENTER to begin..."
 fi
@@ -149,7 +158,7 @@ sudo rm -r /tmp/di_update
 sudo adduser pi i2c
 sudo chmod +x /home/pi/Desktop/GoPiGo/Software/Scratch/GoPiGo_Scratch_Scripts/*.sh
 
-if [ "$quiet_mode" -eq 0 ]
+if [[ "$quiet_mode" -eq 0 ]]
 then
     echo " "
     echo "Please restart the Raspberry Pi for the changes to take effect"
