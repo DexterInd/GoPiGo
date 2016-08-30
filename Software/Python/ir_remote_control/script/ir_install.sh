@@ -1,18 +1,32 @@
 #!/usr/bin/env bash
-echo "  _____            _                                ";
-echo " |  __ \          | |                               ";
-echo " | |  | | _____  _| |_ ___ _ __                     ";
-echo " | |  | |/ _ \ \/ / __/ _ \ '__|                    ";
-echo " | |__| |  __/>  <| ||  __/ |                       ";
-echo " |_____/ \___/_/\_\\__\___|_| _        _            ";
-echo " |_   _|         | |         | |      (_)           ";
-echo "   | |  _ __   __| |_   _ ___| |_ _ __ _  ___  ___  ";
-echo "   | | | '_ \ / _\` | | | / __| __| '__| |/ _ \/ __|";
-echo "  _| |_| | | | (_| | |_| \__ \ |_| |  | |  __/\__ \ ";
-echo " |_____|_| |_|\__,_|\__,_|___/\__|_|  |_|\___||___/ ";
-echo "                                                    ";
-echo "                                                    ";
-echo " "
+# setting quiet mode
+if [[ -f /home/pi/quiet_mode ]]
+then
+        quiet_mode=1
+else
+        quiet_mode=0
+fi
+
+#######
+# if we are NOT in quiet mode, then identify ourselves
+#######
+if [[ $quiet_mode -eq 0 ]]
+then
+	echo "  _____            _                                ";
+	echo " |  __ \          | |                               ";
+	echo " | |  | | _____  _| |_ ___ _ __                     ";
+	echo " | |  | |/ _ \ \/ / __/ _ \ '__|                    ";
+	echo " | |__| |  __/>  <| ||  __/ |                       ";
+	echo " |_____/ \___/_/\_\\__\___|_| _        _            ";
+	echo " |_   _|         | |         | |      (_)           ";
+	echo "   | |  _ __   __| |_   _ ___| |_ _ __ _  ___  ___  ";
+	echo "   | | | '_ \ / _\` | | | / __| __| '__| |/ _ \/ __|";
+	echo "  _| |_| | | | (_| | |_| \__ \ |_| |  | |  __/\__ \ ";
+	echo " |_____|_| |_|\__,_|\__,_|___/\__|_|  |_|\___||___/ ";
+	echo "                                                    ";
+	echo "                                                    ";
+	echo " "
+fi
 printf "WELCOME TO IR RECEIVER SETUP FOR THE GOPIGO.\nPlease ensure internet connectivity before running this script.\nNOTE: Reboot Raspberry Pi after completion.\n"
 
 echo " "
@@ -40,13 +54,21 @@ sudo cp /home/pi/Desktop/GoPiGo/Software/Python/ir_remote_control/script/lircd_k
 sudo cp /home/pi/Desktop/GoPiGo/Software/Python/ir_remote_control/script/lircrc_keyes /etc/lirc/lircrc
 echo "Files copied"
 
-echo " "
-echo "Please restart the Raspberry Pi for the changes to take effect"
-echo "  _____  ______  _____ _______       _____ _______ "
-echo " |  __ \|  ____|/ ____|__   __|/\   |  __ \__   __|"
-echo " | |__) | |__  | (___    | |  /  \  | |__) | | |   "
-echo " |  _  /|  __|  \___ \   | | / /\ \ |  _  /  | |   "
-echo " | | \ \| |____ ____) |  | |/ ____ \| | \ \  | |   "
-echo " |_|  \_\______|_____/   |_/_/    \_\_|  \_\ |_|   "
-echo " "
-echo "To Restart type 'sudo reboot'"
+
+#####
+# if we are not in quiet mode, then tell the user to restart
+#####
+
+if [[ $quiet_mode -eq 0 ]]
+then
+	echo " "
+	echo "Please restart the Raspberry Pi for the changes to take effect"
+	echo "  _____  ______  _____ _______       _____ _______ "
+	echo " |  __ \|  ____|/ ____|__   __|/\   |  __ \__   __|"
+	echo " | |__) | |__  | (___    | |  /  \  | |__) | | |   "
+	echo " |  _  /|  __|  \___ \   | | / /\ \ |  _  /  | |   "
+	echo " | | \ \| |____ ____) |  | |/ ____ \| | \ \  | |   "
+	echo " |_|  \_\______|_____/   |_/_/    \_\_|  \_\ |_|   "
+	echo " "
+	echo "To Restart type 'sudo reboot'"
+fi
