@@ -34,6 +34,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/gpl-3.0.txt>.
 '''
 
 import scratch,sys,threading,math
+import re # regular expressions
 from gopigo import *
 
 en_gpg=1
@@ -47,6 +48,12 @@ en_ir_sensor=0
 DPR = 360.0/64
 WHEEL_RAD = 3.25 # Wheels are ~6.5 cm diameter. 
 CHASS_WID = 13.5 # Chassis is ~13.5 cm wide.
+
+# Regex patterns
+# GET Distance for ultrasonic sensor
+# valid commands: GET_DIST, GET DIST, GET_DISTANCE and GET DISTANCE
+regexUSsensor = "^GET(\s|_)DIST(ANCE)?"   
+comp_regexUSsensor = re.compile(regexUSsensor, re.IGNORECASE)
 
 ## This should probably be moved into a gopigo python module.
 def cm2pulse(dist):
@@ -233,7 +240,8 @@ while True:
 				servo(srv_pos)
 				
 		# Get distance from the ultrasonic sensor connected to port A1
-		elif msg.lower()=="GET_DIST".lower():
+		#elif msg.lower()=="GET_DIST".lower():
+		elif comp_regexUSsensor.match(msg):
 			if en_debug:
 				print "Received distance request."
 				print msg
