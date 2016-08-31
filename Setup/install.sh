@@ -41,7 +41,7 @@ echo "Special thanks to Joe Sanford at Tufts University.  This script was derive
 echo " "
 
 if [[ $EUID -ne 0 ]]; then
-	echo "Must be running as Root user"
+	echo "FAIL!  This script must be run as such: sudo ./install.sh"
 	exit 1
 fi
 echo " "
@@ -51,12 +51,16 @@ then
 fi
 # read
 
+SCRIPTDIR="$(readlink -f $(dirname $0))"
+echo "Installing GoPiGo software in $SCRIPTDIR"
+
 echo " "
 echo "Check for internet connectivity..."
 echo "=================================="
-wget -q --tries=2 --timeout=20 http://raspberrypi.org
+wget -q --tries=2 --timeout=20 http://raspberrypi.org 
 if [ $? -eq 0 ];then
 	echo "Connected"
+	sudo rm index.html
 else
 	echo "Unable to Connect, try again !!!"
 	exit 0
@@ -156,7 +160,7 @@ rm file
 sudo rm -r /tmp/di_update
 
 sudo adduser pi i2c
-sudo chmod +x /home/pi/Desktop/GoPiGo/Software/Scratch/GoPiGo_Scratch_Scripts/*.sh
+sudo chmod +x $SCRIPTDIR/../Software/Scratch/GoPiGo_Scratch_Scripts/*.sh
 
 if [[ "$quiet_mode" -eq 0 ]]
 then
