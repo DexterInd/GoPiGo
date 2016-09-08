@@ -305,16 +305,20 @@ while True:
 		elif msg.lower()=="SOUND".lower():
 			pin = 1
 			sample = 50
+			count = 0
 			print "Sound"
 			try:
 				peak=0
 				for j in range(sample):
 					analog_read_value=analogRead(pin)
+					print ("{}".format(analog_read_value))
 					# Print non zero values
-					peak += analog_read_value
+					if analog_read_value != 0:
+						peak += analog_read_value
+						count += 1
 	
-				avg = peak/(sample*2)
-				# print avg
+				avg = peak/(count*2) # the *2 is a leftover from a previous error, kept for backwards compatibility
+				print ("avg: {}".format(avg))
 
 			except:
 				if en_debug:
