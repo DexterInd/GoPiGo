@@ -288,20 +288,6 @@ while True:
 				s.sensorupdate({'button':button})
 				
 		# Get the value from the sound sensor connected to port A1
-		# elif msg=="SOUND":
-			# # print "LIGHTS!"
-			# pin = 1
-			# try:
-				# sound = analogRead(pin)
-			# except:
-				# if en_debug:
-					# e = sys.exc_info()[1]
-					# print "Error reading sound sensor: " + str(e)
-			# if en_debug:
-				# print "Sound Sensor Reading: " + str(sound)
-			# if en_gpg:
-				# s.sensorupdate({'sound':sound})
-			
 		elif msg.lower()=="SOUND".lower():
 			pin = 1
 			sample = 50
