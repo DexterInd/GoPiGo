@@ -67,9 +67,10 @@ black_line=[0]*5
 # range_col=list(map(operator.sub, black, white))
 range_col=[0]*5
 
-file_b='black_line.txt'
-file_w='white_line.txt'
-file_r='range_line.txt'
+dir_path="/home/pi/"
+file_b=dir_path+'black_line.txt'
+file_w=dir_path+'white_line.txt'
+file_r=dir_path+'range_line.txt'
 # Function declarations of the various functions used for encoding and sending
 # data from RPi to Arduino
 

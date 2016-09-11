@@ -8,9 +8,10 @@ poll_time=0.01
 
 # Calibration Files.  These are fixed positions because we assume
 # The user is using Raspbian for Robots.
-file_b="/home/pi/Desktop/GoPiGo/Software/Python/line_follower/black_line.txt"
-file_w="/home/pi/Desktop/GoPiGo/Software/Python/line_follower/white_line.txt"
-file_r="/home/pi/Desktop/GoPiGo/Software/Python/line_follower/range_line.txt"
+dir_path="/home/pi/"
+file_b=dir_path+"black_line.txt"
+file_w=dir_path+"white_line.txt"
+file_r=dir_path+"range_line.txt"
 
 last_val=[0]*5
 curr=[0]*5
