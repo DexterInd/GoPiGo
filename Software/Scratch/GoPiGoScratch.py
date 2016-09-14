@@ -70,6 +70,7 @@ def cm2pulse(dist):
 	print 'pulses',pulses
 	return pulses
 
+
 fw_version=fw_ver()
 print "GoPiGo Scratch: Current firmware version:",fw_ver()
 if fw_version > 1.2:
@@ -360,14 +361,23 @@ while True:
 			print "IR!"
 			if en_ir_sensor==0:
 				import lirc
-				sockid = lirc.init("keyes", blocking = False)
-				en_ir_sensor=1
+				try:
+					sockid = lirc.init("keyes", blocking = False)
+					en_ir_sensor=1
+				except:
+					en_ir_sensor=0
+					print("*******************************")
+					print("ERROR: IR Receiver not enabled!")
+					print("Please run Advanced Communications Option and enable it")
+					print("A REBOOT will be necessary")
+					print("*******************************")
 			try:
-				a= lirc.nextcode()  # press a button on the remote 
-				if len(a) !=0:
-					print a[0]
-				else:
-					a.append(0)		#return 0 if no keypress found 
+				if en_ir_sensor==1:
+					a= lirc.nextcode()  # press a button on the remote 
+					if len(a) !=0:
+						print a[0]
+					else:
+						a.append(0)		#return 0 if no keypress found 
 			except:
 				if en_debug:
 					e = sys.exc_info()[1]
