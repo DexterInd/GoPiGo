@@ -70,7 +70,6 @@ def cm2pulse(dist):
 	print 'pulses',pulses
 	return pulses
 
-
 fw_version=fw_ver()
 print "GoPiGo Scratch: Current firmware version:",fw_ver()
 if fw_version > 1.2:

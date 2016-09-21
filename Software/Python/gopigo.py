@@ -170,6 +170,9 @@ def motor2(direction,speed):
 #Move the GoPiGo forward
 def fwd():
 	return write_i2c_block(address,motor_fwd_cmd+[0,0,0])
+
+# support more explicit spelling for forward function
+forward=fwd
 	
 #Move the GoPiGo forward without PID
 def motor_fwd():
@@ -178,6 +181,9 @@ def motor_fwd():
 #Move GoPiGo back
 def bwd():
 	return write_i2c_block(address,motor_bwd_cmd+[0,0,0])
+
+# support more explicit spelling for backward function
+backward=bwd
 
 #Move GoPiGo back without PID control
 def motor_bwd():
@@ -198,6 +204,20 @@ def right():
 #Rotate GoPiGo right in same position both motors moving in the opposite direction)
 def right_rot():
 	return write_i2c_block(address,right_rot_cmd+[0,0,0])
+
+DPR = 360.0/64
+# turn x degrees to the right
+def turn_right(degrees):
+	pulse = int(degrees//DPR)
+	enc_tgt(1,0,pulse)
+	right()
+
+# turn x degrees to the left
+def turn_left(degrees):
+	pulse = int(degrees//DPR)
+	enc_tgt(0,1,pulse)
+	left()
+
 
 #Stop the GoPiGo
 def stop():
@@ -418,6 +438,7 @@ def servo(position):
 #	m2:	1 to disable targeting for m2, 1 to enable it
 #	target: number of encoder pulses to target (18 per revolution)
 def enc_tgt(m1,m2,target):
+	print("enc_tgt m1 {} m2 {} target {}".format(m1,m2,target))
 	if m1>1 or m1<0 or m2>1 or m2<0:
 		return -1
 	m_sel=m1*2+m2
