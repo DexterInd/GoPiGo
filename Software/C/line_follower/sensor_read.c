@@ -30,14 +30,14 @@
 
 int main(void){                                 //Program to read IR sensor values
     printf("IR Sensor Values \n");
-	printf("IR1  IR2  IR3  IR4  IR5\n");	
-	if(init()==-1)
+    printf("IR1  IR2  IR3  IR4  IR5\n");	
+    if(init()==-1)
         exit(1);
-	while(1){
-		get_sensorval();
-		printf("\n");
-		pi_sleep(500);
-	}
-	return 0;
+    while(1){
+	get_sensorval();
+	printf("\n");
+	//sleep_ms(500); // Uncomment the sleep_ms() if the values run fast on the screen 
+    }
+    return 0;
 }
 

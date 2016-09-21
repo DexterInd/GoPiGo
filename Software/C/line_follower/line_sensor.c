@@ -37,16 +37,13 @@ int fd;
 char *fileName = "/dev/i2c-1";
 unsigned char w_buf[WRITE_BUF_SIZE],r_buf[READ_BUF_SIZE];
 int read_val[5];
-int i=0,j=0;
+int i=0;
 unsigned long reg_addr=0;
-int version=200;    //Initialized with invalid version
-int v16_thresh=790;
-int LED_L=1,LED_R=0;
 
 //Initialize
 int init(void)
 {
-    int i,raw;
+   
     if ((fd = open(fileName, O_RDWR)) < 0)
     {
         // Open port for reading and writing
@@ -60,17 +57,12 @@ int init(void)
         printf("Unable to get bus access to talk to slave\n");
         return -1;
     }
-    for(i=0;i<10;i++)
-        raw=analogRead(7);
-    if(raw>v16_thresh)
-        version=16;
-    else
-        version=14;
+	
     return 1;
 }
 
 //Sleep in ms 
-void pi_sleep(int t)
+void sleep_ms(int t)
 {
     usleep(t*1000);
 }
@@ -86,7 +78,7 @@ int write_block(char cmd,char v1,char v2,char v3)
 
     ssize_t ret = write(fd, w_buf, WRITE_BUF_SIZE);
     // sleep for 1 ms to prevent too fast writing
-    pi_sleep(1);
+    sleep_ms(1);
 
     if (ret != WRITE_BUF_SIZE) {
         if (ret == -1) {
@@ -122,11 +114,11 @@ char read_byte(void)
 // Read Line Sensor Values(each 10 Bit) to the buffer
 int read_sensor(void)
 {      
-	write_block(aRead_cmd,0,0,0);
-	pi_sleep(50);
+	write_block(line_read_cmd,0,0,0); // This Write statement takes 0.895ms
 	int reg_size=10;
-	ssize_t ret = read(fd, r_buf, reg_size);
-	if (ret != reg_size) {
+	//Used to read the data from line sensor using i2c - read(int fildes, void *buf, size_t nbyte);
+	ssize_t ret = read(fd, r_buf, reg_size);//This read statement takes 1.635ms to read from 5 IR sensors   
+	if (ret != reg_size) {                   
         if (ret == -1) {
             printf("Unable to read from Line Sensor (errno %i): %s\n", errno, strerror(errno));
         }
@@ -136,39 +128,21 @@ int read_sensor(void)
         return -1;
     }
 	for(i=0;i<10;i=i+2){                    // To convert the 10 bit analog reading of each sensor to decimal and store it in read_val[]
-		read_val[j]=r_buf[i]*256+r_buf[i+1];
-		j++;	
+		read_val[i/2]=r_buf[i]*256+r_buf[i+1];
 	}
-	j=0;
 	return 0;
 }
 
 // To get Line Sensor Values(0-1024) from the read buffer
 void get_sensorval(void)
 {
-	while(1){
-		read_sensor();
-		if (read_val[0]!=-1){
-			for(i=0;i<5;i++){                   // To print the five IR sensor readings
-				printf("%d  ",read_val[i]);
-			}
-                    return;
+	read_sensor();
+	if (read_val[0]!=-1){
+		for(i=0;i<5;i++){                   // To print the five IR sensor readings
+			printf("%d  ",read_val[i]);
 		}
-			
+		return;
 	}
-}
-
-// Read analog value from Pin
-int analogRead(int pin)
-{
-    int b1,b2;
-    write_block(analog_read_cmd,pin,0,0);
-    pi_sleep(70);
-    b1=read_byte();
-    b2=read_byte();
-    if(b1==-1 || b2==-1)
-        return -1;
-    return b1* 256 + b2;
 }
 
 

@@ -52,9 +52,8 @@ extern int read_val[5];
 #include <stdbool.h>
 #define WRITE_BUF_SIZE       5
 #define READ_BUF_SIZE        32
-#define aRead_cmd            3    //analogRead() command format header
+#define line_read_cmd        3    //analogRead() command format header
 #define address              0x06 //I2C Address of Arduino
-#define analog_read_cmd      14   //Analog read on a port
 
 //Initialize
 int init(void);
@@ -71,11 +70,8 @@ int read_sensor(void);
 // To get Line Sensor Values(0-1024) from the read buffer
 void get_sensorval(void);
 
-// Read analog value from Pin
-int analogRead(int pin);
-
 //Sleep in ms 
-void pi_sleep(int t);
+void sleep_ms(int t);
 
 #endif
 
