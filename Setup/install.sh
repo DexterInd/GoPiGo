@@ -57,10 +57,9 @@ echo "Installing GoPiGo software in $SCRIPTDIR"
 echo " "
 echo "Check for internet connectivity..."
 echo "=================================="
-wget -q --tries=2 --timeout=20 http://raspberrypi.org 
+wget -q --tries=2 --timeout=20 --output-document=/dev/null http://raspberrypi.org 
 if [ $? -eq 0 ];then
 	echo "Connected"
-	sudo rm index.html
 else
 	echo "Unable to Connect, try again !!!"
 	exit 0
