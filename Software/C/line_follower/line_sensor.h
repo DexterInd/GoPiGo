@@ -67,9 +67,6 @@ char read_byte(void);
 // Read Line Sensor Values(each 10 Bit) to the buffer
 int read_sensor(void);
 
-// To get Line Sensor Values(0-1024) from the read buffer
-void get_sensorval(void);
-
 //Sleep in ms 
 void sleep_ms(int t);
 

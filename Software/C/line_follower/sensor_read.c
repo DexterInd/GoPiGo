@@ -28,14 +28,19 @@
 // ####################################################################################
 #include "line_sensor.h"
 
-int main(void){                                 //Program to read IR sensor values
+int main(void){
+    int i;                                 //Program to read IR sensor values
     printf("IR Sensor Values \n");
     printf("IR1  IR2  IR3  IR4  IR5\n");	
     if(init()==-1)
         exit(1);
     while(1){
-	get_sensorval();
-	printf("\n");
+	read_sensor();
+        printf("\n");
+	for(i=0;i<5;i++){                    // To convert the 10 bit analog reading of each sensor to decimal and store it in read_val[]
+                printf("%d ",read_val[i]);  // Values less than 100 - White, Values greater than 800- Black
+
+        }
 	//sleep_ms(500); // Uncomment the sleep_ms() if the values run fast on the screen 
     }
     return 0;

@@ -113,7 +113,7 @@ char read_byte(void)
 
 // Read Line Sensor Values(each 10 Bit) to the buffer
 int read_sensor(void)
-{      
+{       int flag = 0;
 	write_block(line_read_cmd,0,0,0); // This Write statement takes 0.895ms
 	int reg_size=10;
 	//Used to read the data from line sensor using i2c - read(int fildes, void *buf, size_t nbyte);
@@ -128,21 +128,17 @@ int read_sensor(void)
         return -1;
     }
 	for(i=0;i<10;i=i+2){                    // To convert the 10 bit analog reading of each sensor to decimal and store it in read_val[]
-		read_val[i/2]=r_buf[i]*256+r_buf[i+1];
+		read_val[i/2]=r_buf[i]*256+r_buf[i+1]; // Values less than 100 - White, Values greater than 800- Black
+                if (read_val[i/2]> 65000)              // Checking for junk values in the input
+			flag=1;
 	}
+        if (flag==1){
+		for(i=0;i<5;i++)
+			read_val[i]=-1;                    // Making junk input values to -1
+                printf("\n IO Error, read again");
+        }        
 	return 0;
 }
 
-// To get Line Sensor Values(0-1024) from the read buffer
-void get_sensorval(void)
-{
-	read_sensor();
-	if (read_val[0]!=-1){
-		for(i=0;i<5;i++){                   // To print the five IR sensor readings
-			printf("%d  ",read_val[i]);
-		}
-		return;
-	}
-}
 
 
