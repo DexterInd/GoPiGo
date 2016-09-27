@@ -38,7 +38,7 @@ int main(void){
 	read_sensor();
         printf("\n");
 	for(i=0;i<5;i++){                    // To convert the 10 bit analog reading of each sensor to decimal and store it in read_val[]
-                printf("%d ",read_val[i]);  // Values less than 100 - White, Values greater than 800- Black
+                printf("%d ",read_val[i]);  // Values less than 100 - White, Values greater than 800- Black, Value -1 -Error
 
         }
 	//sleep_ms(500); // Uncomment the sleep_ms() if the values run fast on the screen 

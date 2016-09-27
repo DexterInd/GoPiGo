@@ -135,7 +135,6 @@ int read_sensor(void)
         if (flag==1){
 		for(i=0;i<5;i++)
 			read_val[i]=-1;                    // Making junk input values to -1
-                printf("\n IO Error, read again");
         }        
 	return 0;
 }
