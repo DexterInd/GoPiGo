@@ -40,14 +40,23 @@ THE SOFTWARE.
 # Run the install script before you start
  
 import gopigo
+<<<<<<< HEAD
 import time, sys
+=======
+import time,sys
+>>>>>>> origin/master
 import lirc
 
 try:
 	sockid = lirc.init("keyes", blocking = False)
 except :
 	print("ERROR: IR Receiver not enabled!")
+<<<<<<< HEAD
 	print(" Please run Advanced Communications Option and enable it")
+=======
+	print("Please run Advanced Communications Options and enable it")
+	print("A REBOOT will be necessary")
+>>>>>>> origin/master
 	sys.exit(0)
 
 print ("Press any button on the remote to control the GoPiGo")
