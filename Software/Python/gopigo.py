@@ -173,9 +173,12 @@ def motor2(direction,speed):
 	
 #Move the GoPiGo forward
 def fwd(dist=0): #distance is in cm
-	if dist>0:
-		pulse=int(PPR*(dist/WHEEL_CIRC) )
-		enc_tgt(1,1,pulse)
+	try:
+		if dist>0:
+			pulse=int(PPR*(dist/WHEEL_CIRC) )
+			enc_tgt(1,1,pulse)
+	except:
+		pass
 	return write_i2c_block(address,motor_fwd_cmd+[0,0,0])
 
 # support more explicit spelling for forward function
@@ -187,9 +190,12 @@ def motor_fwd():
 
 #Move GoPiGo back
 def bwd(dist=0):
-	if dist>0:
-		pulse=int(PPR*(dist/WHEEL_CIRC) )
-		enc_tgt(1,1,pulse)
+	try: 
+		if dist>0:
+			pulse=int(PPR*(dist/WHEEL_CIRC) )
+			enc_tgt(1,1,pulse)
+	except:
+		pass
 	return write_i2c_block(address,motor_bwd_cmd+[0,0,0])
 
 # support more explicit spelling for backward function
