@@ -36,6 +36,10 @@ import math
 import struct
 import subprocess
 
+WHEEL_RAD=3.25
+WHEEL_CIRC=2*math.pi*WHEEL_RAD
+PPR = 18 # encoder Pulses Per Revolution
+
 if sys.platform == 'uwp':
 	import winrt_smbus as smbus
 	bus = smbus.SMBus(1)
@@ -168,7 +172,13 @@ def motor2(direction,speed):
 	return write_i2c_block(address,m2_cmd+[direction,speed,0])
 	
 #Move the GoPiGo forward
-def fwd():
+def fwd(dist=0): #distance is in cm
+	try:
+		if dist>0:
+			pulse=int(PPR*(dist/WHEEL_CIRC) )
+			enc_tgt(1,1,pulse)
+	except:
+		pass
 	return write_i2c_block(address,motor_fwd_cmd+[0,0,0])
 
 # support more explicit spelling for forward function
@@ -179,7 +189,13 @@ def motor_fwd():
 	return write_i2c_block(address,motor_fwd_cmd+[0,0,0])
 
 #Move GoPiGo back
-def bwd():
+def bwd(dist=0):
+	try: 
+		if dist>0:
+			pulse=int(PPR*(dist/WHEEL_CIRC) )
+			enc_tgt(1,1,pulse)
+	except:
+		pass
 	return write_i2c_block(address,motor_bwd_cmd+[0,0,0])
 
 # support more explicit spelling for backward function
