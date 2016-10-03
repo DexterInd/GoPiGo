@@ -22,10 +22,10 @@ except ImportError:
 		raise ImportError,"Line sensor libraries not found"
 		sys.exit(0)
 
-y=175 
+y=200 
 class line_sensor_app(wx.Frame):
 	def __init__(self,parent,id,title):
-		wx.Frame.__init__(self,parent,id,title,size=(475,400))
+		wx.Frame.__init__(self,parent,id,title,size=(500,400))
 		self.parent = parent
 		self.initialize()
 		# Exit
@@ -58,15 +58,15 @@ class line_sensor_app(wx.Frame):
 		sizer = wx.GridBagSizer()
 
 		# Set up buttons
-		black_line_set_button = wx.Button(self,-1,label="Set Black Line Values", pos=(25,y))
+		black_line_set_button = wx.Button(self,-1,label="Set Black Line Values", pos=(10,y))
 		sizer.Add(black_line_set_button, (0,1))
 		self.Bind(wx.EVT_BUTTON, self.black_line_set_OnButtonClick, black_line_set_button)
 
-		white_line_set_button = wx.Button(self,-1,label="Set White Line Values", pos=(175,y))
+		white_line_set_button = wx.Button(self,-1,label="Set White Line Values", pos=(180,y))
 		sizer.Add(white_line_set_button, (0,1))
 		self.Bind(wx.EVT_BUTTON, self.white_line_set_button_OnButtonClick, white_line_set_button)
 
-		line_position_set_button = wx.Button(self,-1,label="Read Line Position", pos=(325,y))
+		line_position_set_button = wx.Button(self,-1,label="Read Line Position", pos=(350,y))
 		sizer.Add(line_position_set_button, (0,1))
 		self.Bind(wx.EVT_BUTTON, self.line_position_set_button_OnButtonClick, line_position_set_button)
 		
