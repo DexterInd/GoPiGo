@@ -15,7 +15,7 @@ buf=[]
 # 65 pulses between ~500us or ~1600 us for 1 or 0 in the IR signal
 # goes high again until the next pulse comes 
 # all the time is in microseconds
-sig_thresh_len_before_header= 2000 # wait for a signal of at least this much lenght before looking for a signal 
+sig_thresh_len_before_header= 2000 # wait for a signal of at least this much length before looking for a signal 
 
 before_header_flag=0
 
@@ -52,7 +52,7 @@ detected_sig_buf=[]
 
 p = Popen('mode2 -d /dev/lirc0', stdout = PIPE, stderr = STDOUT, shell = True)
    
-# Compare the key value which was read by the IR receiver with the fingerprints that we had recoreded for each value
+# Compare the key value which was read by the IR receiver with the fingerprints that we had recorded for each value
 def compare_with_button(inp):
     found_flag=0
     keys={  0:"KEY_1",
@@ -331,7 +331,7 @@ def compare_with_button(inp):
         # Create a TCP/IP socket
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
-        server_address = ('localhost', 10000)
+        server_address = ('localhost', 21852)
         # print 'connecting to %s port %s' % server_address
         sock.connect(server_address)
 
@@ -353,7 +353,11 @@ def match_with_button(inp):
     large_val_found=0
     if debug:
         print inp,len(inp)
-        
+    
+	#The ir signals are 65 bytes long with either a pulse length of ~500 us or ~1600us.
+	#Sometime because of noise which cannot be filtered out, we have smaller chunks of signal also present in the bytearray
+	#Something like a 1600us signal breaks into 500,600 and 500 us signal
+	#This checks and skips those signals because they are very hard to filter out.
     if len(inp)==65:
         compare_with_button(inp)
     

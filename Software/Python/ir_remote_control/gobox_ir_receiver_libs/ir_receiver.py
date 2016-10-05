@@ -7,7 +7,7 @@ import threading
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
 # Bind the socket to the port
-server_address = ('localhost', 10000)
+server_address = ('localhost', 21852)
 print ('starting up on %s port %s' % server_address)
 sock.bind(server_address)
 sock.listen(1)
