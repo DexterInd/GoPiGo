@@ -359,32 +359,22 @@ while True:
 		elif msg.lower()=="IR".lower():
 			print "IR!"
 			if en_ir_sensor==0:
-				import lirc
-				try:
-					sockid = lirc.init("keyes", blocking = False)
-					en_ir_sensor=1
-				except:
-					en_ir_sensor=0
-					print("*******************************")
-					print("ERROR: IR Receiver not enabled!")
-					print("Please run Advanced Communications Option and enable it")
-					print("A REBOOT will be necessary")
-					print("*******************************")
+				import ir_receiver
+				en_ir_sensor=1
 			try:
-				if en_ir_sensor==1:
-					a= lirc.nextcode()  # press a button on the remote 
-					if len(a) !=0:
-						print a[0]
-					else:
-						a.append(0)		#return 0 if no keypress found 
+				a= ir_receiver.nextcode()  # press a button on the remote 
+				if len(a) !=0: 
+					print a
+				else:
+					a=[0]	#eturn 0 if no keypress found 
 			except:
 				if en_debug:
 					e = sys.exc_info()[1]
 					print "Error reading IR sensor: " + str(a)
 			if en_debug:
-				print "IR Reading: " + str(a[0])
+				print "IR Reading: " + str(a)
 			if en_gpg: 
-				s.sensorupdate({'ir':a[0]})
+				s.sensorupdate({'ir':a})
 				
 		# Get the value from the Dexter Industries line sensor
 		elif msg.lower()=="LINE".lower():
