@@ -10,6 +10,7 @@ fi
 #######
 # if we are NOT in quiet mode, then identify ourselves
 #######
+
 if [[ $quiet_mode -eq 0 ]]
 then
 	echo "  _____            _                                ";
@@ -26,24 +27,31 @@ then
 	echo "                                                    ";
 	echo "                                                    ";
 	echo " "
-fi
-printf "WELCOME TO IR RECEIVER SETUP FOR THE GOPIGO.\nPlease ensure internet connectivity before running this script.\nNOTE: Reboot Raspberry Pi after completion.\n"
 
-echo " "
-echo "Check for internet connectivity..."
-echo "=================================="
-wget -q --tries=2 --timeout=20 http://google.com
-if [ $? -eq 0 ];then
-	echo "Connected"
+	printf "WELCOME TO IR RECEIVER SETUP FOR THE GOPIGO.\nPlease ensure internet connectivity before running this script.\nNOTE: Reboot Raspberry Pi after completion.\n"
+
+	echo " "
+	echo " "
+
+	echo "Check for internet connectivity..."
+	echo "=================================="
+	wget -q --tries=2 --timeout=20 --output-document=/dev/null http://raspberrypi.org
+	if [ $? -eq 0 ];then
+		echo "Connected"
+	else
+		echo "Unable to Connect, try again !!!"
+		exit 0
+	fi
+
+	sudo apt-get update -y
 else
-	echo "Unable to Connect, try again !!!"
-	exit 0
+# being run from DI UPDATE
+	printf "WELCOME TO IR RECEIVER SETUP FOR THE GOPIGO.\n"
 fi
 
 echo " "
 echo "Installing Dependencies"
 echo "======================="
-sudo apt-get update -y
 sudo apt-get install lirc python-lirc -y
 
 echo " "
@@ -57,7 +65,6 @@ echo "Files copied"
 
 #####
 # if we are not in quiet mode, then tell the user to restart
-#####
 
 if [[ $quiet_mode -eq 0 ]]
 then
