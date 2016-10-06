@@ -35,11 +35,12 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 '''   
 ##################################################
-import lirc
-#initialize the IR daemon
-sockid = lirc.init("keyes", blocking = False)
+import ir_receiver
+import time
+
 while True:
 	#Wait for the next IR code to arrive. The codes are queued in a buffer before printing
-	a= lirc.nextcode()  
+	a= ir_receiver.nextcode()
 	if len(a) !=0:
-		print a[0]
+		print a
+	time.sleep(.1)
