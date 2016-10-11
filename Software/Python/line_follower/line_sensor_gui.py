@@ -70,8 +70,8 @@ class line_sensor_app(wx.Frame):
 		sizer.Add(line_position_set_button, (0,1))
 		self.Bind(wx.EVT_BUTTON, self.line_position_set_button_OnButtonClick, line_position_set_button)
 		
-		# Set up labels
-		self.label = wx.StaticText(self,-1,label=u'  ',pos=(25,y+150))
+		# Set up labels: This is where the output of sensor readings will be printed.
+		self.label = wx.StaticText(self,-1,label=u'  ',pos=(150,y+150))	# Prints line sensor information out.
 		
 		self.label_top = wx.StaticText(self,-1,label=u'Instructions:\n 1.\tPlace the line sensor so that all of the black sensors are over \n\tyour black line.  Then press the button "Black Line Sensor Set".\n\n 2.\tNext, place the line sensor so that all of the black sensors are \n\tNOT over your black line and on the white background surface.\n\tThen press "White Line Sensor Set".\n\n 3.\tFinally, test the sensor by pressing "Read Line Position"',pos=(25,0))
 
