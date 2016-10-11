@@ -11,6 +11,9 @@ import line_sensor
 import time
 import operator
 import gopigo
+import atexit
+
+atexit.register(stop)  # Stop the motors when the program is over.  
 
 #Get a value which does have -1
 def get_sensorval():
