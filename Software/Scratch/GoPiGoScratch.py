@@ -35,7 +35,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/gpl-3.0.txt>.
 
 import scratch,sys,threading,math
 import re # regular expressions
+import os # to handle folder paths
 from gopigo import *
+
+defaultCameraFolder="/home/pi/Desktop/"
+cameraFolder = defaultCameraFolder
 
 en_gpg=1
 en_debug=1
@@ -420,24 +424,46 @@ while True:
 					s.sensorupdate({'read_ir':read_ir[0]})		
 				else:
 					s.sensorupdate({'read_ir':""})
-					
+
+		# CREATE FOLDER TO SAVE PHOTOS IN
+
+		elif msg[:6].lower()=="FOLDER".lower():
+			print "Camera folder"
+			try:
+				cameraFolder=defaultCameraFolder+str(msg[6:])
+				if not os.path.exists(cameraFolder):
+					pi=1000  # uid and gid of user pi
+					os.makedirs(cameraFolder)
+					os.chown(cameraFolder,pi,pi)
+					s.sensorupdate({"folder":"created"})
+				else:
+					s.sensorupdate({"folder":"set"})
+			except:
+				print "error with folder name"
+
+		# TAKE A PICTURE
+
 		elif msg.lower()=="TAKE_PICTURE".lower():
-			print "TAKE_PICTURE!" 
+			print "TAKE_PICTURE" 
+			pi=1000  # uid and gid of user pi
 			try:
 				from subprocess import call
 				import datetime
-				cmd_start="raspistill -o /home/pi/Desktop/img_"
-				cmd_end=".jpg -w 640 -h 480 -t 1"
-				dt=str(datetime.datetime.now())
-				dt=dt.replace(' ','_',10)
-				call ([cmd_start+dt+cmd_end], shell=True)
+				newimage = "{}/img_{}.jpg".format(cameraFolder,str(datetime.datetime.now()).replace(" ","_",10))
+				photo_cmd="raspistill -o {} -w 640 -h 480 -t 1".format(newimage)
+				#print photo_cmd
+	#				cmd_end=" -w 640 -h 480 -t 1"
+	#				dt=str(datetime.datetime.now())
+	#				dt=dt.replace(' ','_',10)
+				call ([photo_cmd], shell=True)
+				os.chown(newimage,pi,pi)
 				print "Picture Taken"
+				s.sensorupdate({'camera':"Picture Taken"})	
 			except:
 				if en_debug:
 					e = sys.exc_info()[1]
 					print "Error taking picture"
 				s.sensorupdate({'camera':"Error"})	
-			s.sensorupdate({'camera':"Picture Taken"})	
 
 					
 		elif msg.lower() =="DHT".lower():
