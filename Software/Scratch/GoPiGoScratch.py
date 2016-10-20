@@ -476,9 +476,8 @@ while True:
 					print("DHT sensor: bad reading" )
 				elif dht_temp == -3.0 or dht_humidity == -3.0:
 					print("DHT sensor: not sudo" )
-				else:
-					s.sensorupdate({'temperature':dht_temp})
-					s.sensorupdate({'humidity':dht_humidity})
+				s.sensorupdate({'temperature':dht_temp})
+				s.sensorupdate({'humidity':dht_humidity})
 
 				
 		else: 
