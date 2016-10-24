@@ -13,6 +13,7 @@ This repository contains source code, firmware and design materials for the GoPi
 # See Also
 
 - [Dexter Industries] (http://www.dexterindustries.com/GoPiGo)
+- [Dexter Industries Forum Support] (http://forum.dexterindustries.com/c/grovepi)
 - [Kickstarter Campaign] (http://kck.st/Q6vVOP)
 - [Raspberry Pi] (http://www.raspberrypi.org/)
 
