@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+from __future__ import print_function
+from __future__ import division
+from builtins import input
 # This script is to test the encoder values from the GoPiGo
 
 '''
@@ -29,5 +32,4 @@ atexit.register(stop)
 fwd()
 time.sleep(1)
 while True:
-	print enc_read(0),
-	print enc_read(1)
+	print( "{},{}".format(enc_read(0), enc_read(1)))
