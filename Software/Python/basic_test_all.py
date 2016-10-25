@@ -38,7 +38,7 @@ def print_menu():
 	print( "  x	:	Stop the GoPiGo")
 	print( "  t	:	Increase the speed by 10 (default 200, min:0 max 255)")
 	print( "  g	:	Reduce the speed by 10")
-	print( "  v	:	print( the voltage of the batteries (should be greater than 10)")
+	print( "  v	:	print the voltage of the batteries (should be greater than 10)")
 	print( "  st	:	Set servo position")
 	print( "  b	:	Run a servo 180 degree sweep")
 	print( "  u	:	Get the distance from the ultrasonic ranger")
