@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+from __future__ import print_function
+from __future__ import division
+
 ########################################################################                                                                  
 # This library is used for communicating with the GoPiGo.                                
 # http://www.dexterindustries.com/GoPiGo/                                                                
@@ -175,7 +178,8 @@ def motor2(direction,speed):
 def fwd(dist=0): #distance is in cm
 	try:
 		if dist>0:
-			pulse=int(PPR*(dist/WHEEL_CIRC) )
+			# this casting to int doesn't seem necessary
+			pulse=int(PPR*(dist//WHEEL_CIRC) )
 			enc_tgt(1,1,pulse)
 	except:
 		pass
@@ -192,7 +196,8 @@ def motor_fwd():
 def bwd(dist=0):
 	try: 
 		if dist>0:
-			pulse=int(PPR*(dist/WHEEL_CIRC) )
+			# this casting to int doesn't seem necessary
+			pulse=int(PPR*(dist//WHEEL_CIRC) )
 			enc_tgt(1,1,pulse)
 	except:
 		pass
@@ -352,7 +357,7 @@ def volt():
 	
 	if b1!=-1 and b2!=-1:
 		v=b1*256+b2
-		v=(5*float(v)/1024)/.4
+		v=(5*float(v)/1024)/0.4
 		return round(v,2)
 	else:
 		return -1
@@ -555,7 +560,8 @@ def disable_com_timeout():
 #						l[1]-timeout_status
 def read_status():
 	st=bus.read_byte(address)
-	st_reg=[st & (1 <<0),(st & (1 <<1))/2]
+	# Karan, can you double check this one?
+	st_reg=[st & (1 <<0),(st & (1 <<1))//2]
 	return st_reg
 	 
 #Read encoder status
