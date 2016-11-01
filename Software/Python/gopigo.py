@@ -1,6 +1,10 @@
 #!/usr/bin/env python
 from __future__ import print_function
 from __future__ import division
+# the above lines are meant for Python3 compatibility.
+# they force the use of Python3 functionality for print() 
+# and the integer division 
+# mind your parentheses!
 
 ########################################################################                                                                  
 # This library is used for communicating with the GoPiGo.                                
