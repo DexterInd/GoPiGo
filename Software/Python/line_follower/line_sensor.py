@@ -26,9 +26,17 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/gpl-3.0.txt>.
 '''
+from __future__ import print_function
+from __future__ import division
+from builtins import input
+# the above lines are meant for Python3 compatibility.
+# they force the use of Python3 functionality for print(), 
+# the integer division and input()
+# mind your parentheses!
 
-import smbus
+
 import time
+import smbus
 import math
 import RPi.GPIO as GPIO
 import struct
@@ -80,7 +88,7 @@ def write_i2c_block(address, block):
 		return bus.write_i2c_block_data(address, 1, block)
 	except IOError:
 		if debug:
-			print "IOError"
+			print ("IOError")
 		return -1
 def read_sensor():
 	try:
@@ -100,8 +108,8 @@ def read_sensor():
 def get_sensorval():
 	while True: 
 		val=read_sensor()
-		print val
-		if val[0]<>-1:
+		print (val)
+		if val[0]!=-1:
 			return val
 		else:
 			#Read once more to clear buffer and remove junk values
@@ -111,7 +119,7 @@ def set_black_line():
 	global black_line,white_line,range_col
 	for i in range(5):
 		val=read_sensor()
-	# print val
+	# print (val)
 	if val[0]!=-1:
 		black_line=val
 	else:
@@ -128,9 +136,9 @@ def get_black_line():
 	try:
 		with open(file_b, 'rb') as f:
 			black_line = pickle.load(f)
-	except Exception, e:
-		print "FAIL!"
-		print e
+	except Exception as e:
+		print ("FAIL!")
+		print (e)
 		black_line=[0]*5
 	return black_line
 	
@@ -138,7 +146,7 @@ def set_white_line():
 	global white_line,black_line,range_col
 	for i in range(5):
 		val=read_sensor()
-	# print val
+	# print (val)
 	if val[0]!=-1:
 		white_line=val
 	else:
@@ -195,6 +203,7 @@ def line_position():
 	curr_pos=0
 	percent_black_line=[0]*5
 	for i in range(5):
-		percent_black_line[i]=diff_val[i]*100/range_col[i]
+		# casting to int when moving to Python 3
+		percent_black_line[i]=(diff_val[i]*100/range_col[i])
 		curr_pos+=percent_black_line[i]*multp[i]
 	return curr_pos	
