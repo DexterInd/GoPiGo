@@ -85,20 +85,24 @@ import tornado.web
 import tornado.escape
 import sockjs.tornado
 import threading
-import Queue
+
 import camera_streamer
 import robot_controller
 import json
 import gopigo
 import subprocess
 import sys
+try:
+    import Queue as queue
+except:
+    import queue 
 robot = None
 
 cameraStreamer = None
 scriptPath = os.path.dirname( __file__ )
 webPath = os.path.abspath( file_location)
 print (webPath)
-robotConnectionResultQueue = Queue.Queue()
+robotConnectionResultQueue = queue.Queue()
 isClosing = False
 
 #--------------------------------------------------------------------------------------------------- 
