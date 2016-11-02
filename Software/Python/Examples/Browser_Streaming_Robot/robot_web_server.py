@@ -56,6 +56,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/gpl-3.0.txt>.
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+from __future__ import print_function
+from __future__ import division
+from builtins import input
+# the above lines are meant for Python3 compatibility.
+# they force the use of Python3 functionality for print(), 
+# the integer division and input()
+# mind your parentheses!
 
 import logging
 
@@ -90,7 +97,7 @@ robot = None
 cameraStreamer = None
 scriptPath = os.path.dirname( __file__ )
 webPath = os.path.abspath( file_location)
-print webPath
+print (webPath)
 robotConnectionResultQueue = Queue.Queue()
 isClosing = False
 
