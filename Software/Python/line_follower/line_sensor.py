@@ -205,6 +205,5 @@ def line_position():
 	for i in range(5):
 		# casting to int when moving to Python 3
 		percent_black_line[i]=(diff_val[i]*100/range_col[i])
-		print(percent_black_line[i],type(percent_black_line[i]))
 		curr_pos+=percent_black_line[i]*multp[i]
 	return curr_pos	
