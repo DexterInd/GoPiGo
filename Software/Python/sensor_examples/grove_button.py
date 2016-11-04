@@ -4,7 +4,7 @@
 #
 # The GoPiGo is a robotics platform for the Raspberry Pi.  You can learn more about GoPiGo here:  www.dexterindustries.com/GoPiGo/
 #
-# Have a question about this example?  Ask on the forums here:  http://www.dexterindustries.com/forum/gopigo/
+# Have a question about this example?  Ask on the forums here:  http://forum.dexterindustries.com/c/gopigo
 #
 '''
 ## License
