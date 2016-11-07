@@ -81,10 +81,12 @@ cp gopigo /usr/bin
 
 cd ../Software/Python
 python setup.py install
+python3 setup.py install
 
 # Install the DHT library
 cd sensor_examples/dht/Adafruit_Python_DHT
 sudo python setup.py install
+sudo python3 setup.py install
 cd ../../../../../Setup/
 
 git clone git://git.drogon.net/wiringPi
