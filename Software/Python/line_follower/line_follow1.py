@@ -81,14 +81,14 @@ def absolute_line_pos():
 #GoPiGo actions
 def go_straight():
 	if msg_en:
-		print "Going straight"
+		print("Going straight")
 	if gpg_en:
 		gopigo.set_speed(fwd_speed)
 		gopigo.fwd()
 		
 def turn_slight_left():
 	if msg_en:
-		print "Turn slight left"
+		print("Turn slight left")
 	if gpg_en:
 		gopigo.set_right_speed(slight_turn_speed)
 		gopigo.set_left_speed(fwd_speed)
@@ -96,14 +96,14 @@ def turn_slight_left():
 		
 def turn_left():
 	if msg_en:
-		print "Turn left"
+		print("Turn left")
 	if gpg_en:
 		gopigo.set_speed(turn_speed)
 		gopigo.left()
 		
 def turn_slight_right():
 	if msg_en:
-		print "Turn slight right"
+		print("Turn slight right")
 	if gpg_en:
 		gopigo.set_right_speed(fwd_speed)
 		gopigo.set_left_speed(slight_turn_speed)
@@ -111,20 +111,20 @@ def turn_slight_right():
 
 def turn_right():
 	if msg_en:
-		print "Turn right"
+		print("Turn right")
 	if gpg_en:
 		gopigo.set_speed(turn_speed)
 		gopigo.right()
 	
 def stop_now():
 	if msg_en:
-		print "Stop"
+		print("Stop")
 	if gpg_en:
 		gopigo.stop()
 		
 def go_back():
 	if msg_en:
-		print "Go Back"
+		print("Go Back")
 	if gpg_en:
 		gopigo.set_speed(turn_speed)
 		gopigo.bwd()
@@ -154,12 +154,12 @@ def run_gpg(curr):
 while True:
 	last_val=curr
 	curr=absolute_line_pos()
-	print curr
+	print(curr)
 	
 	#white line reached
 	if curr== stop1:
 		if msg_en:
-			print "White found, last cmd running"
+			print("White found, last cmd running")
 		for i in range(5):
 			run_gpg(last_val)
 	else:		
