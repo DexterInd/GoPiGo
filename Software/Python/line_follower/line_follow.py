@@ -7,6 +7,14 @@
 #
 # http://www.dexterindustries.com/
 
+
+
+from builtins import input
+# the above lines are meant for Python3 compatibility.
+# they force the use of Python3 functionality for print(),
+# the integer division and input()
+# mind your parentheses!
+
 import line_sensor
 import time
 import operator
@@ -19,7 +27,7 @@ atexit.register(gopigo.stop)  # Stop the motors when the program is over.
 def get_sensorval():
 	while True: 
 		val=line_sensor.read_sensor()
-		if val[0]<>-1:
+		if val[0]!=-1:
 			return val
 		else:
 			#Read once more to clear buffer and remove junk values
@@ -56,20 +64,20 @@ while True:
 	for i in range(5):
 		percent_black_line[i]=diff_val[i]*100/range_col[i]
 		curr_pos+=percent_black_line[i]*multp[i]
-	print curr_pos
+	print(curr_pos)
 	
 	if curr_pos <-2500:
-		print "r"
+		print("r")
 		if gpg_en:
 			gopigo.set_speed(85)
 			gopigo.right()
 	elif curr_pos >2500:
-		print "l"
+		print("l")
 		if gpg_en:
 			gopigo.set_speed(125)
 			gopigo.left()
 	else:
-		print "f"
+		print("f")
 		if gpg_en:
 			gopigo.set_speed(80)
 			gopigo.fwd()

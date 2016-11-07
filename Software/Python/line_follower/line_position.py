@@ -48,6 +48,6 @@ while True:
 			line_pos[i]=1
 		else:
 			line_pos[i]=0
-	print line_pos
+	print(line_pos)
 	
 
