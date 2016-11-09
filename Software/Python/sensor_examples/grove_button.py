@@ -41,7 +41,7 @@ import gopigo
 #   The button won't work on any other port
 
 # button_pin = gopigo.analogPort
-button_pin = gopigo.digitalPort
+button_pin = 11
 
 gopigo.pinMode(button_pin,"INPUT")
 
