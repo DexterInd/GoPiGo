@@ -479,7 +479,20 @@ while True:
 				s.sensorupdate({'temperature':dht_temp})
 				s.sensorupdate({'humidity':dht_humidity})
 
-				
+		elif (msg[:5].lower()=="SPEAK".lower()):
+			try:
+				if en_gpg:
+					from subprocess import call
+					cmd_beg = "espeak -ven+f1 "
+					in_text = msg[len("SPEAK"):]
+					cmd_end = " 2>/dev/null"
+
+					call([cmd_beg+"\""+in_text+"\""+cmd_end], shell=True)
+				if en_debug:
+					print(msg)
+			except:
+				print("Issue with espeak")
+								
 		else: 
 			if en_debug:
 				print "Ignoring Command: ", msg
