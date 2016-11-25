@@ -26,5 +26,5 @@ setuptools.setup(
 	author="Dexter Industries",
 	url="http://www.dexterindustries.com/GoPiGo/",
 	py_modules=['gopigo'],
-	#install_requires=open('requirements.txt').readlines(),
+	install_requires=open('requirements.txt').readlines(),
 )
