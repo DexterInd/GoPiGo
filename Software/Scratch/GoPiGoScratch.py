@@ -38,6 +38,13 @@ import re # regular expressions
 import os # to handle folder paths
 from gopigo import *
 
+try:
+	sys.path.insert(0, '/home/pi/Dexter/PivotPi/Software/Scratch/')
+	import PivotPiScratch
+	pivotpi_available=True
+except:
+	pivotpi_available=False
+
 defaultCameraFolder="/home/pi/Desktop/"
 cameraFolder = defaultCameraFolder
 
@@ -492,6 +499,13 @@ while True:
 					print(msg)
 			except:
 				print("Issue with espeak")
+
+		# PIVOTPI
+		elif pivotpi_available==True and PivotPiScratch.isPivotPiMsg(msg):
+			pivotsensors = PivotPiScratch.handlePivotPi(msg)
+			# print "Back from PivotPi",pivotsensors
+			s.sensorupdate(pivotsensors)
+
 								
 		else: 
 			if en_debug:
