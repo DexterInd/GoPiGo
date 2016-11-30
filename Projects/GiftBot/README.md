@@ -1,6 +1,10 @@
-# GoPiGo
+# GiftBot
 
-The GoPiGo is a delightful and complete robot for the Raspberry Pi that turns your Pi into a fully operating robot.  GoPiGo is a mobile robotic platform for the Raspberry Pi developed by [Dexter Industries.](http://www.dexterindustries.com/GoPiGo)  
+In this project, we'll show you GiftBot, the Raspberry Pi Robot that will deliver your Christmas Gifts and bring cheer to your holiday season.  We took the GoPiGo Raspberry Pi Robot, added some Jingle Bell Rock with the Raspberry Pi Speaker, and harnessed the power of three reindeer to deliver our gifts this year.  A elf will ride on the GoPiGo as it makes its rounds.
+
+No reindeer robot would be complete without a Red Nosed Rudolf: we added one with a Red Grove LED!  GoPiGo is a mobile robotic platform for the Raspberry Pi developed by [Dexter Industries.](http://www.dexterindustries.com/GoPiGo)  
+
+You can see [the full project for the GiftBot Raspberry Pi Robot here.](https://www.dexterindustries.com/projects/giftbot-raspberry-pi-robot-delivers-christmas-gifts/)
 
 ![ GoPiGo ](https://raw.githubusercontent.com/DexterInd/GoPiGo/master/GoPiGo_Chassis-300.jpg)
 
