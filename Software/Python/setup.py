@@ -25,6 +25,6 @@ setuptools.setup(
 	description="Drivers and examples for using the GoPiGo in Python",
 	author="Dexter Industries",
 	url="http://www.dexterindustries.com/GoPiGo/",
-	py_modules=['gopigo'],
+	py_modules=['gopigo','easygopigo'],
 	install_requires=open('requirements.txt').readlines(),
 )
