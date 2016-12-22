@@ -106,7 +106,7 @@ if [ $VERSION -eq '236' ]; then
 else
 	echo "Did NOT find WiringPi Version 2.32"
 	# Check if the Dexter directory exists.
-	DIRECTORY='/home/pi/Dexter'
+	DIRECTORY='/home/pi/DexterIndustries'
 	if [ -d "$DIRECTORY" ]; then
 		# Will enter here if $DIRECTORY exists, even if it contains spaces
 		echo "Dexter Directory Found!"
