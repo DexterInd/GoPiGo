@@ -102,9 +102,9 @@ rm tmpversion                           # Remove the temp file
 echo "VERSION is $VERSION"
 if [ $VERSION -eq '236' ]; then
 
-	echo "FOUND WiringPi Version 2.32 No installation needed."
+	echo "FOUND WiringPi Version 2.36 No installation needed."
 else
-	echo "Did NOT find WiringPi Version 2.32"
+	echo "Did NOT find WiringPi Version 2.36"
 	# Check if the Dexter directory exists.
 	DIRECTORY='/home/pi/Dexter'
 	if [ -d "$DIRECTORY" ]; then
