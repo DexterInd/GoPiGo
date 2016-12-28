@@ -11,7 +11,7 @@ fi
 # if we are NOT in quiet mode, then identify ourselves
 #######
 
-if [[ $quiet_mode -eq 0 ]]
+if [ $quiet_mode -eq 0 ]
 then
 	echo "  _____            _                                ";
 	echo " |  __ \          | |                               ";
@@ -66,7 +66,7 @@ echo "Files copied"
 #####
 # if we are not in quiet mode, then tell the user to restart
 
-if [[ $quiet_mode -eq 0 ]]
+if [ $quiet_mode -eq 0 ]
 then
 	echo " "
 	echo "Please restart the Raspberry Pi for the changes to take effect"
