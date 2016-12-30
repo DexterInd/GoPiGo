@@ -202,6 +202,9 @@ install_arduino() {
     sudo chmod 4755 /usr/bin/avrdude
 
     cd /tmp
+    if [ -f /tmp/setup.sh ]; then
+        rm /tmp/setup.sh
+    fi
     wget http://project-downloads.drogon.net/gertboard/setup.sh
     chmod +x setup.sh
     sudo ./setup.sh
