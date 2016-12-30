@@ -19,8 +19,8 @@ not_called_from_di_update() {
 }
 
 identify_cie() {
-if not_called_from_di_update
-then
+    if not_called_from_di_update
+    then
         echo "  _____            _                                ";
         echo " |  __ \          | |                               ";
         echo " | |  | | _____  _| |_ ___ _ __                     ";
@@ -157,7 +157,79 @@ install_spi_i2c() {
         sudo sed -i -e 's/blacklist spi-bcm2708/#blacklist spi-bcm2708/g' /etc/modprobe.d/raspi-blacklist.conf
         echo "SPI removed from blacklist"
     fi
+
+    #Adding in /etc/modules
     echo " "
+    echo "Adding I2C-dev and SPI-dev in /etc/modules . . ."
+    echo "================================================"
+    if grep -q "i2c-dev" /etc/modules; then
+        echo "I2C-dev already there"
+    else
+        echo i2c-dev >> /etc/modules
+        echo "I2C-dev added"
+    fi
+    if grep -q "i2c-bcm2708" /etc/modules; then
+        echo "i2c-bcm2708 already there"
+    else
+        echo i2c-bcm2708 >> /etc/modules
+        echo "i2c-bcm2708 added"
+    fi
+    if grep -q "spi-dev" /etc/modules; then
+        echo "spi-dev already there"
+    else
+        echo spi-dev >> /etc/modules
+        echo "spi-dev added"
+    fi
+    echo " "
+    echo "Making I2C changes in /boot/config.txt . . ."
+    echo "================================================"
+
+    echo dtparam=i2c1=on >> /boot/config.txt
+    echo dtparam=i2c_arm=on >> /boot/config.txt
+
+    sudo adduser pi i2c
+    echo " "
+}
+
+install_arduino() {
+    #Adding ARDUINO setup files
+    echo " "
+    echo "Making changes to Arduino . . ."
+    echo "==============================="
+    cd /tmp
+    wget http://project-downloads.drogon.net/gertboard/avrdude_5.10-4_armhf.deb
+    sudo dpkg -i avrdude_5.10-4_armhf.deb
+    sudo chmod 4755 /usr/bin/avrdude
+
+    cd /tmp
+    wget http://project-downloads.drogon.net/gertboard/setup.sh
+    chmod +x setup.sh
+    sudo ./setup.sh
+
+    #Enabling serial port in Arduino IDE
+    crontab -l > file; echo '@reboot ln -sf /dev/ttyAMA0 /dev/ttyS0' >> file; crontab file
+    rm file
+    cd $ROBOT_DIR
+    echo " "
+}
+
+call_for_reboot() {
+    if ! called_from_di_update
+    then
+        echo " "
+        echo "Please restart the Raspberry Pi for the changes to take effect"
+        echo " "
+        echo "Please restart to implement changes!"
+        echo "  _____  ______  _____ _______       _____ _______ "
+        echo " |  __ \|  ____|/ ____|__   __|/\   |  __ \__   __|"
+        echo " | |__) | |__  | (___    | |  /  \  | |__) | | |   "
+        echo " |  _  /|  __|  \___ \   | | / /\ \ |  _  /  | |   "
+        echo " | | \ \| |____ ____) |  | |/ ____ \| | \ \  | |   "
+        echo " |_|  \_\______|_____/   |_/_/    \_\_|  \_\ |_|   "
+        echo " "
+        echo "Please restart to implement changes!"
+        echo "To Restart type sudo reboot"
+    fi
 }
 
 ############################################################################
@@ -190,72 +262,10 @@ install_DHT
 install_wiringpi
 install_spi_i2c
 
-#Adding in /etc/modules
-echo " "
-echo "Adding I2C-dev and SPI-dev in /etc/modules . . ."
-echo "================================================"
-if grep -q "i2c-dev" /etc/modules; then
-    echo "I2C-dev already there"
-else
-    echo i2c-dev >> /etc/modules
-    echo "I2C-dev added"
-fi
-if grep -q "i2c-bcm2708" /etc/modules; then
-    echo "i2c-bcm2708 already there"
-else
-    echo i2c-bcm2708 >> /etc/modules
-    echo "i2c-bcm2708 added"
-fi
-if grep -q "spi-dev" /etc/modules; then
-    echo "spi-dev already there"
-else
-    echo spi-dev >> /etc/modules
-    echo "spi-dev added"
-fi
+install_arduino
 
-echo " "
-echo "Making I2C changes in /boot/config.txt . . ."
-echo "================================================"
+#sudo rm -r /tmp/di_update
 
-echo dtparam=i2c1=on >> /boot/config.txt
-echo dtparam=i2c_arm=on >> /boot/config.txt
+sudo chmod +x $ROBOT_DIR/Software/Scratch/GoPiGo_Scratch_Scripts/*.sh
 
-#Adding ARDUINO setup files
-echo " "
-echo "Making changes to Arduino . . ."
-echo "==============================="
-cd /tmp
-wget http://project-downloads.drogon.net/gertboard/avrdude_5.10-4_armhf.deb
-sudo dpkg -i avrdude_5.10-4_armhf.deb
-sudo chmod 4755 /usr/bin/avrdude
-
-cd /tmp
-wget http://project-downloads.drogon.net/gertboard/setup.sh
-chmod +x setup.sh
-sudo ./setup.sh
-
-#Enabling serial port in Arduino IDE
-crontab -l > file; echo '@reboot ln -sf /dev/ttyAMA0 /dev/ttyS0' >> file; crontab file
-rm file
-
-sudo rm -r /tmp/di_update
-
-sudo adduser pi i2c
-sudo chmod +x $SCRIPTDIR/../Software/Scratch/GoPiGo_Scratch_Scripts/*.sh
-
-if ! called_from_di_update
-then
-    echo " "
-    echo "Please restart the Raspberry Pi for the changes to take effect"
-    echo " "
-    echo "Please restart to implement changes!"
-    echo "  _____  ______  _____ _______       _____ _______ "
-    echo " |  __ \|  ____|/ ____|__   __|/\   |  __ \__   __|"
-    echo " | |__) | |__  | (___    | |  /  \  | |__) | | |   "
-    echo " |  _  /|  __|  \___ \   | | / /\ \ |  _  /  | |   "
-    echo " | | \ \| |____ ____) |  | |/ ____ \| | \ \  | |   "
-    echo " |_|  \_\______|_____/   |_/_/    \_\_|  \_\ |_|   "
-    echo " "
-    echo "Please restart to implement changes!"
-    echo "To Restart type sudo reboot"
-fi
+call_for_reboot
