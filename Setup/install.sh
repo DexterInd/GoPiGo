@@ -213,12 +213,11 @@ install_arduino() {
     crontab -l > file; echo '@reboot ln -sf /dev/ttyAMA0 /dev/ttyS0' >> file; crontab file
     rm file
     cd $ROBOT_DIR
-    echo " "
+    echo "done with Arduino "
 }
 
 call_for_reboot() {
-    if ! called_from_di_update
-    then
+    if not_called_from_di_update; then
         echo " "
         echo "Please restart the Raspberry Pi for the changes to take effect"
         echo " "
