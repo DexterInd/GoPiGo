@@ -18,6 +18,26 @@ not_called_from_di_update() {
     fi
 }
 
+identify_cie() {
+if not_called_from_di_update
+then
+        echo "  _____            _                                ";
+        echo " |  __ \          | |                               ";
+        echo " | |  | | _____  _| |_ ___ _ __                     ";
+        echo " | |  | |/ _ \ \/ / __/ _ \ '__|                    ";
+        echo " | |__| |  __/>  <| ||  __/ |                       ";
+        echo " |_____/ \___/_/\_\\\__\___|_|          _            ";
+        echo " |_   _|         | |         | |      (_)           ";
+        echo "   | |  _ __   __| |_   _ ___| |_ _ __ _  ___  ___  ";
+        echo "   | | | '_ \ / _\ | | | / __| __| '__| |/ _ \/ __| ";
+        echo "  _| |_| | | | (_| | |_| \__ \ |_| |  | |  __/\__ \ ";
+        echo " |_____|_| |_|\__,_|\__,_|___/\__|_|  |_|\___||___/ ";
+        echo "                                                    ";
+        echo "                                                    ";
+        echo " "
+    fi
+}
+
 identify_robot() {
 echo "  ______  _____   _____  _____  ______  _____ "
 echo " |  ____ |     | |_____]   |   |  ____ |     |"
@@ -49,25 +69,7 @@ check_internet() {
     fi
 }
 
-identify_cie() {
-if not_called_from_di_update
-then
-        echo "  _____            _                                ";
-        echo " |  __ \          | |                               ";
-        echo " | |  | | _____  _| |_ ___ _ __                     ";
-        echo " | |  | |/ _ \ \/ / __/ _ \ '__|                    ";
-        echo " | |__| |  __/>  <| ||  __/ |                       ";
-        echo " |_____/ \___/_/\_\\\__\___|_|          _            ";
-        echo " |_   _|         | |         | |      (_)           ";
-        echo "   | |  _ __   __| |_   _ ___| |_ _ __ _  ___  ___  ";
-        echo "   | | | '_ \ / _\ | | | / __| __| '__| |/ _ \/ __| ";
-        echo "  _| |_| | | | (_| | |_| \__ \ |_| |  | |  __/\__ \ ";
-        echo " |_____|_| |_|\__,_|\__,_|___/\__|_|  |_|\___||___/ ";
-        echo "                                                    ";
-        echo "                                                    ";
-        echo " "
-    fi
-}
+
 
 display_welcome_msg() {
     echo "Please ensure internet connectivity before running this script."
