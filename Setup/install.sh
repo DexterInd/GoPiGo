@@ -95,61 +95,32 @@ install_dependencies() {
     echo "Dependencies installed"
 }
 
-# Install the DHT library
-cd sensor_examples/dht/Adafruit_Python_DHT
-sudo python setup.py install
-sudo python3 setup.py install
-cd ../../../../../Setup/
-
-# Check if WiringPi Installed
-if [ -f update_wiringpi.sh ]
-then
-	sudo rm update_wiringpi.sh
-fi
-sudo wget https://raw.githubusercontent.com/CleoQc/Raspbian_For_Robots/update201612/upd_script/update_wiringpi.sh
-sudo bash update_wiringpi.sh
-sudo rm update_wiringpi.sh
-# done with WiringPi
-
-if [ -d wiringPi ]
-then
-	sudo rm -r wiringPi
-fi
-# End check if WiringPi installed
+install_DHT() {
+    # Install the DHT library
+    echo "Installing DHT library"
+    pushd $ROBOT_DIR/Software/Python/sensor_examples/dht/Adafruit_Python_DHT
+    sudo python setup.py install
+    sudo python3 setup.py install
+    popd $ROBOT_DIR/Setup/
+}
 
 install_wiringpi() {
     # Check if WiringPi Installed
     # Check if WiringPi Installed and has the latest version.  If it does, skip the step.
-    version=`gpio -v`       # Gets the version of wiringPi installed
-    set -- $version         # Parses the version to get the number
-    WIRINGVERSIONDEC=$3     # Gets the third word parsed out of the first line of gpio -v returned.
-                                            # Should be 2.36
-    echo $WIRINGVERSIONDEC >> tmpversion    # Store to temp file
-    VERSION=$(sed 's/\.//g' tmpversion)     # Remove decimals
-    rm tmpversion                           # Remove the temp file
+    if [ -f update_wiringpi.sh ]
+    then
+        sudo rm update_wiringpi.sh
+    fi
 
-    echo "VERSION is $VERSION"
-    if [ $VERSION -eq '236' ]; then
+    # this path needs updating
+    sudo curl https://raw.githubusercontent.com/CleoQc/Raspbian_For_Robots/update201612/upd_script/update_wiringpi.sh | bash
+    sudo rm update_wiringpi.sh
+    # done with WiringPi
 
-        echo "FOUND WiringPi Version 2.36 No installation needed."
-    else
-        echo "Did NOT find WiringPi Version 2.36"
-        # Check if the Dexter directory exists.
-        DEXTER_DIR='/home/pi/Dexter'
-        if [ -d "$DEXTER_DIR" ]; then
-            # Will enter here if $DIRECTORY exists, even if it contains spaces
-            echo "Dexter Directory Found!"
-        else
-            mkdir $DEXTER_DIR
-        fi
-        # Install wiringPi
-        pushd $DEXTER_DIR   # Change directories to Dexter
-        git clone https://github.com/DexterInd/wiringPi/  # Clone directories to Dexter.
-        cd wiringPi
-        sudo chmod +x ./build
-        sudo ./build
-        echo "wiringPi Installed"
-        popd
+    # remove wiringPi directory if present
+    if [ -d wiringPi ]
+    then
+        sudo rm -r wiringPi
     fi
     # End check if WiringPi installed
     echo " "
