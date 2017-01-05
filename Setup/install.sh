@@ -1,6 +1,10 @@
 #! /bin/bash
 
+
 called_from_di_update() {
+    # check to see if this runs as standalone or because it was 
+    # called by DI Software Update
+    # return 1 if it is called from DI UPdate
     if [[ -f /home/pi/quiet_mode ]]
     then
         quiet_mode=1
@@ -11,6 +15,9 @@ called_from_di_update() {
     fi
 }
 not_called_from_di_update() {
+    # check to see if this runs as standalone or because it was 
+    # called by DI Software Update
+    # returns 1 if it's standalone
     if called_from_di_update; then
         return 0
     else
@@ -68,8 +75,6 @@ check_internet() {
         fi
     fi
 }
-
-
 
 display_welcome_msg() {
     echo "Please ensure internet connectivity before running this script."
