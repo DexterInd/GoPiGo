@@ -96,7 +96,10 @@ install_wiringpi() {
     # Check if WiringPi Installed
 
     # using curl piped to bash does not leave a file behind. no need to remove it
-    sudo curl https://raw.githubusercontent.com/DexterInd/script_tools/master/update_wiringpi.sh | bash
+    # we can do either the curl - it works just fine 
+    # sudo curl https://raw.githubusercontent.com/DexterInd/script_tools/master/update_wiringpi.sh | bash
+    # or call the version that's already on the SD card
+    sudo bash $DEXTERSCRIPT/update_wiringpi.sh
     # done with WiringPi
 
     # remove wiringPi directory if present
