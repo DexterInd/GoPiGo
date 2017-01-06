@@ -1,32 +1,15 @@
 #! /bin/bash
+curl --silent https://raw.githubusercontent.com/DexterInd/script_tools/master/install_script_tools.sh | bash
 
+SCRIPT_DIR="$(readlink -f $(dirname $0))"
+ROBOT_DIR="${SCRIPT_DIR%/*}"
+PIHOME=/home/pi
+DEXTERSCRIPT=$PIHOME/Dexter/lib/Dexter/script_tools
 
-called_from_di_update() {
-    # check to see if this runs as standalone or because it was 
-    # called by DI Software Update
-    # return 1 if it is called from DI UPdate
-    if [[ -f /home/pi/quiet_mode ]]
-    then
-        quiet_mode=1
-        return 1
-    else
-        quiet_mode=0
-        return 0
-    fi
-}
-not_called_from_di_update() {
-    # check to see if this runs as standalone or because it was 
-    # called by DI Software Update
-    # returns 1 if it's standalone
-    if called_from_di_update; then
-        return 0
-    else
-        return 1
-    fi
-}
+source $DEXTERSCRIPT/functions_library.sh
 
 identify_cie() {
-    if not_called_from_di_update
+    if ! quiet_mode
     then
         echo "  _____            _                                ";
         echo " |  __ \          | |                               ";
@@ -50,22 +33,22 @@ echo "  ______  _____   _____  _____  ______  _____ "
 echo " |  ____ |     | |_____]   |   |  ____ |     |"
 echo " |_____| |_____| |       __|__ |_____| |_____|"
 echo " "
-echo "Welcome to GoPiGo Installer." 
+feedback "Welcome to GoPiGo Installer." 
 echo " "
 }
 
 check_root_user() {
     if [[ $EUID -ne 0 ]]; then
-        echo "FAIL!  This script must be run as such: sudo ./install.sh"
+        feedback "FAIL!  This script must be run as such: sudo ./install.sh"
         exit 1
     fi
     echo " "
 }
 
 check_internet() {
-    if not_called_from_di_update; then
-        echo "Check for internet connectivity..."
-        echo "=================================="
+    if ! quiet_mode ; then
+        feedback "Check for internet connectivity..."
+        feedback "=================================="
         wget -q --tries=2 --timeout=20 --output-document=/dev/null http://raspberrypi.org 
         if [ $? -eq 0 ];then
             echo "Connected to the Internet"
@@ -77,32 +60,32 @@ check_internet() {
 }
 
 display_welcome_msg() {
-    echo "Please ensure internet connectivity before running this script."
-    if not_called_from_di_update
+    feedback "Please ensure internet connectivity before running this script."
+    if ! quiet_mode
     then
-        echo "NOTE: Raspberry Pi will need to be rebooted after completion."
+        feedback "NOTE: Raspberry Pi will need to be rebooted after completion."
     fi
 
-    echo "Special thanks to Joe Sanford at Tufts University.  This script was derived from his work.  Thank you Joe!"
+    feedback "Special thanks to Joe Sanford at Tufts University.  This script was derived from his work.  Thank you Joe!"
     echo " "
 }
 
 install_dependencies() {
-    if not_called_from_di_update; then
+    if ! quiet_mode ; then
         sudo apt-get update
     fi
     echo " "
-    echo "Installing Dependencies"
-    echo "======================="
+    feedback "Installing Dependencies"
+    feedback "======================="
     sudo apt-get install python-pip git libi2c-dev python-serial python-rpi.gpio i2c-tools python-smbus arduino minicom libnss-mdns python-dev -y
     sudo pip install -U RPi.GPIO
 
-    echo "Dependencies installed"
+    feedback "Dependencies installed"
 }
 
 install_DHT() {
     # Install the DHT library
-    echo "Installing DHT library"
+    feedback "Installing DHT library"
     pushd $ROBOT_DIR/Software/Python/sensor_examples/dht/Adafruit_Python_DHT
     sudo python setup.py install
     sudo python3 setup.py install
@@ -111,15 +94,12 @@ install_DHT() {
 
 install_wiringpi() {
     # Check if WiringPi Installed
-    # Check if WiringPi Installed and has the latest version.  If it does, skip the step.
-    if [ -f update_wiringpi.sh ]
-    then
-        sudo rm update_wiringpi.sh
-    fi
 
-    # this path needs updating
-    sudo curl https://raw.githubusercontent.com/CleoQc/Raspbian_For_Robots/update201612/upd_script/update_wiringpi.sh | bash
-    sudo rm update_wiringpi.sh
+    # using curl piped to bash does not leave a file behind. no need to remove it
+    # we can do either the curl - it works just fine 
+    # sudo curl https://raw.githubusercontent.com/DexterInd/script_tools/master/update_wiringpi.sh | bash
+    # or call the version that's already on the SD card
+    sudo bash $DEXTERSCRIPT/update_wiringpi.sh
     # done with WiringPi
 
     # remove wiringPi directory if present
@@ -132,8 +112,8 @@ install_wiringpi() {
 }
 
 install_spi_i2c() {
-    echo "Removing blacklist from /etc/modprobe.d/raspi-blacklist.conf . . ."
-    echo "=================================================================="
+    feedback "Removing blacklist from /etc/modprobe.d/raspi-blacklist.conf . . ."
+    feedback "=================================================================="
     if grep -q "#blacklist i2c-bcm2708" /etc/modprobe.d/raspi-blacklist.conf; then
         echo "I2C already removed from blacklist"
     else
@@ -149,8 +129,8 @@ install_spi_i2c() {
 
     #Adding in /etc/modules
     echo " "
-    echo "Adding I2C-dev and SPI-dev in /etc/modules . . ."
-    echo "================================================"
+    feedback "Adding I2C-dev and SPI-dev in /etc/modules . . ."
+    feedback "================================================"
     if grep -q "i2c-dev" /etc/modules; then
         echo "I2C-dev already there"
     else
@@ -170,8 +150,8 @@ install_spi_i2c() {
         echo "spi-dev added"
     fi
     echo " "
-    echo "Making I2C changes in /boot/config.txt . . ."
-    echo "================================================"
+    feedback "Making I2C changes in /boot/config.txt . . ."
+    feedback "================================================"
 
     echo dtparam=i2c1=on >> /boot/config.txt
     echo dtparam=i2c_arm=on >> /boot/config.txt
@@ -183,8 +163,8 @@ install_spi_i2c() {
 install_arduino() {
     #Adding ARDUINO setup files
     echo " "
-    echo "Making changes to Arduino . . ."
-    echo "==============================="
+    feedback "Making changes to Arduino . . ."
+    feedback "==============================="
     cd /tmp
     wget http://project-downloads.drogon.net/gertboard/avrdude_5.10-4_armhf.deb
     sudo dpkg -i avrdude_5.10-4_armhf.deb
@@ -206,20 +186,20 @@ install_arduino() {
 }
 
 call_for_reboot() {
-    if not_called_from_di_update; then
-        echo " "
-        echo "Please restart the Raspberry Pi for the changes to take effect"
-        echo " "
-        echo "Please restart to implement changes!"
-        echo "  _____  ______  _____ _______       _____ _______ "
-        echo " |  __ \|  ____|/ ____|__   __|/\   |  __ \__   __|"
-        echo " | |__) | |__  | (___    | |  /  \  | |__) | | |   "
-        echo " |  _  /|  __|  \___ \   | | / /\ \ |  _  /  | |   "
-        echo " | | \ \| |____ ____) |  | |/ ____ \| | \ \  | |   "
-        echo " |_|  \_\______|_____/   |_/_/    \_\_|  \_\ |_|   "
-        echo " "
-        echo "Please restart to implement changes!"
-        echo "To Restart type sudo reboot"
+    if ! quiet_mode ; then
+        feedback " "
+        feedback "Please restart the Raspberry Pi for the changes to take effect"
+        feedback " "
+        feedback "Please restart to implement changes!"
+        feedback "  _____  ______  _____ _______       _____ _______ "
+        feedback " |  __ \|  ____|/ ____|__   __|/\   |  __ \__   __|"
+        feedback " | |__) | |__  | (___    | |  /  \  | |__) | | |   "
+        feedback " |  _  /|  __|  \___ \   | | / /\ \ |  _  /  | |   "
+        feedback " | | \ \| |____ ____) |  | |/ ____ \| | \ \  | |   "
+        feedback " |_|  \_\______|_____/   |_/_/    \_\_|  \_\ |_|   "
+        feedback " "
+        feedback "Please restart to implement changes!"
+        feedback "To Restart type sudo reboot"
     fi
 }
 
@@ -231,8 +211,6 @@ check_root_user
 display_welcome_msg
 check_internet
 
-SCRIPT_DIR="$(readlink -f $(dirname $0))"
-ROBOT_DIR="${SCRIPT_DIR%/*}"
 echo "Installing GoPiGo software in ${ROBOT_DIR}"
 echo " "
 
