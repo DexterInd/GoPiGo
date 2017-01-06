@@ -1,32 +1,15 @@
 #! /bin/bash
+curl --silent https://raw.githubusercontent.com/DexterInd/script_tools/master/install_script_tools.sh | bash
 
+SCRIPT_DIR="$(readlink -f $(dirname $0))"
+ROBOT_DIR="${SCRIPT_DIR%/*}"
+PIHOME=/home/pi
+DEXTERSCRIPT=$PIHOME/Dexter/lib/Dexter/script_tools
 
-called_from_di_update() {
-    # check to see if this runs as standalone or because it was 
-    # called by DI Software Update
-    # return 1 if it is called from DI UPdate
-    if [[ -f /home/pi/quiet_mode ]]
-    then
-        quiet_mode=1
-        return 1
-    else
-        quiet_mode=0
-        return 0
-    fi
-}
-not_called_from_di_update() {
-    # check to see if this runs as standalone or because it was 
-    # called by DI Software Update
-    # returns 1 if it's standalone
-    if called_from_di_update; then
-        return 0
-    else
-        return 1
-    fi
-}
+source $DEXTERSCRIPT/functions_library.sh
 
 identify_cie() {
-    if not_called_from_di_update
+    if ! quiet_mode
     then
         echo "  _____            _                                ";
         echo " |  __ \          | |                               ";
@@ -63,7 +46,7 @@ check_root_user() {
 }
 
 check_internet() {
-    if not_called_from_di_update; then
+    if ! quiet_mode ; then
         echo "Check for internet connectivity..."
         echo "=================================="
         wget -q --tries=2 --timeout=20 --output-document=/dev/null http://raspberrypi.org 
@@ -78,7 +61,7 @@ check_internet() {
 
 display_welcome_msg() {
     echo "Please ensure internet connectivity before running this script."
-    if not_called_from_di_update
+    if ! quiet_mode
     then
         echo "NOTE: Raspberry Pi will need to be rebooted after completion."
     fi
@@ -88,7 +71,7 @@ display_welcome_msg() {
 }
 
 install_dependencies() {
-    if not_called_from_di_update; then
+    if ! quiet_mode ; then
         sudo apt-get update
     fi
     echo " "
@@ -111,15 +94,9 @@ install_DHT() {
 
 install_wiringpi() {
     # Check if WiringPi Installed
-    # Check if WiringPi Installed and has the latest version.  If it does, skip the step.
-    if [ -f update_wiringpi.sh ]
-    then
-        sudo rm update_wiringpi.sh
-    fi
 
-    # this path needs updating
-    sudo curl https://raw.githubusercontent.com/CleoQc/Raspbian_For_Robots/update201612/upd_script/update_wiringpi.sh | bash
-    sudo rm update_wiringpi.sh
+    # using curl piped to bash does not leave a file behind. no need to remove it
+    sudo curl https://raw.githubusercontent.com/DexterInd/script_tools/master/update_wiringpi.sh | bash
     # done with WiringPi
 
     # remove wiringPi directory if present
@@ -206,7 +183,7 @@ install_arduino() {
 }
 
 call_for_reboot() {
-    if not_called_from_di_update; then
+    if ! quiet_mode ; then
         echo " "
         echo "Please restart the Raspberry Pi for the changes to take effect"
         echo " "
@@ -231,8 +208,6 @@ check_root_user
 display_welcome_msg
 check_internet
 
-SCRIPT_DIR="$(readlink -f $(dirname $0))"
-ROBOT_DIR="${SCRIPT_DIR%/*}"
 echo "Installing GoPiGo software in ${ROBOT_DIR}"
 echo " "
 
