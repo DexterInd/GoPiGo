@@ -33,13 +33,13 @@ echo "  ______  _____   _____  _____  ______  _____ "
 echo " |  ____ |     | |_____]   |   |  ____ |     |"
 echo " |_____| |_____| |       __|__ |_____| |_____|"
 echo " "
-echo "Welcome to GoPiGo Installer." 
+feedback "Welcome to GoPiGo Installer." 
 echo " "
 }
 
 check_root_user() {
     if [[ $EUID -ne 0 ]]; then
-        echo "FAIL!  This script must be run as such: sudo ./install.sh"
+        feedback "FAIL!  This script must be run as such: sudo ./install.sh"
         exit 1
     fi
     echo " "
@@ -47,8 +47,8 @@ check_root_user() {
 
 check_internet() {
     if ! quiet_mode ; then
-        echo "Check for internet connectivity..."
-        echo "=================================="
+        feedback "Check for internet connectivity..."
+        feedback "=================================="
         wget -q --tries=2 --timeout=20 --output-document=/dev/null http://raspberrypi.org 
         if [ $? -eq 0 ];then
             echo "Connected to the Internet"
@@ -60,13 +60,13 @@ check_internet() {
 }
 
 display_welcome_msg() {
-    echo "Please ensure internet connectivity before running this script."
+    feedback "Please ensure internet connectivity before running this script."
     if ! quiet_mode
     then
-        echo "NOTE: Raspberry Pi will need to be rebooted after completion."
+        feedback "NOTE: Raspberry Pi will need to be rebooted after completion."
     fi
 
-    echo "Special thanks to Joe Sanford at Tufts University.  This script was derived from his work.  Thank you Joe!"
+    feedback "Special thanks to Joe Sanford at Tufts University.  This script was derived from his work.  Thank you Joe!"
     echo " "
 }
 
@@ -75,17 +75,17 @@ install_dependencies() {
         sudo apt-get update
     fi
     echo " "
-    echo "Installing Dependencies"
-    echo "======================="
+    feedback "Installing Dependencies"
+    feedback "======================="
     sudo apt-get install python-pip git libi2c-dev python-serial python-rpi.gpio i2c-tools python-smbus arduino minicom libnss-mdns python-dev -y
     sudo pip install -U RPi.GPIO
 
-    echo "Dependencies installed"
+    feedback "Dependencies installed"
 }
 
 install_DHT() {
     # Install the DHT library
-    echo "Installing DHT library"
+    feedback "Installing DHT library"
     pushd $ROBOT_DIR/Software/Python/sensor_examples/dht/Adafruit_Python_DHT
     sudo python setup.py install
     sudo python3 setup.py install
@@ -109,8 +109,8 @@ install_wiringpi() {
 }
 
 install_spi_i2c() {
-    echo "Removing blacklist from /etc/modprobe.d/raspi-blacklist.conf . . ."
-    echo "=================================================================="
+    feedback "Removing blacklist from /etc/modprobe.d/raspi-blacklist.conf . . ."
+    feedback "=================================================================="
     if grep -q "#blacklist i2c-bcm2708" /etc/modprobe.d/raspi-blacklist.conf; then
         echo "I2C already removed from blacklist"
     else
@@ -126,8 +126,8 @@ install_spi_i2c() {
 
     #Adding in /etc/modules
     echo " "
-    echo "Adding I2C-dev and SPI-dev in /etc/modules . . ."
-    echo "================================================"
+    feedback "Adding I2C-dev and SPI-dev in /etc/modules . . ."
+    feedback "================================================"
     if grep -q "i2c-dev" /etc/modules; then
         echo "I2C-dev already there"
     else
@@ -147,8 +147,8 @@ install_spi_i2c() {
         echo "spi-dev added"
     fi
     echo " "
-    echo "Making I2C changes in /boot/config.txt . . ."
-    echo "================================================"
+    feedback "Making I2C changes in /boot/config.txt . . ."
+    feedback "================================================"
 
     echo dtparam=i2c1=on >> /boot/config.txt
     echo dtparam=i2c_arm=on >> /boot/config.txt
@@ -160,8 +160,8 @@ install_spi_i2c() {
 install_arduino() {
     #Adding ARDUINO setup files
     echo " "
-    echo "Making changes to Arduino . . ."
-    echo "==============================="
+    feedback "Making changes to Arduino . . ."
+    feedback "==============================="
     cd /tmp
     wget http://project-downloads.drogon.net/gertboard/avrdude_5.10-4_armhf.deb
     sudo dpkg -i avrdude_5.10-4_armhf.deb
@@ -184,19 +184,19 @@ install_arduino() {
 
 call_for_reboot() {
     if ! quiet_mode ; then
-        echo " "
-        echo "Please restart the Raspberry Pi for the changes to take effect"
-        echo " "
-        echo "Please restart to implement changes!"
-        echo "  _____  ______  _____ _______       _____ _______ "
-        echo " |  __ \|  ____|/ ____|__   __|/\   |  __ \__   __|"
-        echo " | |__) | |__  | (___    | |  /  \  | |__) | | |   "
-        echo " |  _  /|  __|  \___ \   | | / /\ \ |  _  /  | |   "
-        echo " | | \ \| |____ ____) |  | |/ ____ \| | \ \  | |   "
-        echo " |_|  \_\______|_____/   |_/_/    \_\_|  \_\ |_|   "
-        echo " "
-        echo "Please restart to implement changes!"
-        echo "To Restart type sudo reboot"
+        feedback " "
+        feedback "Please restart the Raspberry Pi for the changes to take effect"
+        feedback " "
+        feedback "Please restart to implement changes!"
+        feedback "  _____  ______  _____ _______       _____ _______ "
+        feedback " |  __ \|  ____|/ ____|__   __|/\   |  __ \__   __|"
+        feedback " | |__) | |__  | (___    | |  /  \  | |__) | | |   "
+        feedback " |  _  /|  __|  \___ \   | | / /\ \ |  _  /  | |   "
+        feedback " | | \ \| |____ ____) |  | |/ ____ \| | \ \  | |   "
+        feedback " |_|  \_\______|_____/   |_/_/    \_\_|  \_\ |_|   "
+        feedback " "
+        feedback "Please restart to implement changes!"
+        feedback "To Restart type sudo reboot"
     fi
 }
 
