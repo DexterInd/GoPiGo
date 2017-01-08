@@ -185,6 +185,20 @@ install_arduino() {
     echo "done with Arduino "
 }
 
+install_line_follower(){
+    feedback "--> Installing Line Follower Calibration"
+    # Install GoPiGo Line Follower Calibration
+    delete_file /home/pi/Desktop/line_follow.desktop
+    sudo cp /home/pi/Dexter/GoPiGo/Software/Python/line_follower/line_follow.desktop /home/pi/Desktop/
+    sudo chmod +x /home/pi/Desktop/line_follow.desktop
+    sudo chmod +x /home/pi/Dexter/GoPiGo/Software/Python/line_follower/line_sensor_gui.py
+    sudo touch $PIHOME/Dexter/black_line.txt
+    sudo touch $PIHOME/Dexter/white_line.txt
+    sudo touch $PIHOME/Dexter/range_line.txt
+    sudo chmod 666 $PIHOME/Dexter/*line.txt
+
+}
+
 call_for_reboot() {
     if ! quiet_mode ; then
         feedback " "
@@ -230,8 +244,8 @@ python3 setup.py install
 install_DHT
 install_wiringpi
 install_spi_i2c
-
 install_arduino
+install_line_follower
 
 #sudo rm -r /tmp/di_update
 
