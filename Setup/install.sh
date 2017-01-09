@@ -220,6 +220,10 @@ install_line_follower(){
 
 }
 
+install_control_panel(){
+    sudo cp "$ROBOT_DIR/Software/Python/control_panel/gopigo_control_panel.desktop" $PIHOME/Desktop
+}
+
 call_for_reboot() {
     if ! quiet_mode ; then
         feedback " "
@@ -267,6 +271,7 @@ install_wiringpi
 install_spi_i2c
 install_arduino
 install_line_follower
+install_control_panel
 
 #sudo rm -r /tmp/di_update
 
