@@ -192,9 +192,30 @@ install_line_follower(){
     sudo cp /home/pi/Dexter/GoPiGo/Software/Python/line_follower/line_follow.desktop /home/pi/Desktop/
     sudo chmod +x /home/pi/Desktop/line_follow.desktop
     sudo chmod +x /home/pi/Dexter/GoPiGo/Software/Python/line_follower/line_sensor_gui.py
-    sudo touch $PIHOME/Dexter/black_line.txt
-    sudo touch $PIHOME/Dexter/white_line.txt
-    sudo touch $PIHOME/Dexter/range_line.txt
+    
+    # if the configuration files exist in the home directory
+    # then move them to their new place
+    # otherwise create new ones
+    if file_exists_in_folder "$PIHOME/black_line.txt" $PIHOME
+    then
+        sudo mv $PIHOME/black_line.txt $PIHOME/Dexter/black_line.txt
+    else
+        sudo touch $PIHOME/Dexter/black_line.txt
+    fi
+
+    if file_exists_in_folder "$PIHOME/white_line.txt" $PIHOME
+    then
+        sudo mv $PIHOME/black_line.txt $PIHOME/Dexter/white_line.txt
+    else
+        sudo touch $PIHOME/Dexter/white_line.txt
+    fi    
+    if file_exists_in_folder "$PIHOME/range_line.txt" $PIHOME
+    then
+        sudo mv $PIHOME/black_line.txt $PIHOME/Dexter/range_line.txt
+    else
+        sudo touch $PIHOME/Dexter/range_line.txt
+    fi      
+
     sudo chmod 666 $PIHOME/Dexter/*line.txt
 
 }
