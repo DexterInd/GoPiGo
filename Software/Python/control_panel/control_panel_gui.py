@@ -1,5 +1,12 @@
 #!/usr/bin/python
 
+# try to import the auto_detection library
+try:
+    import auto_detect_robot
+    no_auto_detect = False
+except:
+    no_auto_detect = True
+
 import gopigo
 try:
     import wx
@@ -50,12 +57,23 @@ class gopigo_control_app(wx.Frame):
 
     def initialize(self):
         sizer = wx.GridBagSizer()
-        
-        # Motion buttons
+
         x=75
         y=175 
         dist=60
-       
+
+        # if we can auto-detect, then give feedback to the user
+        if no_auto_detect == False:
+            detected_robot = auto_detect_robot.autodetect()
+            if detected_robot != "GoPiGo":
+                detected_robot_str = wx.StaticText(self,-1,
+                    label="Warning: Could not find a GoPiGo",pos=(x-30+dist*2,4))
+                detected_robot_str.SetForegroundColour('red')
+            sizer.AddStretchSpacer((1,1))
+            sizer.Add(detected_robot_str,(0,1))
+            sizer.AddStretchSpacer((1,1))
+
+        # Motion buttons
         left_button = wx.Button(self,-1,label="Left", pos=(x,y))
         sizer.Add(left_button, (0,1))
         self.Bind(wx.EVT_BUTTON, self.left_button_OnButtonClick, left_button)
