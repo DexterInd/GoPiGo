@@ -160,29 +160,34 @@ install_spi_i2c() {
     echo " "
 }
 
-install_arduino() {
-    #Adding ARDUINO setup files
+install_avr() {
+    #Adding ARDUINO setup files 
     echo " "
-    feedback "Making changes to Arduino . . ."
-    feedback "==============================="
-    cd /tmp
-    wget http://project-downloads.drogon.net/gertboard/avrdude_5.10-4_armhf.deb
-    sudo dpkg -i avrdude_5.10-4_armhf.deb
-    sudo chmod 4755 /usr/bin/avrdude
-
-    cd /tmp
-    if [ -f /tmp/setup.sh ]; then
-        rm /tmp/setup.sh
-    fi
-    wget http://project-downloads.drogon.net/gertboard/setup.sh
-    chmod +x setup.sh
-    sudo ./setup.sh
-
-    #Enabling serial port in Arduino IDE
-    crontab -l > file; echo '@reboot ln -sf /dev/ttyAMA0 /dev/ttyS0' >> file; crontab file
-    rm file
+	######################################################################
+	# Remove after the image is created for BrickPi3
+	######################################################################
+    # feedback "Making changes to Arduino . . ."
+    # feedback "==============================="
+    # cd /tmp
+    # wget http://project-downloads.drogon.net/gertboard/avrdude_5.10-4_armhf.deb
+    # sudo dpkg -i avrdude_5.10-4_armhf.deb
+    # sudo chmod 4755 /usr/bin/avrdude
+    # cd /tmp
+    # if [ -f /tmp/setup.sh ]; then
+        # rm /tmp/setup.sh
+    # fi
+    # wget http://project-downloads.drogon.net/gertboard/setup.sh
+    # chmod +x setup.sh
+    # sudo ./setup.sh
+    # #Enabling serial port in Arduino IDE
+    # crontab -l > file; echo '@reboot ln -sf /dev/ttyAMA0 /dev/ttyS0' >> file; crontab file
+    # rm file
+	######################################################################
+	source /home/pi/Dexter/lib/Dexter/script_tools/install_avrdude.sh
+	create_avrdude_folder
+    install_avrdude
     cd $ROBOT_DIR
-    echo "done with Arduino "
+    echo "done with AVRDUDE "
 }
 
 install_line_follower(){
@@ -269,7 +274,7 @@ python3 setup.py install
 install_DHT
 install_wiringpi
 install_spi_i2c
-install_arduino
+install_avr
 install_line_follower
 install_control_panel
 
