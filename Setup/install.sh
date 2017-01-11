@@ -86,10 +86,10 @@ install_dependencies() {
 install_DHT() {
     # Install the DHT library
     feedback "Installing DHT library"
-    pushd $ROBOT_DIR/Software/Python/sensor_examples/dht/Adafruit_Python_DHT
+    pushd $ROBOT_DIR/Software/Python/sensor_examples/dht/Adafruit_Python_DHT > /dev/null
     sudo python setup.py install
     sudo python3 setup.py install
-    popd $ROBOT_DIR/Setup/
+    popd > /dev/null
 }
 
 install_wiringpi() {
@@ -201,22 +201,22 @@ install_line_follower(){
     # if the configuration files exist in the home directory
     # then move them to their new place
     # otherwise create new ones
-    if file_exists_in_folder "$PIHOME/black_line.txt" $PIHOME
+    if file_exists "$PIHOME/black_line.txt" 
     then
         sudo mv $PIHOME/black_line.txt $PIHOME/Dexter/black_line.txt
     else
         sudo touch $PIHOME/Dexter/black_line.txt
     fi
 
-    if file_exists_in_folder "$PIHOME/white_line.txt" $PIHOME
+    if file_exists "$PIHOME/white_line.txt"
     then
-        sudo mv $PIHOME/black_line.txt $PIHOME/Dexter/white_line.txt
+        sudo mv $PIHOME/white_line.txt $PIHOME/Dexter/white_line.txt
     else
         sudo touch $PIHOME/Dexter/white_line.txt
     fi    
-    if file_exists_in_folder "$PIHOME/range_line.txt" $PIHOME
+    if file_exists "$PIHOME/range_line.txt"
     then
-        sudo mv $PIHOME/black_line.txt $PIHOME/Dexter/range_line.txt
+        sudo mv $PIHOME/range_line.txt $PIHOME/Dexter/range_line.txt
     else
         sudo touch $PIHOME/Dexter/range_line.txt
     fi      
