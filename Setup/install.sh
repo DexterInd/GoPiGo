@@ -86,10 +86,10 @@ install_dependencies() {
 install_DHT() {
     # Install the DHT library
     feedback "Installing DHT library"
-    pushd $ROBOT_DIR/Software/Python/sensor_examples/dht/Adafruit_Python_DHT
+    pushd $ROBOT_DIR/Software/Python/sensor_examples/dht/Adafruit_Python_DHT > /dev/null
     sudo python setup.py install
     sudo python3 setup.py install
-    popd $ROBOT_DIR/Setup/
+    popd > /dev/null
 }
 
 install_wiringpi() {
