@@ -1,5 +1,5 @@
-#! /bin/bash
-
+#!/usr/bin/env bash
+ 
 if [ "$(whoami)" != 'root' ]; then
         echo "You have no permission to run $0 as non-root user."
         echo "Run using sudo and try again."
@@ -15,19 +15,16 @@ read motors
 y='y'
 
 if [ $motors = $y ]; then
-   echo "Updating the GoPiGo firmware"
-   echo "============================="
+	echo "Updating the GoPiGo firmware"
+	echo "============================="
 
-   data='date'
-   now=$($data)
-   echo "$now"
+	data='date'
+	now=$($data)
+	echo "$now"
 
-   var='avrdude -c gpio -p m328p -U lfuse:w:0x7F:m'
-   output=$($var)
-   echo "$output"
-
-   avrdude -c gpio -p m328p -U flash:w:fw_ver_16.cpp.hex
-   echo "=============================" 
+	source /home/pi/Desktop/GoPiGo/Firmware/gopigo_firmware_update.sh
+	update_gopigo_firmware
+	echo "=============================" 
 else
   echo "Disconect your motors and retry!"
 fi
