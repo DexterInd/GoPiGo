@@ -75,7 +75,7 @@ black_line=[0]*5
 # range_col=list(map(operator.sub, black, white))
 range_col=[0]*5
 
-dir_path="/home/pi/"
+dir_path="/home/pi/Dexter"
 file_b=dir_path+'black_line.txt'
 file_w=dir_path+'white_line.txt'
 file_r=dir_path+'range_line.txt'

@@ -7,13 +7,13 @@ except ImportError:
 
 try:  #first look for libraries in the same folder
 	import sys
-	#sys.path.insert(0, '/home/pi/Desktop/GoPiGo/Software/Python/line_follower')
+	#sys.path.insert(0, '/home/pi/Dexter/GoPiGo/Software/Python/line_follower')
 
 	import line_sensor
 	import scratch_line
 except ImportError:
 	try:  # look in the standard Raspbian for Robots folder. 
-		sys.path.insert(0, '/home/pi/Desktop/GoPiGo/Software/Python/line_follower')
+		sys.path.insert(0, '/home/pi/Dexter/GoPiGo/Software/Python/line_follower')
 
 		import line_sensor
 		import scratch_line
