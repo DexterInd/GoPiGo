@@ -237,11 +237,30 @@ def turn_right(degrees):
 	enc_tgt(1,0,pulse)
 	right()
 
+def turn_right_wait_for_completion(degrees):
+	'''
+	Same as turn_right() but blocking
+	'''
+	turn_right(degrees)
+	pulse = int(degrees//DPR)
+	while enc_read(0) < pulse:
+		pass
+
+
 # turn x degrees to the left
 def turn_left(degrees):
 	pulse = int(degrees//DPR)
 	enc_tgt(0,1,pulse)
 	left()
+
+def turn_left_wait_for_completion(degrees):
+	'''
+	same as turn_left() but blocking.
+	'''
+	turn_left(degrees)
+	pulse = int(degrees//DPR)
+	while enc_read(1) < pulse:
+		pass
 
 
 #Stop the GoPiGo
