@@ -69,9 +69,9 @@ class gopigo_control_app(wx.Frame):
                 detected_robot_str = wx.StaticText(self,-1,
                     label="Warning: Could not find a GoPiGo",pos=(x-30+dist*2,4))
                 detected_robot_str.SetForegroundColour('red')
-            sizer.AddStretchSpacer((1,1))
-            sizer.Add(detected_robot_str,(0,1))
-            sizer.AddStretchSpacer((1,1))
+                sizer.AddStretchSpacer((1,1))
+                sizer.Add(detected_robot_str,(0,1))
+                sizer.AddStretchSpacer((1,1))
 
         # Motion buttons
         left_button = wx.Button(self,-1,label="Left", pos=(x,y))
