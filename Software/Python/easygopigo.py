@@ -8,9 +8,17 @@ import tty
 import select
 import gopigo
 
-sys.path.insert(0, '/home/pi/Desktop/GoPiGo/Software/Python/line_follower')
-import line_sensor
-import scratch_line
+try:
+    sys.path.insert(0, '/home/pi/Dexter/GoPiGo/Software/Python/line_follower')
+    import line_sensor
+    import scratch_line
+except:
+    try:
+        sys.path.insert(0, '/home/pi/GoPiGo/Software/Python/line_follower')
+        import line_sensor
+        import scratch_line
+    except:
+        pass
 
 old_settings = ''
 fd = ''
@@ -323,12 +331,12 @@ class Remote(Sensor):
 
 class LineFollower(Sensor):
     '''
-    The line follower detects the presence of a black line or its 
+    The line follower detects the presence of a black line or its
       absence.
     You can use this in one of three ways.
     1. You can use read_position() to get a simple position status:
-        center, left or right. 
-        these indicate the position of the black line. 
+        center, left or right.
+        these indicate the position of the black line.
         So if it says left, the GoPiGo has to turn right
     2. You can use read() to get a list of the five sensors.
         each position in the list will either be a 0 or a 1
@@ -356,7 +364,7 @@ class LineFollower(Sensor):
     def read(self):
         '''
         Returns a list of 5 values between 0 and 1
-        Depends on the line sensor being calibrated first 
+        Depends on the line sensor being calibrated first
             through the Line Sensor Calibration tool
         May return all -1 on a read error
         '''
@@ -365,7 +373,7 @@ class LineFollower(Sensor):
 
     def read_position(self):
         '''
-        Returns a string telling where the black line is, compared to 
+        Returns a string telling where the black line is, compared to
             the GoPiGo
         Returns: "Left", "Right", "Center", "Black", "White"
         May return "Unknown"
