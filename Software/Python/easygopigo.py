@@ -12,26 +12,25 @@ try:
     sys.path.insert(0, '/home/pi/Dexter/GoPiGo/Software/Python/line_follower')
     import line_sensor
     import scratch_line
+    is_line_follower_accessible = True
 except:
     try:
         sys.path.insert(0, '/home/pi/GoPiGo/Software/Python/line_follower')
         import line_sensor
         import scratch_line
+        is_line_follower_accessible = True
     except:
-        pass
+        is_line_follower_accessible = False
 
 old_settings = ''
 fd = ''
-gpg_debug = False
-
 ##########################
 
 
 def debug(in_str):
-    '''
-    '''
-    if gpg_debug:
+    if False:
         print(in_str)
+
 
 #############################################################
 # the following is in a try/except structure because it depends
@@ -209,7 +208,33 @@ class UltraSonicSensor(AnalogSensor):
         return self.safe_distance
 
     def read(self):
-        return gopigo.us_dist(PORTS[self.port])
+        '''
+        Limit the ultrasonic sensor to a distance of 5m.
+        Take 3 readings, discard any that's higher than 5m
+        If we discard 5 times, then assume there's nothing in front
+            and return 501
+        '''
+        return_reading = 0
+        readings =[]
+        skip = 0
+        while len(readings) < 3:
+            value = gopigo.us_dist(PORTS[self.port])
+            if value < 501 and value > 0:
+                readings.append(value)
+            else:
+                skip +=1
+                if skip > 5:
+                    break
+
+        if skip > 5:
+            return(501)
+
+        for reading in readings:
+            return_reading += reading
+
+        return_reading = int(return_reading // len(readings))
+
+        return (return_reading)
 ##########################
 
 
@@ -345,9 +370,12 @@ class LineFollower(Sensor):
         You will have to handle the calibration yourself
     '''
 
-    def __init__(self, port):
-        Sensor.__init__(self, port, "I2C")
-        self.set_descriptor("Line Follower")
+    def __init__(self, port="I2C"):
+        try:
+            Sensor.__init__(self, port, "INPUT")
+            self.set_descriptor("Line Follower")
+        except:
+            raise ValueError("Line Follower Library not found")
 
     def read_raw_sensors(self):
         '''
@@ -401,6 +429,7 @@ class LineFollower(Sensor):
            five_vals == [0, 1, 1, 1, 1]:
             return "Right"
         return "Unknown"
+
 
 if __name__ == '__main__':
     import time
