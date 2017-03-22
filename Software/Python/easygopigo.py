@@ -251,6 +251,7 @@ class Buzzer(AnalogSensor):
     def __init__(self, port="D11"):
         AnalogSensor.__init__(self, port, "OUTPUT")
         self.set_descriptor("Buzzer")
+        self.power = 254
 
     def sound(self, power):
         '''
@@ -262,19 +263,24 @@ class Buzzer(AnalogSensor):
             power = int(power)
         except:
             power = 0
-        debug(type(power))
+
+        if power < 0:
+            power = 0
+        self.power = power
         AnalogSensor.write(self, power)
 
     def sound_off(self):
         '''
         Makes buzzer silent
         '''
+        self.power = 0
         AnalogSensor.write(self, 0)
 
     def sound_on(self):
         '''
         Maximum buzzer sound
         '''
+        self.power = 254
         AnalogSensor.write(self, 254)
 ##########################
 
