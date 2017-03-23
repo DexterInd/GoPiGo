@@ -218,7 +218,7 @@ class UltraSonicSensor(AnalogSensor):
         readings =[]
         skip = 0
         while len(readings) < 3:
-            value = gopigo.us_dist(PORTS[self.port])
+            value = gopigo.corrected_us_dist(PORTS[self.port])
             if value < 501 and value > 0:
                 readings.append(value)
             else:
