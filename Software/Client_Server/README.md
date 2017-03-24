@@ -20,7 +20,7 @@ The server is just a very basic instance right now and we plan to expand it in t
 
 ## License
 GoPiGo for the Raspberry Pi: an open source robotics platform for the Raspberry Pi.
-Copyright (C) 2015  Dexter Industries
+Copyright (C) 2017  Dexter Industries
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
