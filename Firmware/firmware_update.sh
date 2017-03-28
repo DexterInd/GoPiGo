@@ -1,4 +1,6 @@
 #!/usr/bin/env bash
+
+REPO_PATH=$(readlink -f $(dirname $0) | grep -E -o "^(.*?\\GoPiGo)")
  
 if [ "$(whoami)" != 'root' ]; then
         echo "You have no permission to run $0 as non-root user."
@@ -22,7 +24,7 @@ if [ $motors = $y ]; then
 	now=$($data)
 	echo "$now"
 
-	source /home/pi/Desktop/GoPiGo/Firmware/gopigo_firmware_update.sh
+	source $REPO_PATH/Firmware/gopigo_firmware_update.sh
 	update_gopigo_firmware
 	echo "=============================" 
 else
