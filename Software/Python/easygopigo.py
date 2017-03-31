@@ -26,11 +26,36 @@ old_settings = ''
 fd = ''
 ##########################
 
+read_is_open = True
 
 def debug(in_str):
     if False:
         print(in_str)
 
+def _wait_for_read():
+    while read_is_open is False:
+        time.sleep(0.01)
+
+def _is_read_open():
+    return read_is_open
+
+def _grab_read():
+    global read_is_open
+    print("grab")
+    read_is_open = False
+
+def _release_read():
+    global read_is_open
+    print("release")
+    read_is_open = True
+
+
+def volt():
+    _wait_for_read()
+    _grab_read()
+    voltage = gopigo.volt()
+    _release_read()
+    return voltage
 
 #############################################################
 # the following is in a try/except structure because it depends
@@ -125,16 +150,22 @@ class DigitalSensor(Sensor):
         '''
         okay = False
         error_count = 0
-        while not okay and error_count < 10:
-            try:
-                rtn = int(gopigo.digitalRead(self.getPortID()))
-                okay = True
-            except:
-                error_count += 1
-        if error_count > 10:
-            return -1
-        else:
-            return rtn
+
+        _wait_for_read()
+
+        if _is_read_open():
+            _grab_read()
+            while not okay and error_count < 10:
+                try:
+                    rtn = int(gopigo.digitalRead(self.getPortID()))
+                    okay = True
+                except:
+                    error_count += 1
+            _release_read()
+            if error_count > 10:
+                return -1
+            else:
+                return rtn
 
     def write(self, power):
         self.value = power
@@ -153,7 +184,12 @@ class AnalogSensor(Sensor):
         Sensor.__init__(self, port, pinmode)
 
     def read(self):
-        self.value = gopigo.analogRead(self.getPortID())
+        _wait_for_read()
+
+        if _is_read_open():
+            _grab_read()
+            self.value = gopigo.analogRead(self.getPortID())
+        _release_read()
         return self.value
 
     def write(self, power):
@@ -197,8 +233,14 @@ class UltraSonicSensor(AnalogSensor):
         self.set_descriptor("Ultrasonic sensor")
 
     def is_too_close(self):
-        if gopigo.us_dist(PORTS[self.port]) < self.get_safe_distance():
-            return True
+        _wait_for_read()
+
+        if _is_read_open():
+            _grab_read()
+            if gopigo.us_dist(PORTS[self.port]) < self.get_safe_distance():
+                _release_read()
+                return True
+        _release_read()
         return False
 
     def set_safe_distance(self, dist):
@@ -218,7 +260,11 @@ class UltraSonicSensor(AnalogSensor):
         readings =[]
         skip = 0
         while len(readings) < 3:
+            _wait_for_read()
+
+            _grab_read()
             value = gopigo.corrected_us_dist(PORTS[self.port])
+            _release_read()
             if value < 501 and value > 0:
                 readings.append(value)
             else:
@@ -389,7 +435,12 @@ class LineFollower(Sensor):
         From 0 to 1023
         May return a list of -1 when there's a read error
         '''
+        _wait_for_read()
+
+        _grab_read()
         five_vals = line_sensor.read_sensor()
+        _release_read()
+
         if five_vals != -1:
             return five_vals
         else:
@@ -402,7 +453,13 @@ class LineFollower(Sensor):
             through the Line Sensor Calibration tool
         May return all -1 on a read error
         '''
-        five_vals = scratch_line.absolute_line_pos()
+        _wait_for_read()
+
+        if _is_read_open():
+            _grab_read()
+            five_vals = scratch_line.absolute_line_pos()
+            _release_read()
+
         return five_vals
 
     def read_position(self):
@@ -413,7 +470,14 @@ class LineFollower(Sensor):
         May return "Unknown"
         This method is not intelligent enough to handle intersections.
         '''
-        five_vals = self.read()
+        five_vals = [-1,-1,-1,-1,-1]
+
+        _wait_for_read()
+        if _is_read_open():
+            _grab_read()
+            five_vals = self.read()
+            _release_read()
+
         if five_vals == [0, 0, 1, 0, 0] or five_vals == [0, 1, 1, 1, 0]:
             return "Center"
         if five_vals == [1, 1, 1, 1, 1]:
