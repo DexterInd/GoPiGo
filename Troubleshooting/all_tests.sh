@@ -1,4 +1,5 @@
 #! /bin/bash
+REPO_PATH=$(readlink -f $(dirname $0) | grep -E -o "^(.*?\\GoPiGo)")
 
 echo =============================
 echo GoPiGo Troubleshooting Script
@@ -7,7 +8,7 @@ echo =============================
 echo ""
 echo Adding permissions to the scripts
 echo ================================= 
-cd /home/pi/Desktop/GoPiGo/Troubleshooting/
+cd $REPO_PATH/Troubleshooting/
 chmod +x software_status.sh
 chmod +x avrdude_test.sh
 chmod +x i2c_test1.sh

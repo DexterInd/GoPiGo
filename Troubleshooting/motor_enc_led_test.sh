@@ -1,3 +1,4 @@
 #! /bin/bash
+REPO_PATH=$(readlink -f $(dirname $0) | grep -E -o "^(.*?\\GoPiGo)")
 echo ""
-sudo python /home/pi/Desktop/GoPiGo/Software/Python/tests/enc_tgt_test.py
+sudo python $REPO_PATH/Software/Python/tests/enc_tgt_test.py
