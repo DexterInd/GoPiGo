@@ -41,12 +41,12 @@ def _is_read_open():
 
 def _grab_read():
     global read_is_open
-    print("grab")
+    # print("grab")
     read_is_open = False
 
 def _release_read():
     global read_is_open
-    print("release")
+    # print("release")
     read_is_open = True
 
 
