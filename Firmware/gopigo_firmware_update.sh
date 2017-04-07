@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
 REPO_PATH=$(readlink -f $(dirname $0) | grep -E -o "^(.*?\\GoPiGo)")
 update_gopigo_firmware(){ 
+	if [[ "$1" == "Dexter" ]]
+	then
+	    REPO_PATH=/home/pi/Dexter/GoPiGo
+	fi
+	echo "$REPO_PATH"
 	sudo avrdude -c gpio -p m328p -U lfuse:w:0x7F:m
 	sudo avrdude -c gpio -p m328p -U hfuse:w:0xDA:m
 	sudo avrdude -c gpio -p m328p -U efuse:w:0x05:m
