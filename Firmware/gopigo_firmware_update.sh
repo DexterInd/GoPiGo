@@ -13,7 +13,7 @@ update_gopigo_firmware(){
 	    echo "Error in REPO_PATH:$REPO_PATH"
 	    exit
 	fi
-	echo "$REPO_PATH"
+	echo "GoPiGo is found at :$REPO_PATH"
 	sudo avrdude -c gpio -p m328p -U lfuse:w:0x7F:m
 	sudo avrdude -c gpio -p m328p -U hfuse:w:0xDA:m
 	sudo avrdude -c gpio -p m328p -U efuse:w:0x05:m
