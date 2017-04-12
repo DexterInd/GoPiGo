@@ -6,7 +6,13 @@ from builtins import input
 import sys
 import tty
 import select
-import gopigo
+
+try:
+    import gopigo3
+    GPG3 = gopigo3.GoPiGo3()
+except:
+    import gopigo
+
 
 try:
     sys.path.insert(0, '/home/pi/Dexter/GoPiGo/Software/Python/line_follower')
@@ -41,12 +47,12 @@ def _is_read_open():
 
 def _grab_read():
     global read_is_open
-    print("grab")
+    # print("grab")
     read_is_open = False
 
 def _release_read():
     global read_is_open
-    print("release")
+    # print("release")
     read_is_open = True
 
 
@@ -56,6 +62,37 @@ def volt():
     voltage = gopigo.volt()
     _release_read()
     return voltage
+
+def stop():
+    _wait_for_read()
+    _grab_read()
+    gopigo.stop()
+    _release_read()
+
+def backward():
+    _wait_for_read()
+    _grab_read()
+    gopigo.backward()
+    _release_read()
+
+def left():
+    _wait_for_read()
+    _grab_read()
+    gopigo.left()
+    _release_read()
+
+def right():
+    _wait_for_read()
+    _grab_read()
+    gopigo.right()
+    _release_read()
+
+def forward():
+    _wait_for_read()
+    _grab_read()
+    gopigo.forward()
+    _release_read()
+
 
 #############################################################
 # the following is in a try/except structure because it depends
