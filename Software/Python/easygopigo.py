@@ -7,12 +7,7 @@ import sys
 import tty
 import select
 
-try:
-    import gopigo3
-    GPG3 = gopigo3.GoPiGo3()
-except:
-    import gopigo
-
+import gopigo
 
 try:
     sys.path.insert(0, '/home/pi/Dexter/GoPiGo/Software/Python/line_follower')
