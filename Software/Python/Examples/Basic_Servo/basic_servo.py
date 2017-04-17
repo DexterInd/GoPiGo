@@ -39,6 +39,7 @@ print "CONTROLS"
 print "a: move servo left"
 print "d: move servo right"
 print "s: move servo home"
+print "b: make the robot head perform a scanning motion"
 print "Press ENTER to send the commands"
 
 while True:
@@ -50,7 +51,12 @@ while True:
 	elif inp=='d':
 		servo_pos=servo_pos-10	# If the input is 'd' move the servo backward by 10 degrees.
 	elif inp=='s':
-		servo_pos=90			
+		servo_pos=90
+	elif inp=='b':
+		servo_pos=90
+		servo_pos=servo_pos+30
+		servo_pos=servo_pos-60
+		servo_pos=servo_pos+30
 		
 	#Get the servo angles back to the normal 0 to 180 degree range
 	if servo_pos>180:
