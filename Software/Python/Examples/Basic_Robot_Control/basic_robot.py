@@ -14,7 +14,8 @@
 # History
 # ------------------------------------------------
 # Author     	Date      		Comments  
-# Karan			27 June 14		Code cleanup                                                    
+# Karan		27 June 14		Code cleanup                                                    
+# Casten		31 Dec  15		Added async io, action until keyup
 '''
 ## License
  GoPiGo for the Raspberry Pi: an open source robotics platform for the Raspberry Pi.
@@ -38,28 +39,48 @@ along with this program.  If not, see <http://www.gnu.org/licenses/gpl-3.0.txt>.
 
 from gopigo import *	#Has the basic functions for controlling the GoPiGo Robot
 import sys	#Used for closing the running program
-print "This is a basic example for the GoPiGo Robot control"
-print "Press:\n\tw: Move GoPiGo Robot forward\n\ta: Turn GoPiGo Robot left\n\td: Turn GoPiGo Robot right\n\ts: Move GoPiGo Robot backward\n\tt: Increase speed\n\tg: Decrease speed\n\tx: Stop GoPiGo Robot\n\tz: Exit\n"
+import pygame #Gives access to KEYUP/KEYDOWN events
+
+#Initialization for pygame
+pygame.init()
+screen = pygame.display.set_mode((300, 60))
+pygame.display.set_caption('Remote Control Window')
+
+instructions = '''
+This is a basic example for the GoPiGo Robot control 
+(Be sure to put focus on Remote Control Window!)
+Press:
+	w: Move GoPiGo Robot forward
+	a: Turn GoPiGo Robot left
+	d: Turn GoPiGo Robot right
+	s: Move GoPiGo Robot backward
+	t: Increase speed
+	g: Decrease speed
+	z: Exit
+''';
+
+print instructions;
+
 while True:
-	print "Enter the Command:",
-	a=raw_input()	# Fetch the input from the terminal
-	if a=='w':
-		fwd()	# Move forward
-	elif a=='a':
-		left()	# Turn left
-	elif a=='d':
-		right()	# Turn Right
-	elif a=='s':
-		bwd()	# Move back
-	elif a=='x':
-		stop()	# Stop
-	elif a=='t':
-		increase_speed()	# Increase speed
-	elif a=='g':
-		decrease_speed()	# Decrease speed
-	elif a=='z':
-		print "Exiting"		# Exit
-		sys.exit()
-	else:
-		print "Wrong Command, Please Enter Again"
-	time.sleep(.1)
+	event = pygame.event.wait();
+	if (event.type == pygame.KEYUP):
+		stop();
+		continue;
+	if (event.type != pygame.KEYDOWN):
+		continue;	
+	char = event.unicode;
+	if char=='w':
+		fwd()	;# Move forward
+	elif char=='a':
+		left();	# Turn left
+	elif char=='d':
+		right();# Turn Right
+	elif char=='s':
+		bwd();# Move back
+	elif char=='t':
+		increase_speed();	# Increase speed
+	elif char=='g':
+		decrease_speed();	# Decrease speed
+	elif char=='z':
+		print "\nExiting";		# Exit
+		sys.exit();
