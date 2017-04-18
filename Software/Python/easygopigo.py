@@ -470,7 +470,23 @@ class LineFollower(Sensor):
         _wait_for_read()
 
         _grab_read()
+        
         five_vals = line_sensor.read_sensor()
+        five_vals=[0]*5
+        white_line=line_sensor.get_white_line()
+        black_line=line_sensor.get_black_line()
+        range_sensor= line_sensor.get_range()
+        threshold=[a+b/2 for a,b in zip(white_line,range_sensor)]
+        # print (white_line,black_line,range_sensor,threshold)
+        raw_vals=line_sensor.read_sensor()
+        for i in range(5):
+            if raw_vals[i]>threshold[i]:
+                five_vals[i]='b'
+            else:
+                five_vals[i]='w'
+        print(five_vals)
+	
+        
         _release_read()
 
         if five_vals != -1:
