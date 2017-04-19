@@ -452,9 +452,10 @@ class LineFollower(Sensor):
         It is up to you to determine where the black line is.
     3. You can use read_raw_sensors() to get raw values from all sensors
         You will have to handle the calibration yourself
+    4. the gpg argument is ignored. Needed for future compatibility
     '''
 
-    def __init__(self, port="I2C"):
+    def __init__(self, port="I2C", pinmode="",gpg=None):
         try:
             Sensor.__init__(self, port, "INPUT")
             self.set_descriptor("Line Follower")
@@ -477,6 +478,12 @@ class LineFollower(Sensor):
             return five_vals
         else:
             return [-1, -1, -1, -1, -1]
+
+    def get_white_calibration(self):
+        return line_sensor.get_white_line()
+
+    def get_black_calibration(self):
+        return line_sensor.get_black_line()
 
     def read(self):
         '''
