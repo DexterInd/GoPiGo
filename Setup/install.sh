@@ -79,7 +79,8 @@ install_dependencies() {
     feedback "======================="
     sudo apt-get install python-pip git libi2c-dev python-serial python-rpi.gpio i2c-tools python-smbus arduino minicom libnss-mdns python-dev -y
     sudo pip install -U RPi.GPIO
-
+    sudo pip install pyusb
+    
     feedback "Dependencies installed"
 }
 
