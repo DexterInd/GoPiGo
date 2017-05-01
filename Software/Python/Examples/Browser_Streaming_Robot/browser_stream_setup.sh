@@ -30,12 +30,13 @@ else
 	exit 0
 fi
 
+REPO_PATH=$(readlink -f $(dirname $0) | grep -E -o "^(.*?\\GoPiGo)")
 #Installing Mjpeg streamer http://blog.miguelgrinberg.com/post/how-to-build-and-run-mjpg-streamer-on-the-raspberry-pi
 sudo apt-get update
 sudo apt-get install libjpeg8-dev imagemagick libv4l-dev
 sudo ln -s /usr/include/linux/videodev2.h /usr/include/linux/videodev.h
-wget http://sourceforge.net/code-snapshots/svn/m/mj/mjpg-streamer/code/mjpg-streamer-code-182.zip
-unzip mjpg-streamer-code-182.zip
+#wget http://sourceforge.net/code-snapshots/svn/m/mj/mjpg-streamer/code/mjpg-streamer-code-182.zip
+unzip $REPO_PATH/Software/Python/Examples/Browser_Streaming_Robot/mjpg-streamer-code-182.zip
 cd mjpg-streamer-code-182/mjpg-streamer
 make mjpg_streamer input_file.so output_http.so
 sudo cp mjpg_streamer /usr/local/bin
@@ -47,7 +48,7 @@ cd ../../
 rm -rf mjpg-streamer-182
 rm -rf mjpg-streamer-code-182
 rm index.html
-rm mjpg-streamer-code-182.zip
+#rm mjpg-streamer-code-182.zip
 
 git clone https://github.com/DexterInd/userland.git
 
