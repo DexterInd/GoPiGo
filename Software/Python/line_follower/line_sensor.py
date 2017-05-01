@@ -7,7 +7,7 @@
 #
 # Karan Nayan
 # Initial Date: 13 Dec 2015
-# Last Updated: 13 Dec 2015
+# Last Updated: 05 Apr 2017
 # http://www.dexterindustries.com/
 '''
 ## License
@@ -30,7 +30,7 @@ from __future__ import print_function
 #from __future__ import division
 from builtins import input
 # the above lines are meant for Python3 compatibility.
-# they force the use of Python3 functionality for print(), 
+# they force the use of Python3 functionality for print(),
 # the integer division and input()
 # mind your parentheses!
 
@@ -57,7 +57,7 @@ address = 0x06
 # Command Format
 # analogRead() command format header
 aRead_cmd = [3]
- 
+
 # This allows us to be more specific about which commands contain unused bytes
 unused = 0
 
@@ -75,7 +75,7 @@ black_line=[0]*5
 # range_col=list(map(operator.sub, black, white))
 range_col=[0]*5
 
-dir_path="/home/pi/Dexter"
+dir_path="/home/pi/Dexter/"
 file_b=dir_path+'black_line.txt'
 file_w=dir_path+'white_line.txt'
 file_r=dir_path+'range_line.txt'
@@ -90,6 +90,8 @@ def write_i2c_block(address, block):
 		if debug:
 			print ("IOError")
 		return -1
+
+
 def read_sensor():
 	try:
 		#if sensor>=0 and sensor <=4:
@@ -99,14 +101,16 @@ def read_sensor():
 		number = bus.read_i2c_block_data(address, 1)
 		#time.sleep(.05)
 		return number[0]* 256 + number[1],number[2]* 256 + number[3],number[4]* 256 + number[5],number[6]* 256 + number[7],number[8]* 256 + number[9]
-		
+
 		#return number[0]* 256 + number[1]
-		
+
 		time.sleep(.05)
 	except IOError:
 		return -1,-1,-1,-1,-1
+
+
 def get_sensorval():
-	while True: 
+	while True:
 		val=read_sensor()
 		print (val)
 		if val[0]!=-1:
@@ -114,6 +118,7 @@ def get_sensorval():
 		else:
 			#Read once more to clear buffer and remove junk values
 			val=read_sensor()
+
 
 def set_black_line():
 	global black_line,white_line,range_col
@@ -129,7 +134,8 @@ def set_black_line():
 		pickle.dump(black_line, f)
 	with open(file_r, 'wb') as f:
 		pickle.dump(range_col, f)
-		
+
+
 def get_black_line():
 	global black_line
 	#load default values from files
@@ -141,7 +147,8 @@ def get_black_line():
 		print (e)
 		black_line=[0]*5
 	return black_line
-	
+
+
 def set_white_line():
 	global white_line,black_line,range_col
 	for i in range(5):
@@ -156,7 +163,8 @@ def set_white_line():
 		pickle.dump(white_line, f)
 	with open(file_r, 'wb') as f:
 		pickle.dump(range_col, f)
-	
+
+
 def get_white_line():
 	global white_line
 	#load default values from files
@@ -166,7 +174,8 @@ def get_white_line():
 	except:
 		white_line=[0]*5
 	return white_line
-		
+
+
 def get_range():
 	global range_col
 	#load default values from files
@@ -176,7 +185,8 @@ def get_range():
 	except:
 		range_col=[0]*5
 	return range_col
-	
+
+
 def line_position():
 	global black_line,white_line,range_col
 	#load default values from files
@@ -185,19 +195,19 @@ def line_position():
 			black_line = pickle.load(f)
 	except:
 		black_line=[0]*5
-		
+
 	try:
 		with open(file_w, 'rb') as f:
 			white_line = pickle.load(f)
 	except:
 		white_line=[0]*5
-		
+
 	try:
 		with open(file_r, 'rb') as f:
 			range_col = pickle.load(f)
 	except:
 		range_col=[0]*5
-	
+
 	curr=get_sensorval()
 	diff_val=list(map(operator.sub, curr, white_line))
 	curr_pos=0
@@ -206,4 +216,4 @@ def line_position():
 		# casting to int when moving to Python 3
 		percent_black_line[i]=(diff_val[i]*100/range_col[i])
 		curr_pos+=percent_black_line[i]*multp[i]
-	return curr_pos	
+	return curr_pos
