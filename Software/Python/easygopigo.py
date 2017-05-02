@@ -8,6 +8,7 @@ import tty
 import select
 import time
 import gopigo
+from multiprocessing import Process, Lock
 
 try:
     sys.path.insert(0, '/home/pi/Dexter/GoPiGo/Software/Python/line_follower')
@@ -28,68 +29,75 @@ fd = ''
 ##########################
 
 read_is_open = True
+global_lock = None
 
 def debug(in_str):
     if False:
         print(in_str)
 
-def _wait_for_read():
-    timeout = 0
-    while read_is_open is False and timeout < 100:
-        time.sleep(0.01)
-        timeout += 1
-    if timeout > 99:
-        return False
-    else:
-        return True
+def create_lock():
+    global global_lock
+    # print("Creating Lock")
+    global_lock = Lock()
+    # print("easy lock is {}".format(global_lock))
+    return global_lock
 
-def _is_read_open():
-    return read_is_open
+def set_lock(in_lock):
+    global global_lock
+    # print("Setting Lock")
+    global_lock = in_lock
+    print(global_lock)
+
+def get_lock():
+    return global_lock
 
 def _grab_read():
-    global read_is_open
-    # print("grab")
-    read_is_open = False
+    global global_lock
+    status = False
+    try:
+        status = global_lock.acquire(timeout=1)
+    except:
+        pass
+    return status
+    # print("acquired")
 
 def _release_read():
-    global read_is_open
-    # print("release")
-    read_is_open = True
+    global global_lock
+    try:
+        global_lock.release()
+    except:
+        pass
+    # print("released")
 
 
 def volt():
-    _wait_for_read()
-    _grab_read()
-    voltage = gopigo.volt()
-    _release_read()
+    voltage = 0
+    if _grab_read():
+        voltage = gopigo.volt()
+        _release_read()
     return voltage
 
 def stop():
-    _wait_for_read()
     _grab_read()
     gopigo.stop()
     _release_read()
 
 def backward():
-    _wait_for_read()
     _grab_read()
     gopigo.backward()
     _release_read()
 
 def left():
-    _wait_for_read()
     _grab_read()
     gopigo.left()
     _release_read()
 
 def right():
-    _wait_for_read()
     _grab_read()
     gopigo.right()
     _release_read()
 
 def forward():
-    _wait_for_read()
     _grab_read()
     gopigo.forward()
     _release_read()
@@ -133,7 +141,6 @@ class Sensor():
         '''
         port = one of PORTS keys
         pinmode = "INPUT", "OUTPUT", "SERIAL" (which gets ignored)
-        gpg is here for future enhancements
         '''
         debug("Sensor init")
         debug(pinmode)
@@ -190,21 +197,18 @@ class DigitalSensor(Sensor):
         okay = False
         error_count = 0
 
-        _wait_for_read()
-
-        if _is_read_open():
-            _grab_read()
-            while not okay and error_count < 10:
-                try:
-                    rtn = int(gopigo.digitalRead(self.getPortID()))
-                    okay = True
-                except:
-                    error_count += 1
-            _release_read()
-            if error_count > 10:
-                return -1
-            else:
-                return rtn
+        _grab_read()
+        while not okay and error_count < 10:
+            try:
+                rtn = int(gopigo.digitalRead(self.getPortID()))
+                okay = True
+            except:
+                error_count += 1
+        _release_read()
+        if error_count > 10:
+            return -1
+        else:
+            return rtn
 
     def write(self, power):
         self.value = power
@@ -223,11 +227,8 @@ class AnalogSensor(Sensor):
         Sensor.__init__(self, port, pinmode)
 
     def read(self):
-        _wait_for_read()
-
-        if _is_read_open():
-            _grab_read()
-            self.value = gopigo.analogRead(self.getPortID())
+        _grab_read()
+        self.value = gopigo.analogRead(self.getPortID())
         _release_read()
         return self.value
 
@@ -275,13 +276,11 @@ class UltraSonicSensor(AnalogSensor):
         self.set_descriptor("Ultrasonic sensor")
 
     def is_too_close(self):
-        _wait_for_read()
+        _grab_read()
+        if gopigo.us_dist(PORTS[self.port]) < self.get_safe_distance():
+            _release_read()
+            return True
 
-        if _is_read_open():
-            _grab_read()
-            if gopigo.us_dist(PORTS[self.port]) < self.get_safe_distance():
-                _release_read()
-                return True
         _release_read()
         return False
 
@@ -294,7 +293,7 @@ class UltraSonicSensor(AnalogSensor):
     def read(self):
         '''
         Limit the ultrasonic sensor to a distance of 5m.
-        Take 3 readings, discard any that's higher than 5m
+        Take 3 readings, discard any that's higher than 3m
         If we discard 5 times, then assume there's nothing in front
             and return 501
         '''
@@ -302,12 +301,10 @@ class UltraSonicSensor(AnalogSensor):
         readings =[]
         skip = 0
         while len(readings) < 3:
-            _wait_for_read()
-
             _grab_read()
             value = gopigo.corrected_us_dist(PORTS[self.port])
             _release_read()
-            if value < 501 and value > 0:
+            if value < 300 and value > 0:
                 readings.append(value)
             else:
                 skip +=1
@@ -487,8 +484,6 @@ class LineFollower(Sensor):
         From 0 to 1023
         May return a list of -1 when there's a read error
         '''
-        _wait_for_read()
-
         _grab_read()
         five_vals = line_sensor.read_sensor()
         _release_read()
