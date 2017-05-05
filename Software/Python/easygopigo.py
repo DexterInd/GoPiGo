@@ -6,7 +6,7 @@ from builtins import input
 import sys
 import tty
 import select
-
+import time
 import gopigo
 
 try:
@@ -34,8 +34,14 @@ def debug(in_str):
         print(in_str)
 
 def _wait_for_read():
-    while read_is_open is False:
+    timeout = 0
+    while read_is_open is False and timeout < 100:
         time.sleep(0.01)
+        timeout += 1
+    if timeout > 99:
+        return False
+    else:
+        return True
 
 def _is_read_open():
     return read_is_open
@@ -127,6 +133,7 @@ class Sensor():
         '''
         port = one of PORTS keys
         pinmode = "INPUT", "OUTPUT", "SERIAL" (which gets ignored)
+        gpg is here for future enhancements
         '''
         debug("Sensor init")
         debug(pinmode)
@@ -224,6 +231,9 @@ class AnalogSensor(Sensor):
         _release_read()
         return self.value
 
+    def percent_read(self):
+        return self.read * 100 / 1024
+
     def write(self, power):
         self.value = power
         return gopigo.analogWrite(self.getPortID(), power)
@@ -237,7 +247,7 @@ class LightSensor(AnalogSensor):
     self.pin takes a value of 0 when on analog pin (default value)
         takes a value of 1 when on digital pin
     """
-    def __init__(self, port="A1"):
+    def __init__(self, port="A1", gpg=None):
         debug("LightSensor init")
         AnalogSensor.__init__(self, port, "INPUT")
         self.set_descriptor("Light sensor")
@@ -248,7 +258,7 @@ class SoundSensor(AnalogSensor):
     """
     Creates a sound sensor
     """
-    def __init__(self, port="A1"):
+    def __init__(self, port="A1",gpg=None):
         debug("Sound Sensor on port "+port)
         AnalogSensor.__init__(self, port, "INPUT")
         self.set_descriptor("Sound sensor")
@@ -258,7 +268,7 @@ class SoundSensor(AnalogSensor):
 
 class UltraSonicSensor(AnalogSensor):
 
-    def __init__(self, port="A1"):
+    def __init__(self, port="A1",gpg=None):
         debug("Ultrasonic Sensor on port "+port)
         AnalogSensor.__init__(self, port, "INPUT")
         self.safe_distance = 500
@@ -313,6 +323,11 @@ class UltraSonicSensor(AnalogSensor):
         return_reading = int(return_reading // len(readings))
 
         return (return_reading)
+
+
+    def read_inches(self):
+        value = self.read()
+        return (value / 2.54)
 ##########################
 
 
@@ -326,7 +341,7 @@ class Buzzer(AnalogSensor):
     soundoff() -> which is the same as sound(0)
     soundon() -> which is the same as sound(254), max value
     '''
-    def __init__(self, port="D11"):
+    def __init__(self, port="D11",gpg=None):
         AnalogSensor.__init__(self, port, "OUTPUT")
         self.set_descriptor("Buzzer")
         self.power = 254
@@ -364,7 +379,7 @@ class Buzzer(AnalogSensor):
 
 
 class Led(AnalogSensor):
-    def __init__(self, port="D11"):
+    def __init__(self, port="D11",gpg=None):
         AnalogSensor.__init__(self, port, "OUTPUT")
         self.set_descriptor("LED")
 
@@ -384,7 +399,7 @@ class Led(AnalogSensor):
 
 
 class MotionSensor(DigitalSensor):
-    def __init__(self, port="D11"):
+    def __init__(self, port="D11",gpg=None):
         DigitalSensor.__init__(self, port, "INPUT")
         self.set_descriptor("Motion Sensor")
 ##########################
@@ -392,7 +407,7 @@ class MotionSensor(DigitalSensor):
 
 class ButtonSensor(DigitalSensor):
 
-    def __init__(self, port="D11"):
+    def __init__(self, port="D11",gpg=None):
         DigitalSensor.__init__(self, port, "INPUT")
         self.set_descriptor("Button sensor")
 ##########################
@@ -400,7 +415,7 @@ class ButtonSensor(DigitalSensor):
 
 class Remote(Sensor):
 
-    def __init__(self, port="SERIAL"):
+    def __init__(self, port="SERIAL",gpg=None):
         global IR_RECEIVER_ENABLED
         # IR Receiver
         try:
@@ -459,6 +474,10 @@ class LineFollower(Sensor):
         try:
             Sensor.__init__(self, port, "INPUT")
             self.set_descriptor("Line Follower")
+            self.last_3_reads = []
+            self.white_line = self.get_white_calibration()
+            self.black_line = self.get_black_calibration()
+            self.threshold = [w+((b-w)/2) for w,b in zip(self.white_line,self.black_line)]
         except:
             raise ValueError("Line Follower Library not found")
 
@@ -473,6 +492,7 @@ class LineFollower(Sensor):
         _grab_read()
         five_vals = line_sensor.read_sensor()
         _release_read()
+        print ("raw values {}".format(five_vals))
 
         if five_vals != -1:
             return five_vals
@@ -492,14 +512,53 @@ class LineFollower(Sensor):
             through the Line Sensor Calibration tool
         May return all -1 on a read error
         '''
-        _wait_for_read()
+        five_vals = [-1,-1,-1,-1,-1]
 
-        if _is_read_open():
-            _grab_read()
-            five_vals = scratch_line.absolute_line_pos()
-            _release_read()
 
-        return five_vals
+        five_vals = self.read_raw_sensors()
+
+        line_result = []
+        for sensor_reading,cur_threshold in zip(five_vals,self.threshold):
+            if sensor_reading > cur_threshold:
+                line_result.append(1)
+            else:
+                line_result.append(0)
+
+        print ("Current read is {}".format(line_result))
+
+        if five_vals != [-1,-1,-1,-1,-1]:
+            print("appending")
+            self.last_3_reads.append(line_result)
+        if len(self.last_3_reads) > 3:
+            self.last_3_reads.pop(0)
+
+        print (self.last_3_reads)
+        transpose = list(zip(*self.last_3_reads))
+        avg_vals = []
+        for sensor_reading in transpose:
+            # print (sum(sensor_reading)//3)
+            avg_vals.append(sum(sensor_reading)//3)
+
+        print ("current avg: {}".format(avg_vals))
+        return avg_vals
+
+    def follow_line(self,fwd_speed=80):
+        slight_turn_speed=int(.7*fwd_speed)
+        while True:
+            pos = self.read_position()
+            print(pos)
+            if pos == "Center":
+                gopigo.forward()
+            elif pos == "Left":
+                gopigo.set_right_speed(0)
+                gopigo.set_left_speed(slight_turn_speed)
+            elif pos == "Right":
+                gopigo.set_right_speed(slight_turn_speed)
+                gopigo.set_left_speed(0)
+            elif pos == "Black":
+                gopigo.stop()
+            elif pos == "White":
+                gopigo.stop()
 
     def read_position(self):
         '''
@@ -511,11 +570,8 @@ class LineFollower(Sensor):
         '''
         five_vals = [-1,-1,-1,-1,-1]
 
-        _wait_for_read()
         if _is_read_open():
-            _grab_read()
             five_vals = self.read()
-            _release_read()
 
         if five_vals == [0, 0, 1, 0, 0] or five_vals == [0, 1, 1, 1, 0]:
             return "Center"
