@@ -8,6 +8,12 @@ import tty
 import select
 import time
 import gopigo
+import numpy
+import math
+import threading
+from datetime import datetime
+
+from multiprocessing import Process, Lock
 
 try:
     sys.path.insert(0, '/home/pi/Dexter/GoPiGo/Software/Python/line_follower')
@@ -28,68 +34,75 @@ fd = ''
 ##########################
 
 read_is_open = True
+global_lock = None
 
 def debug(in_str):
     if False:
         print(in_str)
 
-def _wait_for_read():
-    timeout = 0
-    while read_is_open is False and timeout < 100:
-        time.sleep(0.01)
-        timeout += 1
-    if timeout > 99:
-        return False
-    else:
-        return True
+def create_lock():
+    global global_lock
+    # print("Creating Lock")
+    global_lock = Lock()
+    # print("easy lock is {}".format(global_lock))
+    return global_lock
 
-def _is_read_open():
-    return read_is_open
+def set_lock(in_lock):
+    global global_lock
+    # print("Setting Lock")
+    global_lock = in_lock
+    print(global_lock)
+
+def get_lock():
+    return global_lock
 
 def _grab_read():
-    global read_is_open
-    # print("grab")
-    read_is_open = False
+    global global_lock
+    status = False
+    try:
+        status = global_lock.acquire(timeout=1)
+    except:
+        pass
+    return status
+    # print("acquired")
 
 def _release_read():
-    global read_is_open
-    # print("release")
-    read_is_open = True
+    global global_lock
+    try:
+        global_lock.release()
+    except:
+        pass
+    # print("released")
 
 
 def volt():
-    _wait_for_read()
-    _grab_read()
-    voltage = gopigo.volt()
-    _release_read()
+    voltage = 0
+    if _grab_read():
+        voltage = gopigo.volt()
+        _release_read()
     return voltage
 
 def stop():
-    _wait_for_read()
     _grab_read()
     gopigo.stop()
     _release_read()
 
 def backward():
-    _wait_for_read()
     _grab_read()
     gopigo.backward()
     _release_read()
 
 def left():
-    _wait_for_read()
     _grab_read()
     gopigo.left()
     _release_read()
 
 def right():
-    _wait_for_read()
     _grab_read()
     gopigo.right()
     _release_read()
 
 def forward():
-    _wait_for_read()
     _grab_read()
     gopigo.forward()
     _release_read()
@@ -133,7 +146,6 @@ class Sensor():
         '''
         port = one of PORTS keys
         pinmode = "INPUT", "OUTPUT", "SERIAL" (which gets ignored)
-        gpg is here for future enhancements
         '''
         debug("Sensor init")
         debug(pinmode)
@@ -190,21 +202,18 @@ class DigitalSensor(Sensor):
         okay = False
         error_count = 0
 
-        _wait_for_read()
-
-        if _is_read_open():
-            _grab_read()
-            while not okay and error_count < 10:
-                try:
-                    rtn = int(gopigo.digitalRead(self.getPortID()))
-                    okay = True
-                except:
-                    error_count += 1
-            _release_read()
-            if error_count > 10:
-                return -1
-            else:
-                return rtn
+        _grab_read()
+        while not okay and error_count < 10:
+            try:
+                rtn = int(gopigo.digitalRead(self.getPortID()))
+                okay = True
+            except:
+                error_count += 1
+        _release_read()
+        if error_count > 10:
+            return -1
+        else:
+            return rtn
 
     def write(self, power):
         self.value = power
@@ -223,11 +232,8 @@ class AnalogSensor(Sensor):
         Sensor.__init__(self, port, pinmode)
 
     def read(self):
-        _wait_for_read()
-
-        if _is_read_open():
-            _grab_read()
-            self.value = gopigo.analogRead(self.getPortID())
+        _grab_read()
+        self.value = gopigo.analogRead(self.getPortID())
         _release_read()
         return self.value
 
@@ -275,13 +281,11 @@ class UltraSonicSensor(AnalogSensor):
         self.set_descriptor("Ultrasonic sensor")
 
     def is_too_close(self):
-        _wait_for_read()
+        _grab_read()
+        if gopigo.us_dist(PORTS[self.port]) < self.get_safe_distance():
+            _release_read()
+            return True
 
-        if _is_read_open():
-            _grab_read()
-            if gopigo.us_dist(PORTS[self.port]) < self.get_safe_distance():
-                _release_read()
-                return True
         _release_read()
         return False
 
@@ -294,7 +298,7 @@ class UltraSonicSensor(AnalogSensor):
     def read(self):
         '''
         Limit the ultrasonic sensor to a distance of 5m.
-        Take 3 readings, discard any that's higher than 5m
+        Take 3 readings, discard any that's higher than 3m
         If we discard 5 times, then assume there's nothing in front
             and return 501
         '''
@@ -302,12 +306,10 @@ class UltraSonicSensor(AnalogSensor):
         readings =[]
         skip = 0
         while len(readings) < 3:
-            _wait_for_read()
-
             _grab_read()
             value = gopigo.corrected_us_dist(PORTS[self.port])
             _release_read()
-            if value < 501 and value > 0:
+            if value < 300 and value > 0:
                 readings.append(value)
             else:
                 skip +=1
@@ -487,8 +489,6 @@ class LineFollower(Sensor):
         From 0 to 1023
         May return a list of -1 when there's a read error
         '''
-        _wait_for_read()
-
         _grab_read()
         five_vals = line_sensor.read_sensor()
         _release_read()
@@ -595,6 +595,132 @@ class LineFollower(Sensor):
             return "Right"
         return "Unknown"
 
+class DHTSensor(Sensor):
+
+    def __init__(self, port="SERIAL",gpg=None):
+        try:
+     	    Sensor.__init__(self,port,"INPUT")
+            self.filtered_temperature = [] # here we keep the temperature values after removing outliers
+            self.filtered_humidity = [] # here we keep the filtered humidity values after removing the outliers
+
+            self.lock = threading.Lock() # we are using locks so we don't have conflicts while accessing the shared variables
+            self.event = threading.Event() # we are using an event so we can close the thread as soon as KeyboardInterrupt is raised
+
+        except:
+            raise ValueError("DHT Sensor not found")
+    def read_temperature(self,sensor_type=0):
+        _grab_read()
+        temp=gopigo.dht(sensor_type)[0]
+        _release_read()
+        if temp == -2:
+            return "Bad reading, trying again"
+        elif temp == -3:
+            return "Run the program as sudo"
+        else:
+            print("Temperature = %.02fC"%temp)
+            return temp
+
+    def read_humidity(self,sensor_type=0):
+        _grab_read()
+        humidity=gopigo.dht(sensor_type)[1]
+        _release_read()
+        if humidity == -2:
+            return "Bad reading, trying again"
+        elif humidity == -3:
+            return "Run the program as sudo"
+        else:
+            print("Humidity = %.02f%%"%humidity)
+            return humidity
+
+    def read_dht(self,sensor_type=0):
+        _grab_read()
+        [temp , humidity]=gopigo.dht(sensor_type)
+        _release_read()
+        if temp ==-2.0 or humidity == -2.0:
+            return "Bad reading, trying again"
+        elif temp ==-3.0 or humidity == -3.0:
+            return "Run the program as sudo"
+        else:
+            print("Temperature = %.02fC Humidity = %.02f%%"%(temp, humidity))
+            return [temp, humidity] 
+             
+    # Derived from Robert's Code
+    # function which eliminates the noise
+    # by using a statistical model
+    # we determine the standard normal deviation and we exclude anything that goes beyond a threshold
+    # think of a probability distribution plot - we remove the extremes
+    # the greater the std_factor, the more "forgiving" is the algorithm with the extreme values
+    def eliminateNoise(self,values, std_factor = 2):
+        mean = numpy.mean(values)
+        standard_deviation = numpy.std(values)
+
+        if standard_deviation == 0:
+            return values
+
+        final_values = [element for element in values if element > mean - std_factor * standard_deviation]
+        final_values = [element for element in final_values if element < mean + std_factor * standard_deviation]
+
+        return final_values
+    # Derived from Robert's Code
+    # function for processing the data
+    # filtering, periods of time, yada yada
+    def readingValues(self,sensor_type=0):
+        seconds_window = 10 # after this many second we make a record
+        values = []
+
+        while not self.event.is_set():
+            counter = 0
+            while counter < seconds_window and not self.event.is_set():
+                temp = None
+                humidity = None
+                try:
+                    [temp, humidity] = gopigo.dht(sensor_type)
+
+                except IOError:
+                    print("we've got IO error")
+
+                if math.isnan(temp) == False and math.isnan(humidity) == False:
+                    values.append({"temp" : temp, "hum" : humidity})
+                    counter += 1
+                #else:
+                    #print("we've got NaN")
+
+                time.sleep(1)
+
+            self.lock.acquire()
+            self.filtered_temperature.append(numpy.mean(self.eliminateNoise([x["temp"] for x in values])))
+            self.filtered_humidity.append(numpy.mean(self.eliminateNoise([x["hum"] for x in values])))
+            self.lock.release()
+
+            values = []
+    
+    # Derived from Robert's Code
+    def continuous_read_dht(self):
+
+        try:
+            # here we start the thread
+            # we use a thread in order to gather/process the data separately from the printing proceess
+            data_collector = threading.Thread(target = self.readingValues)
+            data_collector.start()
+
+            while not self.event.is_set():
+                if len(self.filtered_temperature) > 0: # or we could have used filtered_humidity instead
+                    self.lock.acquire()
+
+                    # here you can do whatever you want with the variables: print them, file them out, anything
+                    temperature = self.filtered_temperature.pop()
+                    humidity = self.filtered_humidity.pop()
+                    print('{},Temperature:{:.01f}C, Humidity:{:.01f}%' .format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"),temperature,humidity))
+
+                    self.lock.release()
+
+                # wait a second before the next check
+                time.sleep(1)
+
+            # wait until the thread is finished
+            data_collector.join()
+        except KeyboardInterrupt:
+            self.event.set()
 
 if __name__ == '__main__':
     import time
@@ -605,3 +731,8 @@ if __name__ == '__main__':
     time.sleep(1)
     print ("buzzer off")
     b.sound_off()
+    c=DHTSensor()
+    c.read_humidity()
+    c.read_temperature()
+    c.read_dht()
+    c.continuous_read_dht()
