@@ -87,11 +87,14 @@ class RobotController:
 								 # the motors (drive and servo) are set to zero speed
 	speed_l=200
 	speed_r=200
+
+	servo_pos=90
 	#-----------------------------------------------------------------------------------------------
 	def __init__( self ):
 		gopigo.set_speed(200)
 		gopigo.stop()
 		#gopigo.fwd()
+		gopigo.servo(self.servo_pos)
 		
 		self.lastServoSettingsSendTime = 0.0
 		self.lastUpdateTime = 0.0
@@ -130,11 +133,11 @@ class RobotController:
 		#gopigo.set_left_speed(int(self.speed_l*joystickY))
 		#gopigo.fwd()
 		if joystickX > .5:
-			print( "Left")
-			gopigo.left()
-		elif joystickX <-.5:
-			print ("Right")
+			print( "Right")
 			gopigo.right()
+		elif joystickX <-.5:
+			print ("Left")
+			gopigo.left()
 		elif joystickY > .5:
 			print ("Fwd")
 			gopigo.fwd()
@@ -146,14 +149,24 @@ class RobotController:
 			gopigo.stop()
 		
 	def setNeckJoystickPos( self, joystickX, joystickY ):
-		#print ("g")
 		joystickX, joystickY = self.normaliseJoystickData( joystickX, joystickY )
 		if debug:	
 			print ("Right joy",joystickX, joystickY)
 			#print (self.speed_r*joystickY)
-		#gopigo.set_right_speed(int(self.speed_r*joystickY))
-		#gopigo.fwd()
-		#self.lastMotionCommandTime = time.time()
+		if joystickX > .5:
+			print ("Servo Right");
+			if self.servo_pos >= 5:
+				self.servo_pos -= 5;
+				gopigo.servo(self.servo_pos);
+		elif joystickX < -.5:
+			print ("Servo Left");
+			if self.servo_pos <= 175:
+				self.servo_pos += 5;
+				gopigo.servo(self.servo_pos)
+		elif joystickY > .5:
+			print ("Servo reset")
+			self.servo_pos = 90
+			gopigo.servo(self.servo_pos)
 
 	def update( self ):
 		if debug:	
