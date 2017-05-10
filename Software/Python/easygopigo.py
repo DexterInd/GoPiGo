@@ -271,8 +271,9 @@ class UltraSonicSensor(AnalogSensor):
     def __init__(self, port="A1",gpg=None):
         debug("Ultrasonic Sensor on port "+port)
         AnalogSensor.__init__(self, port, "INPUT")
-        self.safe_distance = 500
+        self.safe_distance = 300
         self.set_descriptor("Ultrasonic sensor")
+        self.port = port
 
     def is_too_close(self):
         _wait_for_read()
