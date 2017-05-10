@@ -25,6 +25,6 @@ setuptools.setup(
 	description="Drivers and examples for using the GoPiGo in Python",
 	author="Dexter Industries",
 	url="http://www.dexterindustries.com/GoPiGo/",
-	py_modules=['gopigo','easygopigo','line_follower.line_sensor'],
+	py_modules=['gopigo','easygopigo','line_follower.line_sensor','sensor_examples.distance_sensor','sensor_examples.grove_rgb_lcd.grove_rgb_lcd'],
 	install_requires=open('requirements.txt').readlines(),
 )
