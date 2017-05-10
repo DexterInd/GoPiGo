@@ -319,8 +319,9 @@ class UltraSonicSensor(AnalogSensor):
     def __init__(self, port="A1",gpg=None):
         debug("Ultrasonic Sensor on port "+port)
         AnalogSensor.__init__(self, port, "INPUT")
-        self.safe_distance = 500
+        self.safe_distance = 300
         self.set_descriptor("Ultrasonic sensor")
+        self.port = "A1"
 
     def is_too_close(self):
         _grab_read()
@@ -351,6 +352,7 @@ class UltraSonicSensor(AnalogSensor):
             _grab_read()
             value = gopigo.corrected_us_dist(PORTS[self.port])
             _release_read()
+            print(value)
             if value < 300 and value > 0:
                 readings.append(value)
             else:
