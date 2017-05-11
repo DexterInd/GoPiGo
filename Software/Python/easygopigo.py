@@ -8,7 +8,13 @@ import tty
 import select
 import time
 import gopigo
+import numpy
+import math
+import threading
+from datetime import datetime
 import picamera
+import grove_rgb_lcd
+from distance_sensor import DistanceSensor
 from glob import glob  # for USB checking
 from subprocess import check_output, CalledProcessError
 import os
@@ -677,6 +683,217 @@ class EasyCamera(picamera.PiCamera):
 
 #######################################################################
 
+class DHTSensor(Sensor):
+
+    def __init__(self, port="SERIAL",gpg=None):
+        try:
+     	    Sensor.__init__(self,port,"INPUT")
+            self.filtered_temperature = [] # here we keep the temperature values after removing outliers
+            self.filtered_humidity = [] # here we keep the filtered humidity values after removing the outliers
+            self.event = threading.Event() # we are using an event so we can close the thread as soon as KeyboardInterrupt is raised
+
+        except:
+            raise ValueError("DHT Sensor not found")
+    def read_temperature(self,sensor_type=0):
+        _wait_for_read()
+        if _is_read_open():
+            _grab_read()
+            temp=gopigo.dht(sensor_type)[0]
+            _release_read()
+        if temp == -2:
+            return "Bad reading, trying again"
+        elif temp == -3:
+            return "Run the program as sudo"
+        else:
+            print("Temperature = %.02fC"%temp)
+            return temp
+
+    def read_humidity(self,sensor_type=0):
+	_wait_for_read()
+        if _is_read_open():
+            _grab_read()
+            humidity=gopigo.dht(sensor_type)[1]
+            _release_read()
+        if humidity == -2:
+            return "Bad reading, trying again"
+        elif humidity == -3:
+            return "Run the program as sudo"
+        else:
+            print("Humidity = %.02f%%"%humidity)
+            return humidity
+
+    def read_dht(self,sensor_type=0):
+        _wait_for_read()
+        if _is_read_open():
+            _grab_read()
+            [temp , humidity]=gopigo.dht(sensor_type)
+            _release_read()
+        if temp ==-2.0 or humidity == -2.0:
+            return "Bad reading, trying again"
+        elif temp ==-3.0 or humidity == -3.0:
+            return "Run the program as sudo"
+        else:
+            print("Temperature = %.02fC Humidity = %.02f%%"%(temp, humidity))
+            return [temp, humidity] 
+             
+    # Derived from Robert's Code
+    # function which eliminates the noise
+    # by using a statistical model
+    # we determine the standard normal deviation and we exclude anything that goes beyond a threshold
+    # think of a probability distribution plot - we remove the extremes
+    # the greater the std_factor, the more "forgiving" is the algorithm with the extreme values
+    def _eliminateNoise(self,values, std_factor = 2):
+        mean = numpy.mean(values)
+        standard_deviation = numpy.std(values)
+
+        if standard_deviation == 0:
+            return values
+
+        final_values = [element for element in values if element > mean - std_factor * standard_deviation]
+        final_values = [element for element in final_values if element < mean + std_factor * standard_deviation]
+
+        return final_values
+		
+    # Derived from Robert's Code
+    # function for processing the data
+    # filtering, periods of time, yada yada
+    def _readingValues(self,sensor_type=0):
+        seconds_window = 10 # after this many second we make a record
+        values = []
+
+        while not self.event.is_set():
+            counter = 0
+            while counter < seconds_window and not self.event.is_set():
+                temp = None
+                humidity = None
+                try:
+                    [temp, humidity] = gopigo.dht(sensor_type)
+
+                except IOError:
+                    print("we've got IO error")
+
+                if math.isnan(temp) == False and math.isnan(humidity) == False:
+                    values.append({"temp" : temp, "hum" : humidity})
+                    counter += 1
+                #else:
+                    #print("we've got NaN")
+
+                time.sleep(1)
+
+            _wait_for_read()
+            if _is_read_open():
+                _grab_read()
+                self.filtered_temperature.append(numpy.mean(self._eliminateNoise([x["temp"] for x in values])))
+                self.filtered_humidity.append(numpy.mean(self._eliminateNoise([x["hum"] for x in values])))
+                _release_read()
+            values = []
+    
+    # Derived from Robert's Code
+    def continuous_read_dht(self):
+
+        try:
+            # here we start the thread
+            # we use a thread in order to gather/process the data separately from the printing proceess
+            data_collector = threading.Thread(target = self._readingValues)
+            data_collector.start()
+
+            while not self.event.is_set():
+                if len(self.filtered_temperature) > 0: # or we could have used filtered_humidity instead
+                    _wait_for_read()
+                    if _is_read_open():
+                        _grab_read()
+                        # here you can do whatever you want with the variables: print them, file them out, anything
+                        temperature = self.filtered_temperature.pop()
+                        humidity = self.filtered_humidity.pop()
+                        print('{},Temperature:{:.01f}C, Humidity:{:.01f}%' .format(datetime.now().strftime("%Y-%m-%d %H:%M:%S"),temperature,humidity))
+                        _release_read()
+                # wait a second before the next check
+                time.sleep(1)
+
+            # wait until the thread is finished
+            data_collector.join()
+        except KeyboardInterrupt:
+            self.event.set()
+
+
+class RgbLcd(Sensor):
+    '''
+    Wrapper to display Text, change background color on RGB LCD.
+    Connect the sensor to the I2C Port.
+    '''
+    def __init__(self, port="I2C",gpg=None):
+        try:
+            Sensor.__init__(self, port, "OUTPUT")
+            self.set_descriptor("Grove RGB Lcd")
+        except:
+            raise ValueError("Grove RGB Lcd not found")
+    
+    def display_text(self,text):
+        '''
+        To display a text. It moves to the next line when it encounters "\n" in the text or if there are more than 16 characters.
+        Input the text as a string.
+        '''
+        grove_rgb_lcd.setText(text)
+		
+    # Displays Text over the previous screen without clearing the screen
+    def display_text_over(self,text):
+        grove_rgb_lcd.setText_norefresh(text)
+
+    def set_BgColor(self,red,green,blue):
+        '''
+        To set the background color of the LCD
+        Red, Green and Blue variables range between (0-255) which indicate the intensity of the color
+        '''
+        grove_rgb_lcd.setRGB(red,green,blue)
+
+class Servo(Sensor):
+    '''
+    Wrapper to control the Servo Motor on the GPG2.
+    Allows you to rotate the servo by feeding in the angle of rotation.
+    Connect the Servo to the Servo port of GPG2.
+    '''
+    def __init__(self, port="SERVO",gpg=None):
+        try:
+            Sensor.__init__(self, port, "OUTPUT")
+            self.set_descriptor("GoPiGo2 Servo")
+        except:
+            raise ValueError("GoPiGo2 Servo not found")
+			
+    def rotate_servo(self,servo_position):
+        if servo_position>180:
+            servo_position=180
+        elif servo_position<0:
+            servo_position=0
+            gopigo.servo(servo_position)
+			
+    def reset_servo(self):
+        gopigo.disable_servo()
+
+class Distance(Sensor,DistanceSensor):
+    '''
+    Wrapper to measure the distance in cms from the DI distance sensor.
+    Connect the distance sensor to I2C port.
+    '''
+    def __init__(self, port="I2C",gpg=None):
+        DistanceSensor.__init__(self)
+        try:
+            Sensor.__init__(self, port, "INPUT")
+            DistanceSensor.__init__(self)
+            self.set_descriptor("Distance Sensor")
+        except:
+            raise ValueError("Distance Sensor not found")
+			
+    # Returns the values in cms
+    def read_distance(self):
+        _wait_for_read()
+        if _is_read_open():
+            _grab_read()
+            distance_cms=self.readRangeSingleMillimeters()/10
+            _release_read()
+        print('{:4.1f}'.format(distance_cms))
+        return '{:4.1f}'.format(distance_cms)
+
+    
 if __name__ == '__main__':
     import time
     b = Buzzer()
@@ -686,3 +903,24 @@ if __name__ == '__main__':
     time.sleep(1)
     print ("buzzer off")
     b.sound_off()
+
+    #c = RgbLcd()
+    #c.display_text("Hello World")
+    #c.display_text_over("\nK")
+    #c.set_BgColor(0,128,64)
+    #time.sleep(2)
+
+
+    #d=Distance()
+    #g=d.read_distance()
+    #print(g)
+    #s=Servo()
+    #s.rotate_servo(180)
+    #s.rotate_servo(0)
+ 
+    #f=DHTSensor()
+    #f.read_humidity()
+    #f.read_temperature()
+    #f.read_dht()
+    #f.continuous_read_dht()
+
