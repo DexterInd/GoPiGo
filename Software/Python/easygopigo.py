@@ -149,9 +149,9 @@ def _get_mount_points(devices=None):
 #############################################################
 try:
     PORTS = {"A1": gopigo.analogPort, "D11": gopigo.digitalPort,
-             "SERIAL": -1, "I2C": -2}
+             "SERIAL": -1, "I2C": -2, "SERVO": -3}
 except:
-    PORTS = {"A1": 15, "D11": 10, "SERIAL": -1, "I2C": -2}
+    PORTS = {"A1": 15, "D11": 10, "SERIAL": -1, "I2C": -2, "SERVO": -3}
 
 
 ANALOG = 1
