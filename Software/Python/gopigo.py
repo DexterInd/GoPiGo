@@ -428,7 +428,7 @@ def corrected_us_dist(pin):
 		corrected_data = (raw_data + 4.41)  / 1.423
 	else:
 		corrected_data = raw_data
-	print(raw_data,corrected_data)
+	# print(raw_data,corrected_data)
 	return int(corrected_data)
 
 def read_motor_speed():

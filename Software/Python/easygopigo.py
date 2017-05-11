@@ -154,9 +154,9 @@ def _get_mount_points(devices=None):
 #############################################################
 try:
     PORTS = {"A1": gopigo.analogPort, "D11": gopigo.digitalPort,
-             "SERIAL": -1, "I2C": -2}
+             "SERIAL": -1, "I2C": -2, "SERVO": -3}
 except:
-    PORTS = {"A1": 15, "D11": 10, "SERIAL": -1, "I2C": -2}
+    PORTS = {"A1": 15, "D11": 10, "SERIAL": -1, "I2C": -2, "SERVO": -3}
 
 
 ANALOG = 1
@@ -285,7 +285,9 @@ class AnalogSensor(Sensor):
         return self.value
 
     def percent_read(self):
-        return self.read * 100 / 1024
+        value = int(self.read()) * 100 // 1024
+        # print(value)
+        return value
 
     def write(self, power):
         self.value = power
@@ -324,8 +326,9 @@ class UltraSonicSensor(AnalogSensor):
     def __init__(self, port="A1",gpg=None):
         debug("Ultrasonic Sensor on port "+port)
         AnalogSensor.__init__(self, port, "INPUT")
-        self.safe_distance = 500
+        self.safe_distance = 300
         self.set_descriptor("Ultrasonic sensor")
+        self.port = port
 
     def is_too_close(self):
         _wait_for_read()
