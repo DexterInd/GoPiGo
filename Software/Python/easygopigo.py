@@ -280,7 +280,9 @@ class AnalogSensor(Sensor):
         return self.value
 
     def percent_read(self):
-        return self.read * 100 / 1024
+        value = int(self.read()) * 100 // 1024
+        # print(value)
+        return value
 
     def write(self, power):
         self.value = power
