@@ -12,7 +12,7 @@ import picamera
 from glob import glob  # for USB checking
 from subprocess import check_output, CalledProcessError
 import os
-from multiprocessing import Process, Lock
+
 
 try:
     sys.path.insert(0, '/home/pi/Dexter/GoPiGo/Software/Python/line_follower')
@@ -149,6 +149,10 @@ def _get_mount_points(devices=None):
     usb_info = (line for line in output if is_usb(line.split()[0]))
     return [(info.split()[0], info.split()[2]) for info in usb_info]
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 6c5cf1d904fec088da0b49789fdf6052aa85882f
 
 #############################################################
 # the following is in a try/except structure because it depends
@@ -641,6 +645,12 @@ class LineFollower(Sensor):
             return "Right"
         return "Unknown"
 
+#######################################################################
+#
+# EasyCamera offers a way of saving photos onto a usb key
+#
+#######################################################################
+
 class EasyCamera(picamera.PiCamera):
     def __init__(self, resolution=(1920, 1080), gpg=None):
         picamera.PiCamera.__init__(self)
@@ -664,6 +674,9 @@ class EasyCamera(picamera.PiCamera):
             return True
         else:
             return False
+
+#######################################################################
+
 
 if __name__ == '__main__':
     import time
