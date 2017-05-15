@@ -12,6 +12,7 @@ import picamera
 from glob import glob  # for USB checking
 from subprocess import check_output, CalledProcessError
 import os
+from I2C_mutex import *
 
 
 try:
@@ -39,72 +40,71 @@ def debug(in_str):
     if False:
         print(in_str)
 
-def create_lock():
-    global global_lock
-    # print("Creating Lock")
-    global_lock = Lock()
-    # print("easy lock is {}".format(global_lock))
-    return global_lock
+# def create_lock():
+#     global global_lock
+#     # print("Creating Lock")
+#     global_lock = Lock()
+#     # print("easy lock is {}".format(global_lock))
+#     return global_lock
 
-def set_lock(in_lock):
-    global global_lock
-    # print("Setting Lock")
-    global_lock = in_lock
-    print(global_lock)
+# def set_lock(in_lock):
+#     global global_lock
+#     # print("Setting Lock")
+#     global_lock = in_lock
+#     print(global_lock)
 
-def get_lock():
-    return global_lock
+# def get_lock():
+#     return global_lock
 
-def _grab_read():
-    global global_lock
-    status = False
-    try:
-        status = global_lock.acquire(timeout=1)
-    except:
-        pass
-    return status
-    # print("acquired")
+# def _grab_read():
+#     global global_lock
+#     status = False
+#     try:
+#         status = global_lock.acquire(timeout=1)
+#     except:
+#         pass
+#     return status
+#     # print("acquired")
 
-def _release_read():
-    global global_lock
-    try:
-        global_lock.release()
-    except:
-        pass
-    # print("released")
+# def _release_read():
+#     global global_lock
+#     try:
+#         global_lock.release()
+#     except:
+#         pass
+#     # print("released")
 
 
 def volt():
-    voltage = 0
-    if _grab_read():
-        voltage = gopigo.volt()
-        _release_read()
+    I2C_Mutex_Acquire()
+    voltage = gopigo.volt()
+    I2C_Mutex_Release()
     return voltage
 
 def stop():
-    _grab_read()
+    I2C_Mutex_Acquire()
     gopigo.stop()
-    _release_read()
+    I2C_Mutex_Release()
 
 def backward():
-    _grab_read()
+    I2C_Mutex_Acquire()
     gopigo.backward()
-    _release_read()
+    I2C_Mutex_Release()
 
 def left():
-    _grab_read()
+    I2C_Mutex_Acquire()
     gopigo.left()
-    _release_read()
+    I2C_Mutex_Release()
 
 def right():
-    _grab_read()
+    I2C_Mutex_Acquire()
     gopigo.right()
-    _release_read()
+    I2C_Mutex_Release()
 
 def forward():
-    _grab_read()
+    I2C_Mutex_Acquire()
     gopigo.forward()
-    _release_read()
+    I2C_Mutex_Release()
 
 #####################################################################
 #
@@ -149,10 +149,6 @@ def _get_mount_points(devices=None):
     usb_info = (line for line in output if is_usb(line.split()[0]))
     return [(info.split()[0], info.split()[2]) for info in usb_info]
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 6c5cf1d904fec088da0b49789fdf6052aa85882f
 
 #############################################################
 # the following is in a try/except structure because it depends
@@ -248,14 +244,15 @@ class DigitalSensor(Sensor):
         okay = False
         error_count = 0
 
-        _grab_read()
+        I2C_Mutex_Acquire()
         while not okay and error_count < 10:
             try:
                 rtn = int(gopigo.digitalRead(self.getPortID()))
                 okay = True
             except:
                 error_count += 1
-        _release_read()
+        I2C_Mutex_Release()
+
         if error_count > 10:
             return -1
         else:
@@ -263,7 +260,10 @@ class DigitalSensor(Sensor):
 
     def write(self, power):
         self.value = power
-        return gopigo.digitalWrite(self.getPortID(), power)
+        I2C_Mutex_Acquire()
+        return_value = gopigo.digitalWrite(self.getPortID(), power)
+        I2C_Mutex_Release()
+        return return_value
 ##########################
 
 
@@ -278,9 +278,9 @@ class AnalogSensor(Sensor):
         Sensor.__init__(self, port, pinmode)
 
     def read(self):
-        _grab_read()
+        I2C_Mutex_Acquire()
         self.value = gopigo.analogRead(self.getPortID())
-        _release_read()
+        I2C_Mutex_Release()
         return self.value
 
     def percent_read(self):
@@ -290,7 +290,10 @@ class AnalogSensor(Sensor):
 
     def write(self, power):
         self.value = power
-        return gopigo.analogWrite(self.getPortID(), power)
+        I2C_Mutex_Acquire()
+        return_value = gopigo.analogWrite(self.getPortID(), power)
+        I2C_Mutex_Release()
+        return return_value
 ##########################
 
 
@@ -330,13 +333,12 @@ class UltraSonicSensor(AnalogSensor):
         self.port = port
 
     def is_too_close(self):
-        _grab_read()
+        too_close = False
+        I2C_Mutex_Acquire()
         if gopigo.us_dist(PORTS[self.port]) < self.get_safe_distance():
-            _release_read()
-            return True
-
-        _release_read()
-        return False
+            too_close = True
+        I2C_Mutex_Release()
+        return too_close
 
     def set_safe_distance(self, dist):
         self.safe_distance = int(dist)
@@ -355,9 +357,9 @@ class UltraSonicSensor(AnalogSensor):
         readings =[]
         skip = 0
         while len(readings) < 3:
-            _grab_read()
+            I2C_Mutex_Acquire()
             value = gopigo.corrected_us_dist(PORTS[self.port])
-            _release_read()
+            I2C_Mutex_Release()
             print(value)
             if value < 300 and value > 0:
                 readings.append(value)
@@ -539,9 +541,9 @@ class LineFollower(Sensor):
         From 0 to 1023
         May return a list of -1 when there's a read error
         '''
-        _grab_read()
+        I2C_Mutex_Acquire()
         five_vals = line_sensor.read_sensor()
-        _release_read()
+        I2C_Mutex_Release()
         print ("raw values {}".format(five_vals))
 
         if five_vals != -1:
