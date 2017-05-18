@@ -143,7 +143,7 @@ def get_black_line():
 		with open(file_b, 'rb') as f:
 			black_line = pickle.load(f)
 	except Exception as e:
-		print ("FAIL!")
+		print ("Line Follower: failed getting black line values!")
 		print (e)
 		black_line=[0]*5
 	return black_line
