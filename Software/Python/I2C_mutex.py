@@ -1,4 +1,5 @@
 import fcntl
+import time
 
 DexterLockI2C_handle = None
 
