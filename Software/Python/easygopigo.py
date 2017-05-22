@@ -13,6 +13,7 @@ from glob import glob  # for USB checking
 from subprocess import check_output, CalledProcessError
 import os
 from I2C_mutex import *
+from Distance_Sensor import distance_sensor
 
 
 try:
@@ -676,6 +677,40 @@ class EasyCamera(picamera.PiCamera):
             return True
         else:
             return False
+            
+#######################################################################
+#
+# DistanceSensor 
+#
+#######################################################################
+class DistanceSensor(Sensor, distance_sensor.DistanceSensor):
+    '''
+    Wrapper to measure the distance in cms from the DI distance sensor.
+    Connect the distance sensor to I2C port.
+    '''
+    def __init__(self, port="I2C",gpg=None):
+        try:
+            Sensor.__init__(self, port, "OUTPUT")
+            distance_sensor.DistanceSensor.__init__(self)
+            self.set_descriptor("Distance Sensor")
+        except Exception as e:
+            print(e)
+            raise ValueError("Distance Sensor not found")
+    # Returns the values in cms
+    def read_mm(self):
+        I2C_Mutex_Acquire()
+        mm = self.readRangeSingleMillimeters()
+        I2C_Mutex_Release()
+        return mm
+        
+    def read(self):
+        cm = self.read_mm()//10
+        return (cm)
+        
+    def read_inches(self):
+        cm = self.read()
+        return cm / 2.54
+
 
 #######################################################################
 
