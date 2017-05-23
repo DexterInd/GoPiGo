@@ -41,71 +41,58 @@ def debug(in_str):
     if False:
         print(in_str)
 
-# def create_lock():
-#     global global_lock
-#     # print("Creating Lock")
-#     global_lock = Lock()
-#     # print("easy lock is {}".format(global_lock))
-#     return global_lock
 
-# def set_lock(in_lock):
-#     global global_lock
-#     # print("Setting Lock")
-#     global_lock = in_lock
-#     print(global_lock)
+def _grab_read():
+    global read_is_open
+    I2C_Mutex_Acquire()
+    # thread safe doesn't seem to be required so
+    # commented out
+    # while read_is_open is False:
+    #     time.sleep(0.01)
+    read_is_open = False
+    # print("acquired")
 
-# def get_lock():
-#     return global_lock
 
-# def _grab_read():
-#     global global_lock
-#     status = False
-#     try:
-#         status = global_lock.acquire(timeout=1)
-#     except:
-#         pass
-#     return status
-#     # print("acquired")
-
-# def _release_read():
-#     global global_lock
-#     try:
-#         global_lock.release()
-#     except:
-#         pass
-#     # print("released")
+def _release_read():
+    global read_is_open
+    I2C_Mutex_Release()
+    read_is_open = True
+    # print("released")
 
 
 def volt():
-    I2C_Mutex_Acquire()
+    _grab_read()
     voltage = gopigo.volt()
-    I2C_Mutex_Release()
+    _release_read()
     return voltage
 
 def stop():
-    I2C_Mutex_Acquire()
+    # no locking is required here
     gopigo.stop()
-    I2C_Mutex_Release()
+
 
 def backward():
-    I2C_Mutex_Acquire()
+    _grab_read()
     gopigo.backward()
-    I2C_Mutex_Release()
+    _release_read()
+
 
 def left():
     I2C_Mutex_Acquire()
     gopigo.left()
-    I2C_Mutex_Release()
+    _release_read()
+
 
 def right():
-    I2C_Mutex_Acquire()
+    _grab_read()
     gopigo.right()
-    I2C_Mutex_Release()
+    _release_read()
+
 
 def forward():
-    I2C_Mutex_Acquire()
+    _grab_read()
     gopigo.forward()
-    I2C_Mutex_Release()
+    _release_read()
 
 #####################################################################
 #
@@ -245,14 +232,14 @@ class DigitalSensor(Sensor):
         okay = False
         error_count = 0
 
-        I2C_Mutex_Acquire()
+        _grab_read()
         while not okay and error_count < 10:
             try:
                 rtn = int(gopigo.digitalRead(self.getPortID()))
                 okay = True
             except:
                 error_count += 1
-        I2C_Mutex_Release()
+        _release_read()
 
         if error_count > 10:
             return -1
@@ -261,9 +248,9 @@ class DigitalSensor(Sensor):
 
     def write(self, power):
         self.value = power
-        I2C_Mutex_Acquire()
+        _grab_read()
         return_value = gopigo.digitalWrite(self.getPortID(), power)
-        I2C_Mutex_Release()
+        _release_read()
         return return_value
 ##########################
 
@@ -279,9 +266,9 @@ class AnalogSensor(Sensor):
         Sensor.__init__(self, port, pinmode)
 
     def read(self):
-        I2C_Mutex_Acquire()
+        _grab_read()
         self.value = gopigo.analogRead(self.getPortID())
-        I2C_Mutex_Release()
+        _release_read()
         return self.value
 
     def percent_read(self):
@@ -291,9 +278,9 @@ class AnalogSensor(Sensor):
 
     def write(self, power):
         self.value = power
-        I2C_Mutex_Acquire()
+        _grab_read()
         return_value = gopigo.analogWrite(self.getPortID(), power)
-        I2C_Mutex_Release()
+        _release_read()
         return return_value
 ##########################
 
@@ -335,10 +322,10 @@ class UltraSonicSensor(AnalogSensor):
 
     def is_too_close(self):
         too_close = False
-        I2C_Mutex_Acquire()
+        _grab_read()
         if gopigo.us_dist(PORTS[self.port]) < self.get_safe_distance():
             too_close = True
-        I2C_Mutex_Release()
+        _release_read()
         return too_close
 
     def set_safe_distance(self, dist):
@@ -358,9 +345,9 @@ class UltraSonicSensor(AnalogSensor):
         readings =[]
         skip = 0
         while len(readings) < 3:
-            I2C_Mutex_Acquire()
+            _grab_read()
             value = gopigo.corrected_us_dist(PORTS[self.port])
-            I2C_Mutex_Release()
+            _release_read()
             print(value)
             if value < 300 and value > 0:
                 readings.append(value)
@@ -542,9 +529,9 @@ class LineFollower(Sensor):
         From 0 to 1023
         May return a list of -1 when there's a read error
         '''
-        I2C_Mutex_Acquire()
+        _grab_read()
         five_vals = line_sensor.read_sensor()
-        I2C_Mutex_Release()
+        _release_read()
         print ("raw values {}".format(five_vals))
 
         if five_vals != -1:
@@ -690,17 +677,45 @@ class DistanceSensor(Sensor, distance_sensor.DistanceSensor):
     '''
     def __init__(self, port="I2C",gpg=None):
         try:
-            Sensor.__init__(self, port, "OUTPUT")
+            Sensor.__init__(self, port, "INPUT")
+            _grab_read()
             distance_sensor.DistanceSensor.__init__(self)
+            _release_read()
             self.set_descriptor("Distance Sensor")
         except Exception as e:
             print(e)
             raise ValueError("Distance Sensor not found")
-    # Returns the values in cms
+            
+    # Returns the values in mm
+    readings = []
     def read_mm(self):
-        I2C_Mutex_Acquire()
-        mm = self.readRangeSingleMillimeters()
-        I2C_Mutex_Release()
+        mm = 8190
+        readings = []
+        attempt = 0
+        
+        # try 3 times to have a reading that is 
+        # smaller than 8m or bigger than 5 mm.
+        # if sensor insists on that value, then pass it on
+        while (mm > 8000 or mm < 5) and attempt < 3:
+            _grab_read()
+            mm = self.readRangeSingleMillimeters()
+            _release_read()
+            attempt = attempt + 1
+            time.sleep(0.001)
+            
+        # add the reading to our last 3 readings
+        # a 0 value is possible when sensor is not found
+        if (mm < 8000 and mm > 5) or mm == 0:
+            readings.append(mm)
+        if len(readings) > 3:
+            readings.pop(0)
+        
+        # calculate an average and limit it to 5 > X > 3000
+        if len(readings) > 1: # avoid division by 0
+            mm = round(sum(readings) / float(len(readings)))
+        if mm > 3000:
+            mm = 3000
+            
         return mm
         
     def read(self):
