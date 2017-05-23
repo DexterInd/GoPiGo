@@ -44,7 +44,10 @@ def debug(in_str):
 
 def _grab_read():
     global read_is_open
-    I2C_Mutex_Acquire()
+    try:
+        I2C_Mutex_Acquire()
+    except:
+        I2C_Mutex_Release()
     # thread safe doesn't seem to be required so
     # commented out
     # while read_is_open is False:
@@ -62,7 +65,10 @@ def _release_read():
 
 def volt():
     _grab_read()
-    voltage = gopigo.volt()
+    try:
+        voltage = gopigo.volt()
+    except:
+        voltage = 0
     _release_read()
     return voltage
 
@@ -73,25 +79,37 @@ def stop():
 
 def backward():
     _grab_read()
-    gopigo.backward()
+    try:
+        gopigo.backward()
+    except:
+        pass
     _release_read()
 
 
 def left():
-    I2C_Mutex_Acquire()
-    gopigo.left()
+    _grab_read()
+    try:
+        gopigo.left()
+    except:
+        pass    
     _release_read()
 
 
 def right():
     _grab_read()
-    gopigo.right()
+    try:
+        gopigo.right()
+    except:
+        pass
     _release_read()
 
 
 def forward():
     _grab_read()
-    gopigo.forward()
+    try:
+        gopigo.forward()
+    except:
+        pass
     _release_read()
 
 #####################################################################
@@ -249,7 +267,10 @@ class DigitalSensor(Sensor):
     def write(self, power):
         self.value = power
         _grab_read()
-        return_value = gopigo.digitalWrite(self.getPortID(), power)
+        try:
+            return_value = gopigo.digitalWrite(self.getPortID(), power)
+        except:
+            pass
         _release_read()
         return return_value
 ##########################
@@ -267,7 +288,10 @@ class AnalogSensor(Sensor):
 
     def read(self):
         _grab_read()
-        self.value = gopigo.analogRead(self.getPortID())
+        try:
+            self.value = gopigo.analogRead(self.getPortID())
+        except:
+            pass            
         _release_read()
         return self.value
 
@@ -279,7 +303,10 @@ class AnalogSensor(Sensor):
     def write(self, power):
         self.value = power
         _grab_read()
-        return_value = gopigo.analogWrite(self.getPortID(), power)
+        try:
+            return_value = gopigo.analogWrite(self.getPortID(), power)
+        except:
+            pass
         _release_read()
         return return_value
 ##########################
@@ -323,8 +350,11 @@ class UltraSonicSensor(AnalogSensor):
     def is_too_close(self):
         too_close = False
         _grab_read()
-        if gopigo.us_dist(PORTS[self.port]) < self.get_safe_distance():
-            too_close = True
+        try:
+            if gopigo.us_dist(PORTS[self.port]) < self.get_safe_distance():
+                too_close = True
+        except:
+            pass
         _release_read()
         return too_close
 
@@ -346,7 +376,10 @@ class UltraSonicSensor(AnalogSensor):
         skip = 0
         while len(readings) < 3:
             _grab_read()
-            value = gopigo.corrected_us_dist(PORTS[self.port])
+            try:
+                value = gopigo.corrected_us_dist(PORTS[self.port])
+            except:
+                pass
             _release_read()
             print(value)
             if value < 300 and value > 0:
@@ -530,7 +563,10 @@ class LineFollower(Sensor):
         May return a list of -1 when there's a read error
         '''
         _grab_read()
-        five_vals = line_sensor.read_sensor()
+        try:
+            five_vals = line_sensor.read_sensor()
+        except:
+            pass
         _release_read()
         print ("raw values {}".format(five_vals))
 
@@ -679,7 +715,10 @@ class DistanceSensor(Sensor, distance_sensor.DistanceSensor):
         try:
             Sensor.__init__(self, port, "INPUT")
             _grab_read()
-            distance_sensor.DistanceSensor.__init__(self)
+            try:
+                distance_sensor.DistanceSensor.__init__(self)
+            except:
+                pass
             _release_read()
             self.set_descriptor("Distance Sensor")
         except Exception as e:
@@ -698,7 +737,10 @@ class DistanceSensor(Sensor, distance_sensor.DistanceSensor):
         # if sensor insists on that value, then pass it on
         while (mm > 8000 or mm < 5) and attempt < 3:
             _grab_read()
-            mm = self.readRangeSingleMillimeters()
+            try:
+                mm = self.readRangeSingleMillimeters()
+            except:
+                mm = 0
             _release_read()
             attempt = attempt + 1
             time.sleep(0.001)
