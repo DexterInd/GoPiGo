@@ -47,7 +47,7 @@ def _grab_read():
     try:
         I2C_Mutex_Acquire()
     except:
-        I2C_Mutex_Release()
+        pass
     # thread safe doesn't seem to be required so
     # commented out
     # while read_is_open is False:
