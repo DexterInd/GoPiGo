@@ -9,7 +9,10 @@ def I2C_Mutex_Acquire():
     while DexterLockI2C_handle is not None:
         time.sleep(0.001)
     DexterLockI2C_handle = True # set to something other than None
-    DexterLockI2C_handle = open('/run/lock/DexterLockI2C', 'w')
+    try:
+        DexterLockI2C_handle = open('/run/lock/DexterLockI2C', 'w')
+    except:
+        pass
     acquired = False
     while not acquired:
         try:
@@ -18,10 +21,12 @@ def I2C_Mutex_Acquire():
             acquired = True
         except IOError: # already locked by a different process
             time.sleep(0.001)
+        except Exception as e:
+            print(e)
 
 def I2C_Mutex_Release():
     global DexterLockI2C_handle
-    if DexterLockI2C_handle is not None:
+    if DexterLockI2C_handle is not None and DexterLockI2C_handle is not True:
         DexterLockI2C_handle.close()
         DexterLockI2C_handle = None
         time.sleep(0.001)
