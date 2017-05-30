@@ -43,13 +43,16 @@ def debug(in_str):
 
 
 def _grab_read():
+    '''
+    first acquire at the process level,
+    then at the thread level.
+    '''
     global read_is_open
+    # print("acquiring")
     try:
         I2C_Mutex_Acquire()
     except:
         pass
-    # thread safe doesn't seem to be required so
-    # commented out
     # while read_is_open is False:
     #     time.sleep(0.01)
     read_is_open = False
@@ -62,55 +65,105 @@ def _release_read():
     read_is_open = True
     # print("released")
 
+class EasyGoPiGo():
+    def volt(self):
+        _grab_read()
+        try:
+            voltage = gopigo.volt()
+        except:
+            voltage = 0
+        _release_read()
+        return voltage
 
-def volt():
-    _grab_read()
-    try:
-        voltage = gopigo.volt()
-    except:
-        voltage = 0
-    _release_read()
-    return voltage
-
-def stop():
-    # no locking is required here
-    gopigo.stop()
-
-
-def backward():
-    _grab_read()
-    try:
-        gopigo.backward()
-    except:
-        pass
-    _release_read()
+    def stop(self):
+        # no locking is required here
+        gopigo.stop()
 
 
-def left():
-    _grab_read()
-    try:
-        gopigo.left()
-    except:
-        pass    
-    _release_read()
+    def backward(self):
+        _grab_read()
+        try:
+            gopigo.backward()
+        except:
+            pass
+        _release_read()
+
+    def set_speed(self,new_speed):
+        _grab_read()
+        try:
+            gopigo.set_speed(new_speed)
+        except:
+            pass
+        _release_read()
+        
+    def set_left_speed(self,new_speed):
+        _grab_read()
+        try:
+            gopigo.set_left_speed(new_speed)
+        except:
+            pass
+        _release_read()
+
+    def set_right_speed(self,new_speed):
+        _grab_read()
+        try:
+            gopigo.set_right_speed(new_speed)
+        except:
+            pass
+        _release_read()
+        
+    def left(self):
+        _grab_read()
+        try:
+            gopigo.left()
+        except:
+            pass    
+        _release_read()
 
 
-def right():
-    _grab_read()
-    try:
-        gopigo.right()
-    except:
-        pass
-    _release_read()
+    def right(self):
+        _grab_read()
+        try:
+            gopigo.right()
+        except:
+            pass
+        _release_read()
 
 
-def forward():
-    _grab_read()
-    try:
-        gopigo.forward()
-    except:
-        pass
-    _release_read()
+    def forward(self):
+        _grab_read()
+        try:
+            gopigo.forward()
+        except:
+            pass
+        _release_read()
+        
+    def led_on(self,led_id):
+        _grab_read()
+        try:
+            gopigo.led_on(led_id)
+        except:
+            pass
+        _release_read()
+        
+    def led_off(self,led_id):
+        _grab_read()
+        try:
+            gopigo.led_off(led_id)
+        except:
+            pass
+        _release_read()
+        
+    def trim_read(self):
+        _grab_read()
+        current_trim = int(gopigo.trim_read()) 
+        _release_read()
+        return current_trim
+        
+    def trim_write(self,set_trim_to):
+        _grab_read()
+        gopigo.trim_write(int(set_trim_to))
+        _release_read()
 
 #####################################################################
 #
@@ -250,14 +303,15 @@ class DigitalSensor(Sensor):
         okay = False
         error_count = 0
 
-        _grab_read()
+
         while not okay and error_count < 10:
+            _grab_read()
             try:
                 rtn = int(gopigo.digitalRead(self.getPortID()))
                 okay = True
             except:
                 error_count += 1
-        _release_read()
+            _release_read()
 
         if error_count > 10:
             return -1
@@ -301,6 +355,7 @@ class AnalogSensor(Sensor):
         return value
 
     def write(self, power):
+        print("write")
         self.value = power
         _grab_read()
         try:
@@ -308,6 +363,7 @@ class AnalogSensor(Sensor):
         except:
             pass
         _release_read()
+        print("written")
         return return_value
 ##########################
 
@@ -381,7 +437,7 @@ class UltraSonicSensor(AnalogSensor):
             except:
                 pass
             _release_read()
-            print(value)
+            debug(value)
             if value < 300 and value > 0:
                 readings.append(value)
             else:
@@ -568,7 +624,7 @@ class LineFollower(Sensor):
         except:
             pass
         _release_read()
-        print ("raw values {}".format(five_vals))
+        debug ("raw values {}".format(five_vals))
 
         if five_vals != -1:
             return five_vals
@@ -600,29 +656,29 @@ class LineFollower(Sensor):
             else:
                 line_result.append(0)
 
-        print ("Current read is {}".format(line_result))
+        debug ("Current read is {}".format(line_result))
 
         if five_vals != [-1,-1,-1,-1,-1]:
-            print("appending")
+            debug("appending")
             self.last_3_reads.append(line_result)
         if len(self.last_3_reads) > 3:
             self.last_3_reads.pop(0)
 
-        print (self.last_3_reads)
+        debug (self.last_3_reads)
         transpose = list(zip(*self.last_3_reads))
         avg_vals = []
         for sensor_reading in transpose:
             # print (sum(sensor_reading)//3)
             avg_vals.append(sum(sensor_reading)//3)
 
-        print ("current avg: {}".format(avg_vals))
+        debug ("current avg: {}".format(avg_vals))
         return avg_vals
 
     def follow_line(self,fwd_speed=80):
         slight_turn_speed=int(.7*fwd_speed)
         while True:
             pos = self.read_position()
-            print(pos)
+            debug(pos)
             if pos == "Center":
                 gopigo.forward()
             elif pos == "Left":
@@ -728,6 +784,9 @@ class DistanceSensor(Sensor, distance_sensor.DistanceSensor):
     # Returns the values in mm
     readings = []
     def read_mm(self):
+        
+        # 8190 is what the sensor sends when it's out of range
+        # we're just setting a default value
         mm = 8190
         readings = []
         attempt = 0
