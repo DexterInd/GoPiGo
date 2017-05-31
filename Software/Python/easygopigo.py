@@ -8,9 +8,6 @@ import tty
 import select
 import time
 import gopigo
-import picamera
-from glob import glob  # for USB checking
-from subprocess import check_output, CalledProcessError
 import os
 from I2C_mutex import *
 from Distance_Sensor import distance_sensor
@@ -165,48 +162,6 @@ class EasyGoPiGo():
         gopigo.trim_write(int(set_trim_to))
         _release_read()
 
-#####################################################################
-#
-# USB SUPPORT
-#
-#####################################################################
-
-def check_usb():
-    '''
-    will return the path to the USB key if there's one that's mounted
-    will return false otherwise
-    '''
-    if len(_get_mount_points()) == 1:
-        return _get_mount_points()[0][1]
-    return False
-
-def create_folder_on_usb(foldername):
-    usb_path = check_usb()
-    if usb_path is not False:
-        try:
-            os.mkdir( usb_path+"/"+foldername, 0755 );
-            return True
-        except:
-            return False
-
-def _get_usb_devices():
-    '''
-    gets a list of devices that could be a usb
-    '''
-    sdb_devices = map(os.path.realpath, glob('/sys/block/sd*'))
-    usb_devices = (dev for dev in sdb_devices
-        if 'usb' in dev.split('/')[5])
-    return dict((os.path.basename(dev), dev) for dev in usb_devices)
-
-def _get_mount_points(devices=None):
-    '''
-    returns a list of all mounted USBs
-    '''
-    devices = devices or _get_usb_devices() # if devices are None: get_usb_devices
-    output = check_output(['mount']).splitlines()
-    is_usb = lambda path: any(dev in path for dev in devices)
-    usb_info = (line for line in output if is_usb(line.split()[0]))
-    return [(info.split()[0], info.split()[2]) for info in usb_info]
 
 
 #############################################################
@@ -727,35 +682,6 @@ class LineFollower(Sensor):
             return "Right"
         return "Unknown"
 
-#######################################################################
-#
-# EasyCamera offers a way of saving photos onto a usb key
-#
-#######################################################################
-
-class EasyCamera(picamera.PiCamera):
-    def __init__(self, resolution=(1920, 1080), gpg=None):
-        picamera.PiCamera.__init__(self)
-        self.resolution = resolution
-        self.start_time = time.time()
-
-    def take_photo(self,filename):
-        # 2 seconds must have passed since the start of the program
-        # in order to be able to take a photo
-        # known as "camera warm-up time"
-        path=check_usb()
-
-        # ensure we have waited long enough for camera
-        # to be properly initialised
-        while time.time() - self.start_time < 2:
-            time.sleep(0.1)
-
-        # now we can take a photo. Smile!
-        if path is not False:
-            self.capture(path+ "/"+filename)
-            return True
-        else:
-            return False
             
 #######################################################################
 #
