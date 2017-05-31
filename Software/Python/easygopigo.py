@@ -1,14 +1,14 @@
 #!/usr/bin/env python
-from __future__ import print_function
-from __future__ import division
-from builtins import input
+# from __future__ import print_function
+# from __future__ import division
+# from builtins import input
 
 import sys
-import tty
-import select
+# import tty
+# import select
 import time
 import gopigo
-import os
+# import os
 from I2C_mutex import *
 from Distance_Sensor import distance_sensor
 
@@ -310,7 +310,6 @@ class AnalogSensor(Sensor):
         return value
 
     def write(self, power):
-        print("write")
         self.value = power
         _grab_read()
         try:
@@ -318,7 +317,6 @@ class AnalogSensor(Sensor):
         except:
             pass
         _release_read()
-        print("written")
         return return_value
 ##########################
 
