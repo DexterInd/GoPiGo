@@ -127,14 +127,30 @@ LED_R=0
 # This allows us to be more specific about which commands contain unused bytes
 unused = 0
 
-v16_thresh=790
-
 '''
 #Enable slow i2c (for better stability)
 def en_slow_i2c():
 	#subprocess.call('sudo rmmod i2c_bcm2708',shell=True)
 	subprocess.call('sudo modprobe i2c_bcm2708 baudrate=70000',shell=True)
 '''
+
+# if the value of this following variable is None, then it means the HW version hasn't been checked yet
+# in order to be checked, we use check_hw_version() function
+gopigo_hwversion = None
+
+def check_hw_version():
+    hw_version = None
+    v16_thresh = 790
+
+    for i in range(10):
+        raw = analogRead(7)
+
+    if raw > v16_thresh:
+        hw_version = 16
+    else:
+        hw_version = 14
+
+    return hw_version
 
 #Write I2C block
 def write_i2c_block(address,block):
@@ -445,7 +461,11 @@ def read_motor_speed():
 #	arg:
 #		l_id: 1 for left LED and 0 for right LED
 def led_on(l_id):
-	if version > 14:
+    global gopigo_hwversion
+    if gopigo_hwversion is None:
+        gopigo_hwversion = check_hw_version()
+
+	if gopigo_hwversion > 14:
 		r_led=16
 		l_led=17
 	else:
@@ -467,7 +487,11 @@ def led_on(l_id):
 #	arg:
 #		l_id: 1 for left LED and 0 for right LED
 def led_off(l_id):
-	if version>14:
+    global gopigo_hwversion
+    if gopigo_hwversion is None:
+        gopigo_hwversion = check_hw_version()
+
+	if gopigo_hwversion > 14:
 		r_led=16
 		l_led=17
 	else:
@@ -658,11 +682,3 @@ def dht(sensor_type=0):
 			return [-2.0,-2.0]
 	except RuntimeError:
 		return [-3.0,-3.0]
-
-for i in range(10):
-	raw=analogRead(7)
-
-if raw>v16_thresh:
-	version=16
-else:
-	version=14
