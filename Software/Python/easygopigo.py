@@ -310,7 +310,6 @@ class AnalogSensor(Sensor):
         return value
 
     def write(self, power):
-        print("write")
         self.value = power
         _grab_read()
         try:
@@ -318,7 +317,6 @@ class AnalogSensor(Sensor):
         except:
             pass
         _release_read()
-        print("written")
         return return_value
 ##########################
 
