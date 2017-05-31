@@ -662,7 +662,6 @@ def dht(sensor_type=0):
 
 def check_version():
 	global version
-	print (time.time())
 	
 	if version == 0:
 		for i in range(10):
@@ -673,5 +672,4 @@ def check_version():
 		else:
 			version=14
 
-	print (time.time())
 	return version
