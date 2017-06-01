@@ -232,7 +232,10 @@ class Sensor():
         self.setPort(port)
         self.setPinMode(pinmode)
         if pinmode == "INPUT" or pinmode == "OUTPUT":
-            gopigo.pinMode(self.getPortID(), self.getPinMode())
+            try:
+                gopigo.pinMode(self.getPortID(), self.getPinMode())
+            except:
+                pass
 
     def __str__(self):
         return ("{} on port {}".format(self.descriptor, self.getPort()))
@@ -779,6 +782,7 @@ try:
             return cm / 2.54
 
 except:
+    print("Distance Sensor likely not installed")
     pass
 
 #######################################################################
