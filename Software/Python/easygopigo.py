@@ -7,11 +7,19 @@ import sys
 # import tty
 # import select
 import time
-import gopigo
-# import os
-from I2C_mutex import *
-from Distance_Sensor import distance_sensor
 
+try:
+    import gopigo
+except:
+    pass
+# import os
+
+# the following libraries may or may not be installed
+# nor needed
+try:
+    from I2C_mutex import *
+except:
+    pass
 
 try:
     sys.path.insert(0, '/home/pi/Dexter/GoPiGo/Software/Python/line_follower')
@@ -58,11 +66,21 @@ def _grab_read():
 
 def _release_read():
     global read_is_open
-    I2C_Mutex_Release()
+    try:
+        I2C_Mutex_Release()
+    except:
+        pass
     read_is_open = True
     # print("released")
+    
 
 class EasyGoPiGo():
+    '''
+    Wrapper to access the gopigo functionality with mutex in place
+    this makes the gopigo thread safe and process safe
+    if mutex is not available, then it's just a direct access to gopigo
+    '''
+    
     def volt(self):
         _grab_read()
         try:
@@ -74,13 +92,39 @@ class EasyGoPiGo():
 
     def stop(self):
         # no locking is required here
-        gopigo.stop()
+        try:
+            gopigo.stop()
+        except:
+            pass
 
+    def forward(self):
+        _grab_read()
+        try:
+            gopigo.forward()
+        except:
+            pass
+        _release_read()
 
     def backward(self):
         _grab_read()
         try:
             gopigo.backward()
+        except:
+            pass
+        _release_read()
+            
+    def left(self):
+        _grab_read()
+        try:
+            gopigo.left()
+        except:
+            pass    
+        _release_read()
+
+    def right(self):
+        _grab_read()
+        try:
+            gopigo.right()
         except:
             pass
         _release_read()
@@ -109,32 +153,6 @@ class EasyGoPiGo():
             pass
         _release_read()
         
-    def left(self):
-        _grab_read()
-        try:
-            gopigo.left()
-        except:
-            pass    
-        _release_read()
-
-
-    def right(self):
-        _grab_read()
-        try:
-            gopigo.right()
-        except:
-            pass
-        _release_read()
-
-
-    def forward(self):
-        _grab_read()
-        try:
-            gopigo.forward()
-        except:
-            pass
-        _release_read()
-        
     def led_on(self,led_id):
         _grab_read()
         try:
@@ -153,13 +171,19 @@ class EasyGoPiGo():
         
     def trim_read(self):
         _grab_read()
-        current_trim = int(gopigo.trim_read()) 
+        try:
+            current_trim = int(gopigo.trim_read()) 
+        except:
+            pass
         _release_read()
         return current_trim
         
     def trim_write(self,set_trim_to):
         _grab_read()
-        gopigo.trim_write(int(set_trim_to))
+        try:
+            gopigo.trim_write(int(set_trim_to))
+        except:
+            pass
         _release_read()
 
 
@@ -208,7 +232,10 @@ class Sensor():
         self.setPort(port)
         self.setPinMode(pinmode)
         if pinmode == "INPUT" or pinmode == "OUTPUT":
-            gopigo.pinMode(self.getPortID(), self.getPinMode())
+            try:
+                gopigo.pinMode(self.getPortID(), self.getPinMode())
+            except:
+                pass
 
     def __str__(self):
         return ("{} on port {}".format(self.descriptor, self.getPort()))
@@ -686,71 +713,77 @@ class LineFollower(Sensor):
 # DistanceSensor 
 #
 #######################################################################
-class DistanceSensor(Sensor, distance_sensor.DistanceSensor):
-    '''
-    Wrapper to measure the distance in cms from the DI distance sensor.
-    Connect the distance sensor to I2C port.
-    '''
-    def __init__(self, port="I2C",gpg=None):
-        try:
-            Sensor.__init__(self, port, "INPUT")
-            _grab_read()
-            try:
-                distance_sensor.DistanceSensor.__init__(self)
-            except:
-                pass
-            _release_read()
-            self.set_descriptor("Distance Sensor")
-        except Exception as e:
-            print(e)
-            raise ValueError("Distance Sensor not found")
-            
-    # Returns the values in mm
-    readings = []
-    def read_mm(self):
-        
-        # 8190 is what the sensor sends when it's out of range
-        # we're just setting a default value
-        mm = 8190
-        readings = []
-        attempt = 0
-        
-        # try 3 times to have a reading that is 
-        # smaller than 8m or bigger than 5 mm.
-        # if sensor insists on that value, then pass it on
-        while (mm > 8000 or mm < 5) and attempt < 3:
-            _grab_read()
-            try:
-                mm = self.readRangeSingleMillimeters()
-            except:
-                mm = 0
-            _release_read()
-            attempt = attempt + 1
-            time.sleep(0.001)
-            
-        # add the reading to our last 3 readings
-        # a 0 value is possible when sensor is not found
-        if (mm < 8000 and mm > 5) or mm == 0:
-            readings.append(mm)
-        if len(readings) > 3:
-            readings.pop(0)
-        
-        # calculate an average and limit it to 5 > X > 3000
-        if len(readings) > 1: # avoid division by 0
-            mm = round(sum(readings) / float(len(readings)))
-        if mm > 3000:
-            mm = 3000
-            
-        return mm
-        
-    def read(self):
-        cm = self.read_mm()//10
-        return (cm)
-        
-    def read_inches(self):
-        cm = self.read()
-        return cm / 2.54
+try:
+    from Distance_Sensor import distance_sensor
 
+    class DistanceSensor(Sensor, distance_sensor.DistanceSensor):
+        '''
+        Wrapper to measure the distance in cms from the DI distance sensor.
+        Connect the distance sensor to I2C port.
+        '''
+        def __init__(self, port="I2C",gpg=None):
+            try:
+                Sensor.__init__(self, port, "INPUT")
+                _grab_read()
+                try:
+                    distance_sensor.DistanceSensor.__init__(self)
+                except:
+                    pass
+                _release_read()
+                self.set_descriptor("Distance Sensor")
+            except Exception as e:
+                print(e)
+                raise ValueError("Distance Sensor not found")
+                
+        # Returns the values in mm
+        readings = []
+        def read_mm(self):
+            
+            # 8190 is what the sensor sends when it's out of range
+            # we're just setting a default value
+            mm = 8190
+            readings = []
+            attempt = 0
+            
+            # try 3 times to have a reading that is 
+            # smaller than 8m or bigger than 5 mm.
+            # if sensor insists on that value, then pass it on
+            while (mm > 8000 or mm < 5) and attempt < 3:
+                _grab_read()
+                try:
+                    mm = self.readRangeSingleMillimeters()
+                except:
+                    mm = 0
+                _release_read()
+                attempt = attempt + 1
+                time.sleep(0.001)
+                
+            # add the reading to our last 3 readings
+            # a 0 value is possible when sensor is not found
+            if (mm < 8000 and mm > 5) or mm == 0:
+                readings.append(mm)
+            if len(readings) > 3:
+                readings.pop(0)
+            
+            # calculate an average and limit it to 5 > X > 3000
+            if len(readings) > 1: # avoid division by 0
+                mm = round(sum(readings) / float(len(readings)))
+            if mm > 3000:
+                mm = 3000
+                
+            return mm
+            
+        def read(self):
+            cm = self.read_mm()//10
+            return (cm)
+            
+        def read_inches(self):
+            cm = self.read()
+            return cm / 2.54
+
+except:
+    print("Distance Sensor likely not installed")
+    pass
 
 #######################################################################
 
