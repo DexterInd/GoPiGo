@@ -56,7 +56,8 @@ def _grab_read():
     # print("acquiring")
     try:
         I2C_Mutex_Acquire()
-    except:
+    except Exception as e:
+        print("_grab_read: {}".format(e))
         pass
     # while read_is_open is False:
     #     time.sleep(0.01)
@@ -68,7 +69,8 @@ def _release_read():
     global read_is_open
     try:
         I2C_Mutex_Release()
-    except:
+    except Exception as e:
+        print("_release_read: {}".format(e))
         pass
     read_is_open = True
     # print("released")
@@ -100,16 +102,18 @@ class EasyGoPiGo():
     def forward(self):
         _grab_read()
         try:
-            gopigo.forward()
-        except:
+            val = gopigo.forward()
+        except Exception as e:
+            print("easygopigo fwd: {}".format(e))
             pass
         _release_read()
 
     def backward(self):
         _grab_read()
         try:
-            gopigo.backward()
-        except:
+            val = gopigo.backward()
+        except Exception as e:
+            print("easygopigo bwd: {}".format(e))
             pass
         _release_read()
             

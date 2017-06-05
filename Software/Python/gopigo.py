@@ -186,7 +186,8 @@ def fwd(dist=0): #distance is in cm
 			# this casting to int doesn't seem necessary
 			pulse=int(PPR*(dist//WHEEL_CIRC) )
 			enc_tgt(1,1,pulse)
-	except:
+	except Exception as e:
+		print ("gopigo fwd: {}".format(e))
 		pass
 	return write_i2c_block(address,motor_fwd_cmd+[0,0,0])
 
@@ -204,7 +205,8 @@ def bwd(dist=0):
 			# this casting to int doesn't seem necessary
 			pulse=int(PPR*(dist//WHEEL_CIRC) )
 			enc_tgt(1,1,pulse)
-	except:
+	except Exception as e:
+		print ("gopigo bwd: {}".format(e))
 		pass
 	return write_i2c_block(address,motor_bwd_cmd+[0,0,0])
 
