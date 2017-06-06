@@ -428,6 +428,7 @@ class UltraSonicSensor(AnalogSensor):
                 skip +=1
                 if skip > 5:
                     break
+            time.sleep(0.05)
 
         if skip > 5:
             return(501)
