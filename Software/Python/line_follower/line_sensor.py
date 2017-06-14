@@ -110,14 +110,18 @@ def read_sensor():
 
 
 def get_sensorval():
-	while True:
+	attempt = 0
+	while attempt < 5:
 		val=read_sensor()
-		print (val)
+		# print (val)
 		if val[0]!=-1:
 			return val
 		else:
 			#Read once more to clear buffer and remove junk values
 			val=read_sensor()
+			attempt = attempt + 1
+			
+	return val
 
 
 def set_black_line():
