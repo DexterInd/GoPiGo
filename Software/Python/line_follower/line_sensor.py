@@ -110,6 +110,8 @@ def read_sensor():
 
 
 def get_sensorval():
+	
+	# updated to avoid an infinite loop
 	attempt = 0
 	while attempt < 5:
 		val=read_sensor()
