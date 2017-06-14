@@ -86,6 +86,8 @@ def absolute_line_pos():
 
 	raw_vals=line_sensor.get_sensorval()
 	# print (raw_vals)
+	
+	# updated to handle the case where the line follower is not answering
 	for i in range(5):
 		if raw_vals[i] == -1:
 			line_pos[i] = -1
