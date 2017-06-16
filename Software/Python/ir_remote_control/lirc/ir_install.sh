@@ -44,27 +44,11 @@ then
 
 	echo " "
 	echo " "
-
-	echo "Check for internet connectivity..."
-	echo "=================================="
-	wget -q --tries=2 --timeout=20 --output-document=/dev/null http://raspberrypi.org
-	if [ $? -eq 0 ];then
-		echo "Connected"
-	else
-		echo "Unable to Connect, try again !!!"
-		exit 0
-	fi
-
-	sudo apt-get update -y
+  
 else
 # being run from DI UPDATE
 	printf "WELCOME TO IR RECEIVER SETUP FOR THE GOPIGO.\n"
 fi
-
-echo " "
-echo "Installing Dependencies"
-echo "======================="
-sudo apt-get install lirc python-lirc -y
 
 echo " "
 echo "Copying Config Files"
