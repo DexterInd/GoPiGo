@@ -69,9 +69,9 @@ sudo apt-get install lirc python-lirc -y
 echo " "
 echo "Copying Config Files"
 echo "===================="
-sudo cp $GOPIGO_PATH/Software/Python/ir_remote_control/script/hardware_copy.conf /etc/lirc/hardware.conf
-sudo cp $GOPIGO_PATH/Software/Python/ir_remote_control/script/lircd_keyes.conf /etc/lirc/lircd.conf
-sudo cp $GOPIGO_PATH/Software/Python/ir_remote_control/script/lircrc_keyes /etc/lirc/lircrc
+sudo cp $GOPIGO_PATH/Software/Python/ir_remote_control/lirc/hardware_copy.conf /etc/lirc/hardware.conf
+sudo cp $GOPIGO_PATH/Software/Python/ir_remote_control/lirc/lircd_keyes.conf /etc/lirc/lircd.conf
+sudo cp $GOPIGO_PATH/Software/Python/ir_remote_control/lirc/lircrc_keyes /etc/lirc/lircrc
 echo "Files copied"
 
 
