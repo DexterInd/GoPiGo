@@ -44,7 +44,7 @@ then
 
 	echo " "
 	echo " "
-  
+
 else
 # being run from DI UPDATE
 	printf "WELCOME TO IR RECEIVER SETUP FOR THE GOPIGO.\n"
@@ -56,22 +56,4 @@ echo "===================="
 sudo cp $GOPIGO_PATH/Software/Python/ir_remote_control/lirc/hardware_copy.conf /etc/lirc/hardware.conf
 sudo cp $GOPIGO_PATH/Software/Python/ir_remote_control/lirc/lircd_keyes.conf /etc/lirc/lircd.conf
 sudo cp $GOPIGO_PATH/Software/Python/ir_remote_control/lirc/lircrc_keyes /etc/lirc/lircrc
-echo "Files copied"
-
-
-#####
-# if we are not in quiet mode, then tell the user to restart
-
-if [ $quiet_mode -eq 0 ]
-then
-	echo " "
-	echo "Please restart the Raspberry Pi for the changes to take effect"
-	echo "  _____  ______  _____ _______       _____ _______ "
-	echo " |  __ \|  ____|/ ____|__   __|/\   |  __ \__   __|"
-	echo " | |__) | |__  | (___    | |  /  \  | |__) | | |   "
-	echo " |  _  /|  __|  \___ \   | | / /\ \ |  _  /  | |   "
-	echo " | | \ \| |____ ____) |  | |/ ____ \| | \ \  | |   "
-	echo " |_|  \_\______|_____/   |_/_/    \_\_|  \_\ |_|   "
-	echo " "
-	echo "To Restart type 'sudo reboot'"
-fi
+echo "Lirc files copied"
