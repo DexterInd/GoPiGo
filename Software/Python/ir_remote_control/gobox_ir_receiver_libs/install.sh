@@ -25,3 +25,7 @@ sudo apt-get install monit -y
 
 sudo cp  $GOPIGO_PATH/Software/Python/ir_remote_control/gobox_ir_receiver_libs/monitrc /etc/monit/monitrc
 sudo monit start all 
+
+# Copy over monit.conf.  This file starts the IR Receiver wrapper that monitors for IR calls.
+sudo rm /etc/monit/conf.d/gobox_ir_receiver_monit.conf
+sudo cp $GOPIGO_PATH/Software/Python/ir_remote_control/gobox_ir_receiver_libs/gobox_ir_receiver_monit.conf /etc/monit/conf.d
