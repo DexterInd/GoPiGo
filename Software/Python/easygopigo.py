@@ -419,7 +419,7 @@ class UltraSonicSensor(AnalogSensor):
             try:
                 value = gopigo.corrected_us_dist(PORTS[self.port])
             except Exception as e:
-                print("UltraSonicSensor read(): {}."format(e))
+                print("UltraSonicSensor read(): {}".format(e))
                 pass
             _release_read()
             if value < 300 and value > 0:
