@@ -8,7 +8,7 @@ poll_time=0.01
 
 # Calibration Files.  These are fixed positions because we assume
 # The user is using Raspbian for Robots.
-dir_path="/home/pi/Dexter"
+dir_path="/home/pi/Dexter/"
 file_b=dir_path+"black_line.txt"
 file_w=dir_path+"white_line.txt"
 file_r=dir_path+"range_line.txt"
