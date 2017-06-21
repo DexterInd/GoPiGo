@@ -401,13 +401,15 @@ def main(process_ir):
 
     # Read the raw value from the IR receiver
     line = process_ir.stdout.readline()
-    pulse_us_string = line[6:len(line)]
+
+    # we also remove the trailing whitespace and newlines
+    pulse_us_string = line[6:len(line)].rstrip()
 
     # check if we got a positive integer number
-    if not str.isdigit(pulse_us_string):
-        return
-    else:
+    if str.isdigit(pulse_us_string):
         pulse_us= int(pulse_us_string) # signal length
+    else:
+        return
 
     sig_type=  line[0:5]    # signal type : pulse or space
 
