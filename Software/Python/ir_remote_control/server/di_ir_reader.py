@@ -3,9 +3,21 @@ from subprocess import Popen, PIPE, STDOUT, call
 import time
 import socket
 import time
+import sys
+import signal
 
 call("sudo /etc/init.d/lirc stop", shell=True)
-time.sleep(.5)
+
+def signal_handler(signal, frame):
+    print('SIGINT captured - exiting')
+
+    # restore the original signal handler as otherwise evil things will happen
+    # in raw_input when CTRL+C is pressed, and our signal handler is not re-entrant
+    signal.signal(signal.SIGINT, original_sigint)
+    sys.exit(1)
+
+    # restore the exit gracefully handler here
+    signal.signal(signal.SIGINT, signal_handler)
 
 # Compare the key value which was read by the IR receiver with the fingerprints that we had recorded for each value
 def compare_with_button(inp):
@@ -318,7 +330,6 @@ def match_with_button(inp):
 
 
 def main():
-
     ######################################
     # IR signals
     # first pulse   : low of ~9000 us
@@ -359,6 +370,8 @@ def main():
 
     debug= 0
     detected_sig_buf=[]
+
+    time.sleep(.5)
 
     p = Popen('mode2 -d /dev/lirc0', stdout = PIPE, stderr = STDOUT, shell = True)
 
@@ -486,3 +499,10 @@ def main():
 
         last_pulse_us=pulse_us
         last_sig_type= sig_type
+
+if __name__ == "__main__":
+    # store the original SIGINT handler
+    original_sigint = signal.getsignal(signal.SIGINT)
+    # and have the signal handler registered
+    signal.signal(signal.SIGINT, signal_handler)
+    main()
