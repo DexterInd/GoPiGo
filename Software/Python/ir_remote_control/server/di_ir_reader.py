@@ -1,4 +1,4 @@
-#!/usr/bin/env python 
+#!/usr/bin/env python
 from subprocess import Popen, PIPE, STDOUT, call
 import time
 import socket
@@ -10,12 +10,12 @@ time.sleep(.5)
 buf=[]
 ######################################
 # IR signals
-# first pulse   : low of ~9000 us 
+# first pulse   : low of ~9000 us
 # second pulse  : high of ~4200 us
 # 65 pulses between ~500us or ~1600 us for 1 or 0 in the IR signal
-# goes high again until the next pulse comes 
+# goes high again until the next pulse comes
 # all the time is in microseconds
-sig_thresh_len_before_header= 2000 # wait for a signal of at least this much length before looking for a signal 
+sig_thresh_len_before_header= 2000 # wait for a signal of at least this much length before looking for a signal
 
 before_header_flag=0
 
@@ -23,7 +23,7 @@ before_header_flag=0
 
 # Noise is of 3 types
 #   * a signal of less than 50 us, we just neglect these noises
-#   * a very small signal which is not measured but causes the reading to stop and start again. We compensate for this by looking for 2 consecutive pulse or space from LIRC, if we see them, then we just add the next signal 
+#   * a very small signal which is not measured but causes the reading to stop and start again. We compensate for this by looking for 2 consecutive pulse or space from LIRC, if we see them, then we just add the next signal
 
 # looking for the 1st signal
 header_thresh=9000
@@ -31,13 +31,13 @@ header_margin=200   #signal length b/w 8800 and 9200
 header_detected_flag=0
 
 # looking for second signal
-header_1_thresh=4200    
+header_1_thresh=4200
 header_1_margin=400     #b/w 3800 and 4600
 header_1_detected_flag=0
 
-trailer_min_length=2000 # looks for the last signal to be atleast 2000us 
+trailer_min_length=2000 # looks for the last signal to be atleast 2000us
 
-noise_thresh=50 # Noise threshold is 50us 
+noise_thresh=50 # Noise threshold is 50us
 noise_flag=0
 
 last_pulse_us=0 # last pulse length
@@ -51,7 +51,7 @@ debug= 0
 detected_sig_buf=[]
 
 p = Popen('mode2 -d /dev/lirc0', stdout = PIPE, stderr = STDOUT, shell = True)
-   
+
 # Compare the key value which was read by the IR receiver with the fingerprints that we had recorded for each value
 def compare_with_button(inp):
     found_flag=0
@@ -73,8 +73,8 @@ def compare_with_button(inp):
             15:"KEY_H",
             16:"KEY_S",
             }
-            
-    key_map =[  #KEY_1 
+
+    key_map =[  #KEY_1
                 [588,531,571,552,
                 571,527,595,528,564,560,
                 562,534,589,535,567,556,
@@ -87,8 +87,8 @@ def compare_with_button(inp):
                 569,532,590,1651,564,533,
                 589,1655,570,1647,568,1652,
                 593],
-                
-                #KEY_2 
+
+                #KEY_2
                 [564,538,585,534,
                 568,556,566,531,592,532,
                 570,554,568,530,592,532,
@@ -101,8 +101,8 @@ def compare_with_button(inp):
                 565,1650,594,531,561,563,
                 570,1648,567,1657,587,1654,
                 571],
-                
-                #KEY_3 
+
+                #KEY_3
                 [595,503,619,504,
                 598,526,596,501,621,503,
                 590,537,586,507,595,529,
@@ -115,8 +115,8 @@ def compare_with_button(inp):
                 561,561,562,534,588,1660,
                 566,1647,567,1651,594,1649,
                 566],
-                
-                #KEY_4 
+
+                #KEY_4
                 [564,534,588,536,
                 567,557,595,503,624,500,
                 567,556,567,530,593,532,
@@ -129,8 +129,8 @@ def compare_with_button(inp):
                 568,555,567,530,597,1647,
                 563,1655,590,1628,617,1628,
                 566],
-                
-                #KEY_5 
+
+                #KEY_5
                 [591,533,599,499,
                 623,500,592,534,589,503,
                 619,505,598,525,597,500,
@@ -143,8 +143,8 @@ def compare_with_button(inp):
                 617,1631,593,501,622,502,
                 590,1628,617,1629,596,1622,
                 593],
-                
-                #KEY_6 
+
+                #KEY_6
                 [591,530,562,561,
                 561,536,587,536,566,557,
                 566,531,591,532,570,554,
@@ -157,8 +157,8 @@ def compare_with_button(inp):
                 565,559,564,534,588,536,
                 566,1657,587,533,571,1648,
                 597],
-                
-                #KEY_7 
+
+                #KEY_7
                 [570,527,595,527,
                 565,558,565,536,586,533,
                 569,553,570,528,595,528,
@@ -171,8 +171,8 @@ def compare_with_button(inp):
                 589,1655,570,531,592,1648,
                 567,1652,562,1656,589,1656,
                 569],
-                
-                #KEY_8 
+
+                #KEY_8
                 [567,530,590,534,
                 569,554,567,530,593,531,
                 562,561,571,527,597,527,
@@ -185,8 +185,8 @@ def compare_with_button(inp):
                 564,534,589,534,568,556,
                 567,1651,563,1659,585,1656,
                 570],
-                
-                #KEY_9 
+
+                #KEY_9
                 [569,555,567,531,
                 592,532,570,554,568,530,
                 592,531,572,552,570,528,
@@ -199,8 +199,8 @@ def compare_with_button(inp):
                 568,1648,597,525,567,555,
                 567,1650,565,557,569,1648,
                 563],
-                
-                #KEY_0 
+
+                #KEY_0
                 [570,553,569,527,
                 595,527,565,558,565,531,
                 591,531,563,558,564,533,
@@ -213,8 +213,8 @@ def compare_with_button(inp):
                 588,1655,560,1656,573,549,
                 569,1648,567,555,567,1650,
                 565],
-                
-                #KEY_UP 
+
+                #KEY_UP
                 [584,534,568,555,
                 566,532,592,531,571,553,
                 569,530,592,533,569,554,
@@ -227,8 +227,8 @@ def compare_with_button(inp):
                 566,533,590,1656,568,1656,
                 559,1657,587,537,566,1654,
                 591],
-                
-                #KEY_DOWN 
+
+                #KEY_DOWN
                 [564,534,588,535,
                 567,557,566,532,590,533,
                 569,554,569,529,597,526,
@@ -241,8 +241,8 @@ def compare_with_button(inp):
                 568,556,567,1653,571,553,
                 570,1655,559,1656,589,1657,
                 568],
-                
-                #KEY_LEFT 
+
+                #KEY_LEFT
                 [564,559,563,534,
                 588,535,568,554,569,530,
                 592,530,623,500,562,535,
@@ -255,8 +255,8 @@ def compare_with_button(inp):
                 590,533,569,1653,591,1649,
                 566,1652,562,561,562,1656,
                 568],
-                
-                #KEY_RIGHT 
+
+                #KEY_RIGHT
                 [592,531,561,562,
                 570,526,596,527,566,557,
                 565,531,592,531,561,562,
@@ -269,8 +269,8 @@ def compare_with_button(inp):
                 564,1653,591,1656,559,1654,
                 570,1648,587,535,567,1650,
                 595],
-                
-                #KEY_OK 
+
+                #KEY_OK
                 [584,534,569,555,
                 567,531,591,532,570,554,
                 568,529,594,530,562,561,
@@ -283,8 +283,8 @@ def compare_with_button(inp):
                 563,1657,588,1657,567,1652,
                 563,1660,585,535,567,1651,
                 593],
-                
-                #KEY_H 
+
+                #KEY_H
                 [595,528,565,558,
                 564,533,589,535,567,556,
                 567,530,592,533,574,550,
@@ -297,9 +297,9 @@ def compare_with_button(inp):
                 567,1651,564,560,562,1656,
                 573,1646,595,529,563,1656,
                 589],
-                
-                
-                #KEY_S 
+
+
+                #KEY_S
                 [614,507,560,562,
                 571,526,596,528,564,559,
                 563,534,589,535,568,556,
@@ -325,7 +325,7 @@ def compare_with_button(inp):
         if total_diff < 1500:
             found_flag=1
             break
-                
+
     # Send to socket client
     try:
         # Create a TCP/IP socket
@@ -347,37 +347,37 @@ def compare_with_button(inp):
     finally:
         # print 'Closing socket'
         sock.close()
-    
+
 def match_with_button(inp):
     list_to_parse=[]
     large_val_found=0
     if debug:
         print inp,len(inp)
-    
+
 	#The ir signals are 65 bytes long with either a pulse length of ~500 us or ~1600us.
 	#Sometime because of noise which cannot be filtered out, we have smaller chunks of signal also present in the bytearray
 	#Something like a 1600us signal breaks into 500,600 and 500 us signal
 	#This checks and skips those signals because they are very hard to filter out.
     if len(inp)==65:
         compare_with_button(inp)
-    
+
 # with open(file_name) as f:
     # for line in f:
-    
+
 print "Press any key on the remote to start"
 while True:
     # Read the raw value from the IR receiver
     line = p.stdout.readline()
-    
+
     pulse_us= int(line[6:len(line)]) # signal length
     sig_type=  line[0:5]    # signal type : pulse or space
-    
+
     if sig_type == 'pulse':
         sig_type=pulse
     else:
         sig_type=space
-        
-    # If noise was there in current pulse, just skip it 
+
+    # If noise was there in current pulse, just skip it
     if pulse_us < noise_thresh:
         if debug:
             print "noise:",pulse_us
@@ -389,10 +389,10 @@ while True:
     # Then to looks for 65 signals in ~500 us or 1600us length
     # Last for the signal to end
     # We do the check in the reverse order and if we are already on the second or third check, then just don;t do the initial checks
-    
+
     #last check for end of signal
     if header_1_detected_flag==1:
-        if pulse_us > trailer_min_length:   # Signal ending after the 65 pulses 
+        if pulse_us > trailer_min_length:   # Signal ending after the 65 pulses
             last_flag_state=[before_header_flag,header_detected_flag,header_1_detected_flag]
             header_1_detected_flag=0
             header_detected_flag=0
@@ -416,32 +416,32 @@ while True:
                 pulse_us+=last_pulse_us
                 if debug:
                     print pulse_us
-                    
-            if last_sig_type == sig_type: # if a similar signal type was detected then add it in the next pulse 
-                add_next_flag=1 
-            
+
+            if last_sig_type == sig_type: # if a similar signal type was detected then add it in the next pulse
+                add_next_flag=1
+
             if debug:
                 if add_next_flag ==0:
                     print "d:",pulse_us
-           
+
             detected_sig_buf.append(pulse_us)
     else:
         if debug:
             print "n:",pulse_us
-    
-    #Third check for 4k pulse 
+
+    #Third check for 4k pulse
     if header_detected_flag ==1 and header_1_detected_flag == 0:
         if debug:
             print "checking before_header1_flag==1",pulse_us,header_1_thresh-header_1_margin,header_1_thresh+header_1_margin
-            
+
         if add_next_flag:
             if debug:
                 print "adding 4k pulse"
                 print pulse_us,last_pulse_us
             pulse_us+=last_pulse_us
-            
+
             add_next_flag=0
-            
+
         if pulse_us > header_1_thresh-header_1_margin and pulse_us < header_1_thresh+header_1_margin:
             # IR signal detected
             if debug:
@@ -458,18 +458,18 @@ while True:
             header_detected_flag=0
             before_header_flag=0
 
-    #Second check for 9k pulse 
+    #Second check for 9k pulse
     if before_header_flag==1 and header_detected_flag==0:
         if debug:
             print "checking before_header_flag==1",pulse_us,header_thresh-header_margin,header_thresh+header_margin
-        
+
         if add_next_flag:
             pulse_us+=last_pulse_us
-            
+
             add_next_flag=0
             if debug:
                 print "checking_again before_header_flag==1",pulse_us,header_thresh-header_margin,header_thresh+header_margin,last_pulse_us
-            
+
         if pulse_us > header_thresh-header_margin and pulse_us < header_thresh+header_margin:
             header_detected_flag=1
             if debug:
@@ -479,7 +479,7 @@ while True:
                 add_next_flag=1
             last_flag_state=[before_header_flag,header_detected_flag,header_1_detected_flag]
             before_header_flag=0
-            
+
     #First check for anything over 2k preceeding the start of signal
     if before_header_flag==0 and pulse_us>sig_thresh_len_before_header:
         before_header_flag=1
