@@ -7,50 +7,6 @@ import time
 call("sudo /etc/init.d/lirc stop", shell=True)
 time.sleep(.5)
 
-######################################
-# IR signals
-# first pulse   : low of ~9000 us
-# second pulse  : high of ~4200 us
-# 65 pulses between ~500us or ~1600 us for 1 or 0 in the IR signal
-# goes high again until the next pulse comes
-# all the time is in microseconds
-sig_thresh_len_before_header= 2000 # wait for a signal of at least this much length before looking for a signal
-
-before_header_flag=0
-
-# The signals have a big threshold to compensate for noise coming in the signal
-
-# Noise is of 3 types
-#   * a signal of less than 50 us, we just neglect these noises
-#   * a very small signal which is not measured but causes the reading to stop and start again. We compensate for this by looking for 2 consecutive pulse or space from LIRC, if we see them, then we just add the next signal
-
-# looking for the 1st signal
-header_thresh=9000
-header_margin=200   #signal length b/w 8800 and 9200
-header_detected_flag=0
-
-# looking for second signal
-header_1_thresh=4200
-header_1_margin=400     #b/w 3800 and 4600
-header_1_detected_flag=0
-
-trailer_min_length=2000 # looks for the last signal to be atleast 2000us
-
-noise_thresh=50 # Noise threshold is 50us
-noise_flag=0
-
-last_pulse_us=0 # last pulse length
-last_sig_type=0 # 1 pulse, 0 space
-add_next_flag=0
-
-pulse=1
-space=0
-
-debug= 0
-detected_sig_buf=[]
-
-p = Popen('mode2 -d /dev/lirc0', stdout = PIPE, stderr = STDOUT, shell = True)
-
 # Compare the key value which was read by the IR receiver with the fingerprints that we had recorded for each value
 def compare_with_button(inp):
     found_flag=0
@@ -360,10 +316,51 @@ def match_with_button(inp):
     if len(inp)==65:
         compare_with_button(inp)
 
-# with open(file_name) as f:
-    # for line in f:
 
 def main():
+
+    ######################################
+    # IR signals
+    # first pulse   : low of ~9000 us
+    # second pulse  : high of ~4200 us
+    # 65 pulses between ~500us or ~1600 us for 1 or 0 in the IR signal
+    # goes high again until the next pulse comes
+    # all the time is in microseconds
+    sig_thresh_len_before_header= 2000 # wait for a signal of at least this much length before looking for a signal
+
+    before_header_flag=0
+
+    # The signals have a big threshold to compensate for noise coming in the signal
+
+    # Noise is of 3 types
+    #   * a signal of less than 50 us, we just neglect these noises
+    #   * a very small signal which is not measured but causes the reading to stop and start again. We compensate for this by looking for 2 consecutive pulse or space from LIRC, if we see them, then we just add the next signal
+
+    # looking for the 1st signal
+    header_thresh=9000
+    header_margin=200   #signal length b/w 8800 and 9200
+    header_detected_flag=0
+
+    # looking for second signal
+    header_1_thresh=4200
+    header_1_margin=400     #b/w 3800 and 4600
+    header_1_detected_flag=0
+
+    trailer_min_length=2000 # looks for the last signal to be atleast 2000us
+
+    noise_thresh=50 # Noise threshold is 50us
+
+    last_pulse_us=0 # last pulse length
+    last_sig_type=0 # 1 pulse, 0 space
+    add_next_flag=0
+
+    pulse=1
+    space=0
+
+    debug= 0
+    detected_sig_buf=[]
+
+    p = Popen('mode2 -d /dev/lirc0', stdout = PIPE, stderr = STDOUT, shell = True)
 
     print "Press any key on the remote to start"
     while True:
