@@ -22,6 +22,9 @@ class GracefullExiter:
         self.exit_now = True
         sys.exit(1)
 
+    def __enter__(self):
+        pass
+
     def exit_gracefully(self, signum, frame):
         self.exit_now = True
 
