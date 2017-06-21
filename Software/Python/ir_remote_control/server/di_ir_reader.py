@@ -396,6 +396,7 @@ def main(process_ir):
     global last_pulse_us
     global last_sig_type
     global add_next_flag
+    global detected_sig_buf
 
     # Read the raw value from the IR receiver
     line = process_ir.stdout.readline()
