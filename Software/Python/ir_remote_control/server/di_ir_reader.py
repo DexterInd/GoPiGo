@@ -390,6 +390,13 @@ space=0
 detected_sig_buf=[]
 
 def main(process_ir):
+    global before_header_flag
+    global header_detected_flag
+    global header_1_detected_flag
+    global last_pulse_us
+    global last_sig_type
+    global add_next_flag
+
     # Read the raw value from the IR receiver
     line = process_ir.stdout.readline()
 
