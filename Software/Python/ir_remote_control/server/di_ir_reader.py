@@ -9,18 +9,18 @@ import signal
 call("sudo /etc/init.d/lirc stop", shell=True)
 debug = 1
 
-def signal_handler(signum, frame):
-    print('SIGINT captured - exiting')
+# class for exiting gracefully
+# use as "with GracefullExiter as exiter:" and then keep on checking [exit_now]
+class GracefullExiter:
+    exit_now = False
 
-    # restore the original signal handler as otherwise evil things will happen
-    # in raw_input when CTRL+C is pressed, and our signal handler is not re-entrant
-    signal.signal(signal.SIGINT, original_sigint)
+    def __init__(self):
+        signal.signal(signal.SIGINT, self.exit_gracefully)
+        signal.signal(signal.SIGTERM, self.exit_gracefully)
 
-    # exit the app
-    sys.exit(1)
+    def exit_gracefully(self, signum, frame):
+        self.exit_now = True
 
-    # restore the exit gracefully handler here
-    signal.signal(signal.SIGINT, signal_handler)
 
 # Compare the key value which was read by the IR receiver with the fingerprints that we had recorded for each value
 def compare_with_button(inp):
@@ -332,7 +332,132 @@ def match_with_button(inp):
         compare_with_button(inp)
 
 
-def main():
+def main(process_ir):
+    # Read the raw value from the IR receiver
+    line = process_ir.stdout.readline()
+
+    pulse_us= int(line[6:len(line)]) # signal length
+    sig_type=  line[0:5]    # signal type : pulse or space
+
+    if sig_type == 'pulse':
+        sig_type=pulse
+    else:
+        sig_type=space
+
+    # If noise was there in current pulse, just skip it
+    if pulse_us < noise_thresh:
+        if debug:
+            print "noise:",pulse_us
+        continue
+
+    # There are 3 checks to detect the keypresses
+    # First is to look for a signal in ~9000 us pulse length
+    # Second to look for pulse in ~4000 us length
+    # Then to looks for 65 signals in ~500 us or 1600us length
+    # Last for the signal to end
+    # We do the check in the reverse order and if we are already on the second or third check, then just don;t do the initial checks
+
+    #last check for end of signal
+    if header_1_detected_flag==1:
+        if pulse_us > trailer_min_length:   # Signal ending after the 65 pulses
+            last_flag_state=[before_header_flag,header_detected_flag,header_1_detected_flag]
+            header_1_detected_flag=0
+            header_detected_flag=0
+            before_header_flag=0
+            if debug:
+                print "de:",pulse_us
+            header_1_detected_flag=0
+            #*********************************************
+            match_with_button(detected_sig_buf)
+            detected_sig_buf=[]
+        else:
+            if add_next_flag:
+                add_next_flag = 0
+                # remove last sig from buffer
+                if debug:
+                    print "adding last",pulse_us,
+                try:
+                    detected_sig_buf.pop()
+                except IndexError:
+                    continue
+                pulse_us+=last_pulse_us
+                if debug:
+                    print pulse_us
+
+            if last_sig_type == sig_type: # if a similar signal type was detected then add it in the next pulse
+                add_next_flag=1
+
+            if debug:
+                if add_next_flag ==0:
+                    print "d:",pulse_us
+
+            detected_sig_buf.append(pulse_us)
+    else:
+        if debug:
+            print "n:",pulse_us
+
+    #Third check for 4k pulse
+    if header_detected_flag ==1 and header_1_detected_flag == 0:
+        if debug:
+            print "checking before_header1_flag==1",pulse_us,header_1_thresh-header_1_margin,header_1_thresh+header_1_margin
+
+        if add_next_flag:
+            if debug:
+                print "adding 4k pulse"
+                print pulse_us,last_pulse_us
+            pulse_us+=last_pulse_us
+
+            add_next_flag=0
+
+        if pulse_us > header_1_thresh-header_1_margin and pulse_us < header_1_thresh+header_1_margin:
+            # IR signal detected
+            if debug:
+                print "header_1_detected_flag=1"
+            header_1_detected_flag=1
+        else:
+            if last_sig_type == sig_type:
+                if debug:
+                    print "setting 4k pulse flag"
+                add_next_flag=1
+                last_pulse_us=pulse_us
+                continue
+            last_flag_state=[before_header_flag,header_detected_flag,header_1_detected_flag]
+            header_detected_flag=0
+            before_header_flag=0
+
+    #Second check for 9k pulse
+    if before_header_flag==1 and header_detected_flag==0:
+        if debug:
+            print "checking before_header_flag==1",pulse_us,header_thresh-header_margin,header_thresh+header_margin
+
+        if add_next_flag:
+            pulse_us+=last_pulse_us
+
+            add_next_flag=0
+            if debug:
+                print "checking_again before_header_flag==1",pulse_us,header_thresh-header_margin,header_thresh+header_margin,last_pulse_us
+
+        if pulse_us > header_thresh-header_margin and pulse_us < header_thresh+header_margin:
+            header_detected_flag=1
+            if debug:
+                print "header_detected_flag=1"
+        else:
+            if last_sig_type == sig_type:
+                add_next_flag=1
+            last_flag_state=[before_header_flag,header_detected_flag,header_1_detected_flag]
+            before_header_flag=0
+
+    #First check for anything over 2k preceeding the start of signal
+    if before_header_flag==0 and pulse_us>sig_thresh_len_before_header:
+        before_header_flag=1
+        if debug:
+            print "before_header_flag=1",pulse_us
+
+    last_pulse_us=pulse_us
+    last_sig_type= sig_type
+
+
+if __name__ == "__main__":
     ######################################
     # IR signals
     # first pulse   : low of ~9000 us
@@ -375,137 +500,10 @@ def main():
 
     time.sleep(.5)
 
-    p = Popen('mode2 -d /dev/lirc0', stdout = PIPE, stderr = STDOUT, shell = True)
+    process_ir = Popen('mode2 -d /dev/lirc0', stdout = PIPE, stderr = STDOUT, shell = True)
 
     print "Press any key on the remote to start"
-    while True:
-        # Read the raw value from the IR receiver
-        line = p.stdout.readline()
 
-        pulse_us= int(line[6:len(line)]) # signal length
-        sig_type=  line[0:5]    # signal type : pulse or space
-
-        if sig_type == 'pulse':
-            sig_type=pulse
-        else:
-            sig_type=space
-
-        # If noise was there in current pulse, just skip it
-        if pulse_us < noise_thresh:
-            if debug:
-                print "noise:",pulse_us
-            continue
-
-        # There are 3 checks to detect the keypresses
-        # First is to look for a signal in ~9000 us pulse length
-        # Second to look for pulse in ~4000 us length
-        # Then to looks for 65 signals in ~500 us or 1600us length
-        # Last for the signal to end
-        # We do the check in the reverse order and if we are already on the second or third check, then just don;t do the initial checks
-
-        #last check for end of signal
-        if header_1_detected_flag==1:
-            if pulse_us > trailer_min_length:   # Signal ending after the 65 pulses
-                last_flag_state=[before_header_flag,header_detected_flag,header_1_detected_flag]
-                header_1_detected_flag=0
-                header_detected_flag=0
-                before_header_flag=0
-                if debug:
-                    print "de:",pulse_us
-                header_1_detected_flag=0
-                #*********************************************
-                match_with_button(detected_sig_buf)
-                detected_sig_buf=[]
-            else:
-                if add_next_flag:
-                    add_next_flag = 0
-                    # remove last sig from buffer
-                    if debug:
-                        print "adding last",pulse_us,
-                    try:
-                        detected_sig_buf.pop()
-                    except IndexError:
-                        continue
-                    pulse_us+=last_pulse_us
-                    if debug:
-                        print pulse_us
-
-                if last_sig_type == sig_type: # if a similar signal type was detected then add it in the next pulse
-                    add_next_flag=1
-
-                if debug:
-                    if add_next_flag ==0:
-                        print "d:",pulse_us
-
-                detected_sig_buf.append(pulse_us)
-        else:
-            if debug:
-                print "n:",pulse_us
-
-        #Third check for 4k pulse
-        if header_detected_flag ==1 and header_1_detected_flag == 0:
-            if debug:
-                print "checking before_header1_flag==1",pulse_us,header_1_thresh-header_1_margin,header_1_thresh+header_1_margin
-
-            if add_next_flag:
-                if debug:
-                    print "adding 4k pulse"
-                    print pulse_us,last_pulse_us
-                pulse_us+=last_pulse_us
-
-                add_next_flag=0
-
-            if pulse_us > header_1_thresh-header_1_margin and pulse_us < header_1_thresh+header_1_margin:
-                # IR signal detected
-                if debug:
-                    print "header_1_detected_flag=1"
-                header_1_detected_flag=1
-            else:
-                if last_sig_type == sig_type:
-                    if debug:
-                        print "setting 4k pulse flag"
-                    add_next_flag=1
-                    last_pulse_us=pulse_us
-                    continue
-                last_flag_state=[before_header_flag,header_detected_flag,header_1_detected_flag]
-                header_detected_flag=0
-                before_header_flag=0
-
-        #Second check for 9k pulse
-        if before_header_flag==1 and header_detected_flag==0:
-            if debug:
-                print "checking before_header_flag==1",pulse_us,header_thresh-header_margin,header_thresh+header_margin
-
-            if add_next_flag:
-                pulse_us+=last_pulse_us
-
-                add_next_flag=0
-                if debug:
-                    print "checking_again before_header_flag==1",pulse_us,header_thresh-header_margin,header_thresh+header_margin,last_pulse_us
-
-            if pulse_us > header_thresh-header_margin and pulse_us < header_thresh+header_margin:
-                header_detected_flag=1
-                if debug:
-                    print "header_detected_flag=1"
-            else:
-                if last_sig_type == sig_type:
-                    add_next_flag=1
-                last_flag_state=[before_header_flag,header_detected_flag,header_1_detected_flag]
-                before_header_flag=0
-
-        #First check for anything over 2k preceeding the start of signal
-        if before_header_flag==0 and pulse_us>sig_thresh_len_before_header:
-            before_header_flag=1
-            if debug:
-                print "before_header_flag=1",pulse_us
-
-        last_pulse_us=pulse_us
-        last_sig_type= sig_type
-
-if __name__ == "__main__":
-    # store the original SIGINT handler
-    original_sigint = signal.getsignal(signal.SIGINT)
-    # and have the signal handler registered
-    signal.signal(signal.SIGINT, signal_handler)
-
-    main()
+    with GracefullExiter() as exiter:
+        while not exiter.exit_now:
+            main(process_ir)
