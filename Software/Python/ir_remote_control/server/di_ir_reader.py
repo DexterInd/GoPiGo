@@ -5,6 +5,7 @@ import socket
 import time
 import sys
 import signal
+import os
 
 call("sudo /etc/init.d/lirc stop", shell=True)
 debug = 1
@@ -400,8 +401,14 @@ def main(process_ir):
 
     # Read the raw value from the IR receiver
     line = process_ir.stdout.readline()
+    pulse_us_string = line[6:len(line)]
 
-    pulse_us= int(line[6:len(line)]) # signal length
+    # check if we got a positive integer number
+    if not str.isdigit(pulse_us_string):
+        return
+    else:
+        pulse_us= int(pulse_us_string) # signal length
+
     sig_type=  line[0:5]    # signal type : pulse or space
 
     if sig_type == 'pulse':
@@ -529,6 +536,15 @@ if __name__ == "__main__":
 
     print "Press any key on the remote to start"
 
-    with GracefullExiter() as exiter:
-        while not exiter.exit_now:
-            main(process_ir)
+    try:
+        with GracefullExiter() as exiter:
+            while not exiter.exit_now:
+                main(process_ir)
+
+    except as unknown_exception:
+        print(str(unknown_exception))
+
+        # send the signal to all the process groups
+        os.killpg(os.getpgid(process_ir.pid), signal.SIGTERM)
+
+        exit(1)
