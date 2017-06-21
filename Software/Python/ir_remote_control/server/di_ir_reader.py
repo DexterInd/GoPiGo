@@ -549,4 +549,4 @@ if __name__ == "__main__":
         # send the signal to all the process groups
         os.killpg(os.getpgid(process_ir.pid), signal.SIGTERM)
 
-        exit(1)
+        sys.exit(1)
