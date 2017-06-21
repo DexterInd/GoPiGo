@@ -348,7 +348,7 @@ def main(process_ir):
     if pulse_us < noise_thresh:
         if debug:
             print "noise:",pulse_us
-        continue
+        return
 
     # There are 3 checks to detect the keypresses
     # First is to look for a signal in ~9000 us pulse length
@@ -379,7 +379,7 @@ def main(process_ir):
                 try:
                     detected_sig_buf.pop()
                 except IndexError:
-                    continue
+                    return
                 pulse_us+=last_pulse_us
                 if debug:
                     print pulse_us
@@ -420,7 +420,7 @@ def main(process_ir):
                     print "setting 4k pulse flag"
                 add_next_flag=1
                 last_pulse_us=pulse_us
-                continue
+                return
             last_flag_state=[before_header_flag,header_detected_flag,header_1_detected_flag]
             header_detected_flag=0
             before_header_flag=0
