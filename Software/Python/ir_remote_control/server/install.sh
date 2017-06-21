@@ -19,6 +19,5 @@ sudo rm -r ir_receiver.egg-info
 
 sudo cp ir-server.service /etc/systemd/system/ir-server.service
 sudo systemctl daemon-reload
-sudo systemctl enable ir-server.service
 
 popd
