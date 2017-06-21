@@ -18,12 +18,18 @@ class GracefullExiter:
         signal.signal(signal.SIGINT, self.exit_gracefully)
         signal.signal(signal.SIGTERM, self.exit_gracefully)
 
-    def __exit__(self):
+    def __exit__(self, exc_type, exc_value, traceback):
         self.exit_now = True
-        sys.exit(1)
+
+        # if encountered exception
+        if exc_type is not None:
+            print(exc_type, exc_value, traceback)
+            return False
+        else:
+            return True
 
     def __enter__(self):
-        pass
+        return self
 
     def exit_gracefully(self, signum, frame):
         self.exit_now = True
