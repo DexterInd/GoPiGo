@@ -7,6 +7,7 @@ import sys
 import signal
 
 call("sudo /etc/init.d/lirc stop", shell=True)
+debug = 1
 
 def signal_handler(signal, frame):
     print('SIGINT captured - exiting')
@@ -368,7 +369,6 @@ def main():
     pulse=1
     space=0
 
-    debug= 0
     detected_sig_buf=[]
 
     time.sleep(.5)
