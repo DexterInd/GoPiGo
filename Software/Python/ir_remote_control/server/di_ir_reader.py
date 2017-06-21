@@ -18,6 +18,10 @@ class GracefullExiter:
         signal.signal(signal.SIGINT, self.exit_gracefully)
         signal.signal(signal.SIGTERM, self.exit_gracefully)
 
+    def __exit__(self):
+        self.exit_now = True
+        sys.exit(1)
+
     def exit_gracefully(self, signum, frame):
         self.exit_now = True
 
