@@ -546,7 +546,7 @@ if __name__ == "__main__":
     except Exception as unknown_exception:
         print(str(unknown_exception))
 
-        # send the signal to all the process groups
-        os.killpg(os.getpgid(process_ir.pid), signal.SIGTERM)
+        # send the signal to just this process
+        os.killpg(os.getpgid(process_ir.pid), signal.SIGINT)
 
         sys.exit(1)
