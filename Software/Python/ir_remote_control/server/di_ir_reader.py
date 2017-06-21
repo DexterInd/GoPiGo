@@ -543,7 +543,7 @@ if __name__ == "__main__":
             while not exiter.exit_now:
                 main(process_ir)
 
-    except as unknown_exception:
+    except Exception as unknown_exception:
         print(str(unknown_exception))
 
         # send the signal to all the process groups
