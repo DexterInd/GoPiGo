@@ -9,12 +9,14 @@ import signal
 call("sudo /etc/init.d/lirc stop", shell=True)
 debug = 1
 
-def signal_handler(signal, frame):
+def signal_handler(signum, frame):
     print('SIGINT captured - exiting')
 
     # restore the original signal handler as otherwise evil things will happen
     # in raw_input when CTRL+C is pressed, and our signal handler is not re-entrant
     signal.signal(signal.SIGINT, original_sigint)
+
+    # exit the app
     sys.exit(1)
 
     # restore the exit gracefully handler here
@@ -505,4 +507,5 @@ if __name__ == "__main__":
     original_sigint = signal.getsignal(signal.SIGINT)
     # and have the signal handler registered
     signal.signal(signal.SIGINT, signal_handler)
+
     main()
