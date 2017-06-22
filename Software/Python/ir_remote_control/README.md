@@ -3,7 +3,7 @@
 
 ------
 
-#### What is this Library for?
+## What is this Library for?
 
 With this library you can control your `GoPiGo` with a `Keyes Remote Control` by pressing corresponding keys on it.
 This means you can make the robot turn to the left, make it go forward, stop, etc. Sky's the limit.
