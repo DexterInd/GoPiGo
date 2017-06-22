@@ -9,7 +9,7 @@ With this library you can control your `GoPiGo` with a `Keyes Remote Control` by
 This means you can make the robot turn to the left, make it go forward, stop, etc. Sky's the limit.
 
 ## Example Programs
-* `examples/ir_recv_example.py` - can be run in orer **to test the functionality** - for each pressed key a feedback is printed in the console
+* `examples/ir_recv_example.py` - run it in order **to test the IR receiver's functionality** - for each pressed key a feedback is printed in the console.
 * `examples/gopigo_ir_control_bot.py` - run this script in order **to control your** `GoPiGo` with the `UP`/`DOWN`/`RIGHT`/`UP`/`OK` keys.
 
 ## Installation Scripts
