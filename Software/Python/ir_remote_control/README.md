@@ -8,29 +8,29 @@
 With this library you can control your `GoPiGo` with a `Keyes Remote Control` by pressing corresponding keys on it.
 This means you can make the robot turn to the left, make it go forward, stop, etc. Sky's the limit.
 
-#### Example Programs
+## Example Programs
 * `examples/ir_recv_example.py` - can be run in orer **to test the functionality** - for each pressed key a feedback is printed in the console
 * `examples/gopigo_ir_control_bot.py` - run this script in order **to control your** `GoPiGo` with the `UP`/`DOWN`/`RIGHT`/`UP`/`OK` keys.
 
-#### Installation Scripts
+## Installation Scripts
 * `server/install.sh` - install script for the ir server service - the server is registered as a service in `systemd`.
 * `lirc/install.sh` - install script for the lirc dependencies.
 * `lirc/ir_install_manually.sh` -  install script for the lirc dependencies - **use this one if you manually reinstall the dependencies**.
 
 
-#### Setup the Hardware
+## Setup the Hardware
 Connect the `IR receiver` to the Serial port on the GoPiGo. This will act as a pass through to the `IR signals` to the `Serial` pins.
 IR receiver (`<= v1.0`) have the IR receiver connected to the `white wire`.
 IR receiver (`v1.1 - 1.2`) have the IR receiver connected to the `yellow wire`.
 
-#### Setup the Software
+## Setup the Software
 
 In your `Raspberry Pi`, open up a terminal and enter the following commands:
 1. `sudo bash lirc/install.sh`.
 2. `sudo bash lirc/setup_older_version.sh` - run this script too only if your version of IR receiver `<= v1.0`.
 3. `sudo bash server/install.sh`.
 
-#### Enabling / Disabling Service
+## Enabling / Disabling Service
 
 First, you need to click on `Advanced Communications Options` icon on Desktop.
 Select `Enable IR Receiver` and then reboot as required by the app.
