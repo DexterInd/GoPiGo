@@ -40,23 +40,18 @@ Select `Enable IR Receiver` and then reboot as required by the app.
 **The `ir-server.service` service is responsible for making the IR receiver work or not.**
 
 For disabling the service type : `sudo systemctl disable ir-server.service`.
-
 This will cause the IR receiver to not start on the next boot/reboot.
 
 For stopping the service type : `sudo systemctl stop ir-server.service`.
-
 This will cause the IR receiver to stop working immediately.
 This won't stop the IR receiver from starting again when the `Raspberry Pi` is booted/rebooted, provided the service is enabled.
 
 For enabling the service type : `sudo systemctl enable ir-server.service`.
-
 This will cause the IR receiver to start on the next boot/reboot.
 
 For starting the service type : `sudo systemctl start ir-server.service`.
-
 This will cause the IR receiver to start working immediately.
 This won't make the IR receiver start again when the `Raspberry Pi` is booted/rebooted. For that you need to enable the service.
 
 For monitoring the status of the service type : `sudo systemctl status ir-server.service`.
-
 This will print useful information about the status of the `ir-server.service` service.
