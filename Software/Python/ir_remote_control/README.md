@@ -20,8 +20,8 @@ This means you can make the robot turn to the left, make it go forward, stop, et
 
 ## Setup the Hardware
 Connect the `IR receiver` to the Serial port on the GoPiGo. This will act as a pass through to the `IR signals` to the `Serial` pins.
-IR receiver (`<= v1.0`) have the IR receiver connected to the `white wire`.
-IR receiver (`v1.1 - 1.2`) have the IR receiver connected to the `yellow wire`.
+* IR receiver (`<= v1.0`) have the IR receiver connected to the `white wire`.
+* IR receiver (`v1.1 - 1.2`) have the IR receiver connected to the `yellow wire`.
 
 ## Setup the Software
 
