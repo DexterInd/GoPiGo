@@ -33,7 +33,7 @@ echo "  ______  _____   _____  _____  ______  _____ "
 echo " |  ____ |     | |_____]   |   |  ____ |     |"
 echo " |_____| |_____| |       __|__ |_____| |_____|"
 echo " "
-feedback "Welcome to GoPiGo Installer." 
+feedback "Welcome to GoPiGo Installer."
 echo " "
 }
 
@@ -49,7 +49,7 @@ check_internet() {
     if ! quiet_mode ; then
         feedback "Check for internet connectivity..."
         feedback "=================================="
-        wget -q --tries=2 --timeout=20 --output-document=/dev/null http://raspberrypi.org 
+        wget -q --tries=2 --timeout=20 --output-document=/dev/null http://raspberrypi.org
         if [ $? -eq 0 ];then
             echo "Connected to the Internet"
         else
@@ -80,7 +80,8 @@ install_dependencies() {
     sudo apt-get install python-pip git libi2c-dev python-serial python-rpi.gpio i2c-tools python-smbus arduino minicom libnss-mdns python-dev -y
     sudo pip install -U RPi.GPIO
     sudo pip install pyusb
-    
+    sudo pip install numpy
+
     feedback "Dependencies installed"
 }
 
@@ -97,7 +98,7 @@ install_wiringpi() {
     # Check if WiringPi Installed
 
     # using curl piped to bash does not leave a file behind. no need to remove it
-    # we can do either the curl - it works just fine 
+    # we can do either the curl - it works just fine
     # sudo curl https://raw.githubusercontent.com/DexterInd/script_tools/master/update_wiringpi.sh | bash
     # or call the version that's already on the SD card
     sudo bash $DEXTERSCRIPT/update_wiringpi.sh
@@ -162,7 +163,7 @@ install_spi_i2c() {
 }
 
 install_avr() {
-    #Adding ARDUINO setup files 
+    #Adding ARDUINO setup files
     echo " "
 	######################################################################
 	# Remove after the image is created for BrickPi3
@@ -198,11 +199,11 @@ install_line_follower(){
     sudo cp /home/pi/Dexter/GoPiGo/Software/Python/line_follower/line_follow.desktop /home/pi/Desktop/
     sudo chmod +x /home/pi/Desktop/line_follow.desktop
     sudo chmod +x /home/pi/Dexter/GoPiGo/Software/Python/line_follower/line_sensor_gui.py
-    
+
     # if the configuration files exist in the home directory
     # then move them to their new place
     # otherwise create new ones
-    if file_exists "$PIHOME/black_line.txt" 
+    if file_exists "$PIHOME/black_line.txt"
     then
         sudo mv $PIHOME/black_line.txt $PIHOME/Dexter/black_line.txt
     else
@@ -214,13 +215,13 @@ install_line_follower(){
         sudo mv $PIHOME/white_line.txt $PIHOME/Dexter/white_line.txt
     else
         sudo touch $PIHOME/Dexter/white_line.txt
-    fi    
+    fi
     if file_exists "$PIHOME/range_line.txt"
     then
         sudo mv $PIHOME/range_line.txt $PIHOME/Dexter/range_line.txt
     else
         sudo touch $PIHOME/Dexter/range_line.txt
-    fi      
+    fi
 
     sudo chmod 666 $PIHOME/Dexter/*line.txt
 
@@ -265,7 +266,7 @@ install_dependencies
 #Copy Software Servo
 cp -R $ROBOT_DIR/Firmware/SoftwareServo/ /usr/share/arduino/libraries/
 
-chmod +x gopigo 
+chmod +x gopigo
 cp gopigo /usr/bin
 
 cd $ROBOT_DIR/Software/Python
