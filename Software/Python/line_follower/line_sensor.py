@@ -85,8 +85,8 @@ file_r=dir_path+'range_line.txt'
 
 # buffer for the lien follower sensor
 sensor_buffer = [ [], [], [], [], [] ]
-# keep a maximum of 15 readings for each IR sensor on the line follower
-max_buffer_length = 15
+# keep a maximum of 20 readings for each IR sensor on the line follower
+max_buffer_length = 20
 
 # Function for removing outlier values
 # For bigger std_factor_threshold, the filtering is less aggressive
@@ -137,8 +137,8 @@ def read_sensor():
                 sensor_buffer[i].pop(0)
 
             # eliminate outlier values and select the most recent one
-            filtered_value = statisticalNoiseReduction(sensor_buffer[i], 1.5)[-1]
-            
+            filtered_value = statisticalNoiseReduction(sensor_buffer[i], 2)[-1]
+
             # append the value to the corresponding IR sensor
             output_values.append(filtered_value)
 
