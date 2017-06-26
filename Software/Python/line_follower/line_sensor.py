@@ -83,7 +83,7 @@ file_r=dir_path+'range_line.txt'
 # Function declarations of the various functions used for encoding and sending
 # data from RPi to Arduino
 
-# buffer for the lien follower sensor
+# buffer with raw data from the line follower sensor
 sensor_buffer = [ [], [], [], [], [] ]
 # keep a maximum of 20 readings for each IR sensor on the line follower
 max_buffer_length = 20
