@@ -8,7 +8,7 @@ poll_time=0.01
 
 # Calibration Files.  These are fixed positions because we assume
 # The user is using Raspbian for Robots.
-dir_path="/home/pi/Dexter"
+dir_path="/home/pi/Dexter/"
 file_b=dir_path+"black_line.txt"
 file_w=dir_path+"white_line.txt"
 file_r=dir_path+"range_line.txt"
@@ -85,11 +85,18 @@ def absolute_line_pos():
 	# print "Threshold:" + str(threshold)
 
 	raw_vals=line_sensor.get_sensorval()
+	# print (raw_vals)
+	
+	# updated to handle the case where the line follower is not answering
 	for i in range(5):
-		if raw_vals[i]>threshold[i]:
+		if raw_vals[i] == -1:
+			line_pos[i] = -1
+		elif raw_vals[i]>threshold[i]:
 			line_pos[i]=1
 		else:
 			line_pos[i]=0
+			
+	# print line_pos
 	return line_pos
 	
 	
@@ -158,6 +165,8 @@ def line_sensor_vals():
 		return '3'
 	else:
 		return '4'
+		
+		
 if __name__ == "__main__":	
 	while True:
 		print line_sensor_vals()		

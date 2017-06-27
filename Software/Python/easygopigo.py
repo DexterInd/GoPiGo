@@ -56,7 +56,8 @@ def _grab_read():
     # print("acquiring")
     try:
         I2C_Mutex_Acquire()
-    except:
+    except Exception as e:
+        print("_grab_read: {}".format(e))
         pass
     # while read_is_open is False:
     #     time.sleep(0.01)
@@ -68,7 +69,8 @@ def _release_read():
     global read_is_open
     try:
         I2C_Mutex_Release()
-    except:
+    except Exception as e:
+        print("_release_read: {}".format(e))
         pass
     read_is_open = True
     # print("released")
@@ -100,16 +102,18 @@ class EasyGoPiGo():
     def forward(self):
         _grab_read()
         try:
-            gopigo.forward()
-        except:
+            val = gopigo.forward()
+        except Exception as e:
+            print("easygopigo fwd: {}".format(e))
             pass
         _release_read()
 
     def backward(self):
         _grab_read()
         try:
-            gopigo.backward()
-        except:
+            val = gopigo.backward()
+        except Exception as e:
+            print("easygopigo bwd: {}".format(e))
             pass
         _release_read()
             
@@ -232,7 +236,10 @@ class Sensor():
         self.setPort(port)
         self.setPinMode(pinmode)
         if pinmode == "INPUT" or pinmode == "OUTPUT":
-            gopigo.pinMode(self.getPortID(), self.getPinMode())
+            try:
+                gopigo.pinMode(self.getPortID(), self.getPinMode())
+            except:
+                pass
 
     def __str__(self):
         return ("{} on port {}".format(self.descriptor, self.getPort()))
@@ -411,16 +418,17 @@ class UltraSonicSensor(AnalogSensor):
             _grab_read()
             try:
                 value = gopigo.corrected_us_dist(PORTS[self.port])
-            except:
+            except Exception as e:
+                print("UltraSonicSensor read(): {}".format(e))
                 pass
             _release_read()
-            debug(value)
             if value < 300 and value > 0:
                 readings.append(value)
             else:
                 skip +=1
                 if skip > 5:
                     break
+            time.sleep(0.05)
 
         if skip > 5:
             return(501)
@@ -779,6 +787,7 @@ try:
             return cm / 2.54
 
 except:
+    print("Distance Sensor likely not installed")
     pass
 
 #######################################################################
