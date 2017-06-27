@@ -4,7 +4,7 @@ import datetime
 import time
 
 # Before running this program, please make sure [ir-server.service] is stopped
-# After the program has finished, please turn [ir-server.service] back on
+# After the program has finished, please turn [ir-server.service] back on 
 
 call("sudo /etc/init.d/lirc stop", shell=True)
 time.sleep(.5)
