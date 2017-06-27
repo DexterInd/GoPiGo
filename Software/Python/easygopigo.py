@@ -1,20 +1,25 @@
 #!/usr/bin/env python
-from __future__ import print_function
-from __future__ import division
-from builtins import input
+# from __future__ import print_function
+# from __future__ import division
+# from builtins import input
 
 import sys
-import tty
-import select
+# import tty
+# import select
 import time
-import gopigo
-import picamera
-from glob import glob  # for USB checking
-from subprocess import check_output, CalledProcessError
-import os
-from I2C_mutex import *
-from Distance_Sensor import distance_sensor
 
+try:
+    import gopigo
+except:
+    pass
+# import os
+
+# the following libraries may or may not be installed
+# nor needed
+try:
+    from I2C_mutex import *
+except:
+    pass
 
 try:
     sys.path.insert(0, '/home/pi/Dexter/GoPiGo/Software/Python/line_follower')
@@ -51,7 +56,8 @@ def _grab_read():
     # print("acquiring")
     try:
         I2C_Mutex_Acquire()
-    except:
+    except Exception as e:
+        print("_grab_read: {}".format(e))
         pass
     # while read_is_open is False:
     #     time.sleep(0.01)
@@ -61,11 +67,22 @@ def _grab_read():
 
 def _release_read():
     global read_is_open
-    I2C_Mutex_Release()
+    try:
+        I2C_Mutex_Release()
+    except Exception as e:
+        print("_release_read: {}".format(e))
+        pass
     read_is_open = True
     # print("released")
+    
 
 class EasyGoPiGo():
+    '''
+    Wrapper to access the gopigo functionality with mutex in place
+    this makes the gopigo thread safe and process safe
+    if mutex is not available, then it's just a direct access to gopigo
+    '''
+    
     def volt(self):
         _grab_read()
         try:
@@ -77,13 +94,41 @@ class EasyGoPiGo():
 
     def stop(self):
         # no locking is required here
-        gopigo.stop()
+        try:
+            gopigo.stop()
+        except:
+            pass
 
+    def forward(self):
+        _grab_read()
+        try:
+            val = gopigo.forward()
+        except Exception as e:
+            print("easygopigo fwd: {}".format(e))
+            pass
+        _release_read()
 
     def backward(self):
         _grab_read()
         try:
-            gopigo.backward()
+            val = gopigo.backward()
+        except Exception as e:
+            print("easygopigo bwd: {}".format(e))
+            pass
+        _release_read()
+            
+    def left(self):
+        _grab_read()
+        try:
+            gopigo.left()
+        except:
+            pass    
+        _release_read()
+
+    def right(self):
+        _grab_read()
+        try:
+            gopigo.right()
         except:
             pass
         _release_read()
@@ -112,32 +157,6 @@ class EasyGoPiGo():
             pass
         _release_read()
         
-    def left(self):
-        _grab_read()
-        try:
-            gopigo.left()
-        except:
-            pass    
-        _release_read()
-
-
-    def right(self):
-        _grab_read()
-        try:
-            gopigo.right()
-        except:
-            pass
-        _release_read()
-
-
-    def forward(self):
-        _grab_read()
-        try:
-            gopigo.forward()
-        except:
-            pass
-        _release_read()
-        
     def led_on(self,led_id):
         _grab_read()
         try:
@@ -156,57 +175,21 @@ class EasyGoPiGo():
         
     def trim_read(self):
         _grab_read()
-        current_trim = int(gopigo.trim_read()) 
+        try:
+            current_trim = int(gopigo.trim_read()) 
+        except:
+            pass
         _release_read()
         return current_trim
         
     def trim_write(self,set_trim_to):
         _grab_read()
-        gopigo.trim_write(int(set_trim_to))
+        try:
+            gopigo.trim_write(int(set_trim_to))
+        except:
+            pass
         _release_read()
 
-#####################################################################
-#
-# USB SUPPORT
-#
-#####################################################################
-
-def check_usb():
-    '''
-    will return the path to the USB key if there's one that's mounted
-    will return false otherwise
-    '''
-    if len(_get_mount_points()) == 1:
-        return _get_mount_points()[0][1]
-    return False
-
-def create_folder_on_usb(foldername):
-    usb_path = check_usb()
-    if usb_path is not False:
-        try:
-            os.mkdir( usb_path+"/"+foldername, 0755 );
-            return True
-        except:
-            return False
-
-def _get_usb_devices():
-    '''
-    gets a list of devices that could be a usb
-    '''
-    sdb_devices = map(os.path.realpath, glob('/sys/block/sd*'))
-    usb_devices = (dev for dev in sdb_devices
-        if 'usb' in dev.split('/')[5])
-    return dict((os.path.basename(dev), dev) for dev in usb_devices)
-
-def _get_mount_points(devices=None):
-    '''
-    returns a list of all mounted USBs
-    '''
-    devices = devices or _get_usb_devices() # if devices are None: get_usb_devices
-    output = check_output(['mount']).splitlines()
-    is_usb = lambda path: any(dev in path for dev in devices)
-    usb_info = (line for line in output if is_usb(line.split()[0]))
-    return [(info.split()[0], info.split()[2]) for info in usb_info]
 
 
 #############################################################
@@ -253,7 +236,10 @@ class Sensor():
         self.setPort(port)
         self.setPinMode(pinmode)
         if pinmode == "INPUT" or pinmode == "OUTPUT":
-            gopigo.pinMode(self.getPortID(), self.getPinMode())
+            try:
+                gopigo.pinMode(self.getPortID(), self.getPinMode())
+            except:
+                pass
 
     def __str__(self):
         return ("{} on port {}".format(self.descriptor, self.getPort()))
@@ -355,7 +341,6 @@ class AnalogSensor(Sensor):
         return value
 
     def write(self, power):
-        print("write")
         self.value = power
         _grab_read()
         try:
@@ -363,7 +348,6 @@ class AnalogSensor(Sensor):
         except:
             pass
         _release_read()
-        print("written")
         return return_value
 ##########################
 
@@ -434,16 +418,17 @@ class UltraSonicSensor(AnalogSensor):
             _grab_read()
             try:
                 value = gopigo.corrected_us_dist(PORTS[self.port])
-            except:
+            except Exception as e:
+                print("UltraSonicSensor read(): {}".format(e))
                 pass
             _release_read()
-            debug(value)
             if value < 300 and value > 0:
                 readings.append(value)
             else:
                 skip +=1
                 if skip > 5:
                     break
+            time.sleep(0.05)
 
         if skip > 5:
             return(501)
@@ -727,106 +712,83 @@ class LineFollower(Sensor):
             return "Right"
         return "Unknown"
 
-#######################################################################
-#
-# EasyCamera offers a way of saving photos onto a usb key
-#
-#######################################################################
-
-class EasyCamera(picamera.PiCamera):
-    def __init__(self, resolution=(1920, 1080), gpg=None):
-        picamera.PiCamera.__init__(self)
-        self.resolution = resolution
-        self.start_time = time.time()
-
-    def take_photo(self,filename):
-        # 2 seconds must have passed since the start of the program
-        # in order to be able to take a photo
-        # known as "camera warm-up time"
-        path=check_usb()
-
-        # ensure we have waited long enough for camera
-        # to be properly initialised
-        while time.time() - self.start_time < 2:
-            time.sleep(0.1)
-
-        # now we can take a photo. Smile!
-        if path is not False:
-            self.capture(path+ "/"+filename)
-            return True
-        else:
-            return False
             
 #######################################################################
 #
 # DistanceSensor 
 #
 #######################################################################
-class DistanceSensor(Sensor, distance_sensor.DistanceSensor):
-    '''
-    Wrapper to measure the distance in cms from the DI distance sensor.
-    Connect the distance sensor to I2C port.
-    '''
-    def __init__(self, port="I2C",gpg=None):
-        try:
-            Sensor.__init__(self, port, "INPUT")
-            _grab_read()
-            try:
-                distance_sensor.DistanceSensor.__init__(self)
-            except:
-                pass
-            _release_read()
-            self.set_descriptor("Distance Sensor")
-        except Exception as e:
-            print(e)
-            raise ValueError("Distance Sensor not found")
-            
-    # Returns the values in mm
-    readings = []
-    def read_mm(self):
-        
-        # 8190 is what the sensor sends when it's out of range
-        # we're just setting a default value
-        mm = 8190
-        readings = []
-        attempt = 0
-        
-        # try 3 times to have a reading that is 
-        # smaller than 8m or bigger than 5 mm.
-        # if sensor insists on that value, then pass it on
-        while (mm > 8000 or mm < 5) and attempt < 3:
-            _grab_read()
-            try:
-                mm = self.readRangeSingleMillimeters()
-            except:
-                mm = 0
-            _release_read()
-            attempt = attempt + 1
-            time.sleep(0.001)
-            
-        # add the reading to our last 3 readings
-        # a 0 value is possible when sensor is not found
-        if (mm < 8000 and mm > 5) or mm == 0:
-            readings.append(mm)
-        if len(readings) > 3:
-            readings.pop(0)
-        
-        # calculate an average and limit it to 5 > X > 3000
-        if len(readings) > 1: # avoid division by 0
-            mm = round(sum(readings) / float(len(readings)))
-        if mm > 3000:
-            mm = 3000
-            
-        return mm
-        
-    def read(self):
-        cm = self.read_mm()//10
-        return (cm)
-        
-    def read_inches(self):
-        cm = self.read()
-        return cm / 2.54
+try:
+    from Distance_Sensor import distance_sensor
 
+    class DistanceSensor(Sensor, distance_sensor.DistanceSensor):
+        '''
+        Wrapper to measure the distance in cms from the DI distance sensor.
+        Connect the distance sensor to I2C port.
+        '''
+        def __init__(self, port="I2C",gpg=None):
+            try:
+                Sensor.__init__(self, port, "INPUT")
+                _grab_read()
+                try:
+                    distance_sensor.DistanceSensor.__init__(self)
+                except:
+                    pass
+                _release_read()
+                self.set_descriptor("Distance Sensor")
+            except Exception as e:
+                print(e)
+                raise ValueError("Distance Sensor not found")
+                
+        # Returns the values in mm
+        readings = []
+        def read_mm(self):
+            
+            # 8190 is what the sensor sends when it's out of range
+            # we're just setting a default value
+            mm = 8190
+            readings = []
+            attempt = 0
+            
+            # try 3 times to have a reading that is 
+            # smaller than 8m or bigger than 5 mm.
+            # if sensor insists on that value, then pass it on
+            while (mm > 8000 or mm < 5) and attempt < 3:
+                _grab_read()
+                try:
+                    mm = self.readRangeSingleMillimeters()
+                except:
+                    mm = 0
+                _release_read()
+                attempt = attempt + 1
+                time.sleep(0.001)
+                
+            # add the reading to our last 3 readings
+            # a 0 value is possible when sensor is not found
+            if (mm < 8000 and mm > 5) or mm == 0:
+                readings.append(mm)
+            if len(readings) > 3:
+                readings.pop(0)
+            
+            # calculate an average and limit it to 5 > X > 3000
+            if len(readings) > 1: # avoid division by 0
+                mm = round(sum(readings) / float(len(readings)))
+            if mm > 3000:
+                mm = 3000
+                
+            return mm
+            
+        def read(self):
+            cm = self.read_mm()//10
+            return (cm)
+            
+        def read_inches(self):
+            cm = self.read()
+            return cm / 2.54
+
+except:
+    print("Distance Sensor likely not installed")
+    pass
 
 #######################################################################
 

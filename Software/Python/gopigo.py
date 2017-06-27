@@ -128,6 +128,7 @@ LED_R=0
 unused = 0
 
 v16_thresh=790
+version = 0
 
 '''
 #Enable slow i2c (for better stability)
@@ -185,7 +186,8 @@ def fwd(dist=0): #distance is in cm
 			# this casting to int doesn't seem necessary
 			pulse=int(PPR*(dist//WHEEL_CIRC) )
 			enc_tgt(1,1,pulse)
-	except:
+	except Exception as e:
+		print ("gopigo fwd: {}".format(e))
 		pass
 	return write_i2c_block(address,motor_fwd_cmd+[0,0,0])
 
@@ -203,7 +205,8 @@ def bwd(dist=0):
 			# this casting to int doesn't seem necessary
 			pulse=int(PPR*(dist//WHEEL_CIRC) )
 			enc_tgt(1,1,pulse)
-	except:
+	except Exception as e:
+		print ("gopigo bwd: {}".format(e))
 		pass
 	return write_i2c_block(address,motor_bwd_cmd+[0,0,0])
 
@@ -445,7 +448,7 @@ def read_motor_speed():
 #	arg:
 #		l_id: 1 for left LED and 0 for right LED
 def led_on(l_id):
-	if version > 14:
+	if check_version() > 14:
 		r_led=16
 		l_led=17
 	else:
@@ -467,7 +470,7 @@ def led_on(l_id):
 #	arg:
 #		l_id: 1 for left LED and 0 for right LED
 def led_off(l_id):
-	if version>14:
+	if check_version()>14:
 		r_led=16
 		l_led=17
 	else:
@@ -659,10 +662,16 @@ def dht(sensor_type=0):
 	except RuntimeError:
 		return [-3.0,-3.0]
 
-for i in range(10):
-	raw=analogRead(7)
+def check_version():
+	global version
+	
+	if version == 0:
+		for i in range(10):
+			raw=analogRead(7)
 
-if raw>v16_thresh:
-	version=16
-else:
-	version=14
+		if raw>v16_thresh:
+			version=16
+		else:
+			version=14
+
+	return version

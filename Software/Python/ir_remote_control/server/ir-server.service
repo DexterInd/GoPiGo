@@ -1,0 +1,11 @@
+[Unit]
+Description=IR Server App
+
+[Service]
+Type=idle
+ExecStart=/usr/bin/python /home/pi/Dexter/GoPiGo/Software/Python/ir_remote_control/server/di_ir_reader.py
+Restart=on-failure
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target
