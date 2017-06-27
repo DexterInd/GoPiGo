@@ -45,49 +45,15 @@ then
 	echo " "
 	echo " "
 
-	echo "Check for internet connectivity..."
-	echo "=================================="
-	wget -q --tries=2 --timeout=20 --output-document=/dev/null http://raspberrypi.org
-	if [ $? -eq 0 ];then
-		echo "Connected"
-	else
-		echo "Unable to Connect, try again !!!"
-		exit 0
-	fi
-
-	sudo apt-get update -y
 else
 # being run from DI UPDATE
 	printf "WELCOME TO IR RECEIVER SETUP FOR THE GOPIGO.\n"
 fi
 
 echo " "
-echo "Installing Dependencies"
-echo "======================="
-sudo apt-get install lirc python-lirc -y
-
-echo " "
 echo "Copying Config Files"
 echo "===================="
-sudo cp $GOPIGO_PATH/Software/Python/ir_remote_control/script/hardware_copy.conf /etc/lirc/hardware.conf
-sudo cp $GOPIGO_PATH/Software/Python/ir_remote_control/script/lircd_keyes.conf /etc/lirc/lircd.conf
-sudo cp $GOPIGO_PATH/Software/Python/ir_remote_control/script/lircrc_keyes /etc/lirc/lircrc
-echo "Files copied"
-
-
-#####
-# if we are not in quiet mode, then tell the user to restart
-
-if [ $quiet_mode -eq 0 ]
-then
-	echo " "
-	echo "Please restart the Raspberry Pi for the changes to take effect"
-	echo "  _____  ______  _____ _______       _____ _______ "
-	echo " |  __ \|  ____|/ ____|__   __|/\   |  __ \__   __|"
-	echo " | |__) | |__  | (___    | |  /  \  | |__) | | |   "
-	echo " |  _  /|  __|  \___ \   | | / /\ \ |  _  /  | |   "
-	echo " | | \ \| |____ ____) |  | |/ ____ \| | \ \  | |   "
-	echo " |_|  \_\______|_____/   |_/_/    \_\_|  \_\ |_|   "
-	echo " "
-	echo "To Restart type 'sudo reboot'"
-fi
+sudo cp $GOPIGO_PATH/Software/Python/ir_remote_control/lirc/hardware_copy.conf /etc/lirc/hardware.conf
+sudo cp $GOPIGO_PATH/Software/Python/ir_remote_control/lirc/lircd_keyes.conf /etc/lirc/lircd.conf
+sudo cp $GOPIGO_PATH/Software/Python/ir_remote_control/lirc/lircrc_keyes /etc/lirc/lircrc
+echo "Lirc files copied"
