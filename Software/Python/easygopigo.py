@@ -289,7 +289,6 @@ class DigitalSensor(Sensor):
         okay = False
         error_count = 0
 
-
         while not okay and error_count < 10:
             _grab_read()
             try:
@@ -526,6 +525,9 @@ class ButtonSensor(DigitalSensor):
     def __init__(self, port="D11",gpg=None):
         DigitalSensor.__init__(self, port, "INPUT")
         self.set_descriptor("Button sensor")
+        
+    def is_button_pressed(self):
+        return self.read() == 1
 ##########################
 
 
