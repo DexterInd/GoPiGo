@@ -721,7 +721,7 @@ class LineFollower(Sensor):
 #
 #######################################################################
 try:
-    from Distance_Sensor import distance_sensor
+    from di_sensors import distance_sensor
 
     class DistanceSensor(Sensor, distance_sensor.DistanceSensor):
         '''
