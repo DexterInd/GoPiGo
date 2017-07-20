@@ -758,7 +758,7 @@ try:
             while (mm > 8000 or mm < 5) and attempt < 3:
                 _grab_read()
                 try:
-                    mm = self.readRangeSingleMillimeters()
+                    mm = self.self.read_range_single()
                 except:
                     mm = 0
                 _release_read()
