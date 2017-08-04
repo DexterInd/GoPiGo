@@ -537,16 +537,11 @@ class Remote(Sensor):
         # IR Receiver
         try:
             import ir_receiver
-            import ir_receiver_check
             IR_RECEIVER_ENABLED = True
         except:
             IR_RECEIVER_ENABLED = False
 
-        if ir_receiver_check.check_ir() == 0:
-            print("*** Error with the Remote Controller")
-            print("Please enable the IR Receiver in the Advanced Comms tool")
-            IR_RECEIVER_ENABLED = False
-        else:
+        if IR_RECEIVER_ENABLED:
             Sensor.__init__(self, port, "SERIAL")
             self.set_descriptor("Remote Control")
 
@@ -561,12 +556,13 @@ class Remote(Sensor):
             before handling the code value
         if the IR Receiver is not enabled, this will return -1
         '''
-        if IR_RECEIVER_ENABLED:
-            return ir_receiver.nextcode()
-        else:
-            print("Error with the Remote Controller")
-            print("Please enable the IR Receiver in the Advanced Comms tool")
-            return -1
+        # if IR_RECEIVER_ENABLED:
+        import ir_receiver
+        return ir_receiver.nextcode()
+        # else:
+        #     print("Error with the Remote Controller")
+        #     print("Please enable the IR Receiver in the Advanced Comms tool")
+        #     return -1
 ##########################
 
 
@@ -604,6 +600,7 @@ class LineFollower(Sensor):
         From 0 to 1023
         May return a list of -1 when there's a read error
         '''
+
         _grab_read()
         try:
             five_vals = line_sensor.read_sensor()
@@ -630,6 +627,7 @@ class LineFollower(Sensor):
             through the Line Sensor Calibration tool
         May return all -1 on a read error
         '''
+
         five_vals = [-1,-1,-1,-1,-1]
 
 
