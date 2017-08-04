@@ -45,30 +45,6 @@ def debug(in_str):
     if False:
         print(in_str)
 
-def _wait_for_read():
-    while read_is_open is False:
-        time.sleep(0.01)
-
-def _is_read_open():
-    return read_is_open
-
-def _grab_read():
-    global read_is_open
-    # print("grab")
-    read_is_open = False
-
-def _release_read():
-    global read_is_open
-    # print("release")
-    read_is_open = True
-
-
-def volt():
-    _wait_for_read()
-    _grab_read()
-    voltage = gopigo.volt()
-    _release_read()
-    return voltage
 
 def _grab_read():
     '''
@@ -437,7 +413,6 @@ class UltraSonicSensor(AnalogSensor):
         readings =[]
         skip = 0
         while len(readings) < 3:
-
             _grab_read()
             try:
                 value = gopigo.corrected_us_dist(PORTS[self.port])
