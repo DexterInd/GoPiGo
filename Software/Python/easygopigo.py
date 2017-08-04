@@ -22,9 +22,8 @@ except:
     pass
 
 try:
-    sys.path.insert(0, '/home/pi/Dexter/GoPiGo/Software/Python/line_follower')
-    import line_sensor
-    import scratch_line
+    from line_follower import line_sensor
+    from line_follower import scratch_line
     is_line_follower_accessible = True
 except:
     try:
@@ -253,7 +252,7 @@ class Sensor():
     def __init__(self, port, pinmode):
         '''
         port = one of PORTS keys
-        pinmode = "INPUT", "OUTPUT", "SERIAL" (which gets ignored)
+        pinmode = "INPUT", "OUTPUT", "SERIAL" (which gets ignored), "SERVO"
         '''
         debug("Sensor init")
         debug(pinmode)
@@ -741,6 +740,27 @@ class LineFollower(Sensor):
             return "Right"
         return "Unknown"
 
+
+#######################################################################
+#
+# SERVO
+#
+#######################################################################
+
+class Servo(Sensor):
+    
+    def __init__(self, port="SERVO", gpg=None):
+        Sensor.__init__(self, port, "SERVO")
+        gopigo.enable_servo()
+        self.set_descriptor("Servo Motor")
+        
+    def rotate_servo(self, servo_position):
+        if servo_position > 180:
+            servo_position = 180
+        if servo_position < 0:
+            servo_position = 0
+        gopigo.servo(servo_position)
+        
             
 #######################################################################
 #
