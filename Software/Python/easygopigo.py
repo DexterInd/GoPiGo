@@ -81,7 +81,14 @@ class EasyGoPiGo():
     this makes the gopigo thread safe and process safe
     if mutex is not available, then it's just a direct access to gopigo
     '''
-    
+    def __init__(self):
+        '''
+        On Init, set speed to half-way, so GoPiGo is predictable 
+            and not too fast.
+        '''
+        DEFAULT_SPEED = 128
+        gopigo.set_speed(DEFAULT_SPEED)
+        
     def volt(self):
         _grab_read()
         try:
@@ -139,6 +146,14 @@ class EasyGoPiGo():
         except:
             pass
         _release_read()
+        
+    def reset_speed(self):
+        _grab_read()
+        try:
+            gopigo.set_speed(DEFAULT_SPEED)
+        except:
+            pass
+        _release_read()       
         
     def set_left_speed(self,new_speed):
         _grab_read()
@@ -537,16 +552,11 @@ class Remote(Sensor):
         # IR Receiver
         try:
             import ir_receiver
-            import ir_receiver_check
             IR_RECEIVER_ENABLED = True
         except:
             IR_RECEIVER_ENABLED = False
 
-        if ir_receiver_check.check_ir() == 0:
-            print("*** Error with the Remote Controller")
-            print("Please enable the IR Receiver in the Advanced Comms tool")
-            IR_RECEIVER_ENABLED = False
-        else:
+        if IR_RECEIVER_ENABLED:
             Sensor.__init__(self, port, "SERIAL")
             self.set_descriptor("Remote Control")
 
@@ -561,12 +571,13 @@ class Remote(Sensor):
             before handling the code value
         if the IR Receiver is not enabled, this will return -1
         '''
-        if IR_RECEIVER_ENABLED:
-            return ir_receiver.nextcode()
-        else:
-            print("Error with the Remote Controller")
-            print("Please enable the IR Receiver in the Advanced Comms tool")
-            return -1
+        # if IR_RECEIVER_ENABLED:
+        import ir_receiver
+        return ir_receiver.nextcode()
+        # else:
+        #     print("Error with the Remote Controller")
+        #     print("Please enable the IR Receiver in the Advanced Comms tool")
+        #     return -1
 ##########################
 
 
@@ -604,6 +615,7 @@ class LineFollower(Sensor):
         From 0 to 1023
         May return a list of -1 when there's a read error
         '''
+
         _grab_read()
         try:
             five_vals = line_sensor.read_sensor()
@@ -630,6 +642,7 @@ class LineFollower(Sensor):
             through the Line Sensor Calibration tool
         May return all -1 on a read error
         '''
+
         five_vals = [-1,-1,-1,-1,-1]
 
 

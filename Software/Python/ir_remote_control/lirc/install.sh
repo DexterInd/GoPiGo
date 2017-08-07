@@ -53,6 +53,12 @@ fi
 echo " "
 echo "Copying Config Files"
 echo "===================="
+
+if [ ! -d "/etc/lirc" ]
+then
+	sudo mkdir "/etc/lirc"
+fi
+
 sudo cp $GOPIGO_PATH/Software/Python/ir_remote_control/lirc/hardware_copy.conf /etc/lirc/hardware.conf
 sudo cp $GOPIGO_PATH/Software/Python/ir_remote_control/lirc/lircd_keyes.conf /etc/lirc/lircd.conf
 sudo cp $GOPIGO_PATH/Software/Python/ir_remote_control/lirc/lircrc_keyes /etc/lirc/lircrc
