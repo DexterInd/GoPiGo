@@ -81,7 +81,14 @@ class EasyGoPiGo():
     this makes the gopigo thread safe and process safe
     if mutex is not available, then it's just a direct access to gopigo
     '''
-    
+    def __init__(self):
+        '''
+        On Init, set speed to half-way, so GoPiGo is predictable 
+            and not too fast.
+        '''
+        DEFAULT_SPEED = 128
+        gopigo.set_speed(DEFAULT_SPEED)
+        
     def volt(self):
         _grab_read()
         try:
@@ -139,6 +146,14 @@ class EasyGoPiGo():
         except:
             pass
         _release_read()
+        
+    def reset_speed(self):
+        _grab_read()
+        try:
+            gopigo.set_speed(DEFAULT_SPEED)
+        except:
+            pass
+        _release_read()       
         
     def set_left_speed(self,new_speed):
         _grab_read()
