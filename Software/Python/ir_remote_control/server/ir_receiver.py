@@ -40,8 +40,14 @@ th = threading.Thread(target=run_server)
 th.daemon = True
 th.start()
 
-def nextcode():
+def nextcode(consume=True):
+    '''
+    Returns the key that was last read by the background thread.
+    If consume is set to True, this key will only be returned once.
+    If consume is set to False, this key will be returned until changed
+    '''
     global last_recv_or_code
     send_back=last_recv_or_code
-    last_recv_or_code=""
+    if consume:
+        last_recv_or_code=""
     return send_back
