@@ -5,6 +5,8 @@ import threading
 
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # reuse the port on future connections
+sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1) # enable naggle algorithm
 
 # Bind the socket to the port
 server_address = ('localhost', 21852)
@@ -21,20 +23,23 @@ def run_server():
         # Wait for a connection
         # print 'waiting for a connection'
         connection, client_address = sock.accept()
-        
-        try:
-            # print 'connection from', client_address
-            while True:
-                data = connection.recv(16)
-                if data:
-                    # print data
-                    last_recv_or_code=data
+        connection.setblocking(False)
+
+        while True:
+            try:
+                msg = connection.recv(16)
+                if len(msg) > 0:
+                    last_recv_or_code = msg
                 else:
+                    last_recv_or_code = "NO_PRESS"
                     break
-        except:
-			last_recv_or_code=-1
-        finally:
-            connection.close()
+            except:
+                continue
+
+            time.sleep(0.6)
+
+        connection.close()
+
 
 th = threading.Thread(target=run_server)
 th.daemon = True
