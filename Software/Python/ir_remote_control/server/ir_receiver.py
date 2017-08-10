@@ -1,5 +1,6 @@
 import socket
 import sys
+import signal
 import time
 import threading
 
@@ -13,37 +14,40 @@ server_address = ('localhost', 21852)
 print ('starting up on %s port %s' % server_address)
 sock.bind(server_address)
 sock.listen(1)
-
-last_recv_or_code=""
+sock.settimeout(0.5) # socket timeout
+last_recv_or_code="NO_PRESS"
 
 # This runs in a background thread and keeps on updating a global variable so that the only the latest value is returned when the scripts asks for data
 def run_server():
     global last_recv_or_code
+
+    # each loop handles one key at a time
+    # so there's only going to be a new socket for each loop
     while True:
-        # Wait for a connection
-        # print 'waiting for a connection'
-        connection, client_address = sock.accept()
-        connection.setblocking(False)
+        try:
+            connection, client_address = sock.accept() # accept a new client
+            connection.setblocking(True) # set connection to blocking mode
 
-        while True:
-            try:
-                msg = connection.recv(16)
-                if len(msg) > 0:
-                    last_recv_or_code = msg
-                else:
-                    last_recv_or_code = "NO_PRESS"
-                    break
-            except:
-                continue
+        except socket.timeout:
 
-            time.sleep(0.6)
+            # if we encounter a timeout, then it means nothing is pressed at the given moment
+            last_recv_or_code = "NO_PRESS"
+            continue
 
+        # read a maximum of 16 characters
+        # since it's a blocking method
+        # we can be sure we're getting a non-empty string
+        last_recv_or_code = connection.recv(16)
+
+        # on each loop, close the given socket
         connection.close()
 
+    sys.exit(0)
 
 th = threading.Thread(target=run_server)
 th.daemon = True
 th.start()
+
 
 def nextcode(consume=True):
     '''
