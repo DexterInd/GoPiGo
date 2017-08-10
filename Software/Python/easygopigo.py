@@ -22,9 +22,8 @@ except:
     pass
 
 try:
-    sys.path.insert(0, '/home/pi/Dexter/GoPiGo/Software/Python/line_follower')
-    import line_sensor
-    import scratch_line
+    from line_follower import line_sensor
+    from line_follower import scratch_line
     is_line_follower_accessible = True
 except:
     try:
@@ -82,7 +81,14 @@ class EasyGoPiGo():
     this makes the gopigo thread safe and process safe
     if mutex is not available, then it's just a direct access to gopigo
     '''
-    
+    def __init__(self):
+        '''
+        On Init, set speed to half-way, so GoPiGo is predictable 
+            and not too fast.
+        '''
+        DEFAULT_SPEED = 128
+        gopigo.set_speed(DEFAULT_SPEED)
+        
     def volt(self):
         _grab_read()
         try:
@@ -140,6 +146,14 @@ class EasyGoPiGo():
         except:
             pass
         _release_read()
+        
+    def reset_speed(self):
+        _grab_read()
+        try:
+            gopigo.set_speed(DEFAULT_SPEED)
+        except:
+            pass
+        _release_read()       
         
     def set_left_speed(self,new_speed):
         _grab_read()
@@ -229,7 +243,7 @@ class Sensor():
     def __init__(self, port, pinmode):
         '''
         port = one of PORTS keys
-        pinmode = "INPUT", "OUTPUT", "SERIAL" (which gets ignored)
+        pinmode = "INPUT", "OUTPUT", "SERIAL" (which gets ignored), "SERVO"
         '''
         debug("Sensor init")
         debug(pinmode)
@@ -288,7 +302,6 @@ class DigitalSensor(Sensor):
         '''
         okay = False
         error_count = 0
-
 
         while not okay and error_count < 10:
             _grab_read()
@@ -526,6 +539,9 @@ class ButtonSensor(DigitalSensor):
     def __init__(self, port="D11",gpg=None):
         DigitalSensor.__init__(self, port, "INPUT")
         self.set_descriptor("Button sensor")
+        
+    def is_button_pressed(self):
+        return self.read() == 1
 ##########################
 
 
@@ -536,16 +552,11 @@ class Remote(Sensor):
         # IR Receiver
         try:
             import ir_receiver
-            import ir_receiver_check
             IR_RECEIVER_ENABLED = True
         except:
             IR_RECEIVER_ENABLED = False
 
-        if ir_receiver_check.check_ir() == 0:
-            print("*** Error with the Remote Controller")
-            print("Please enable the IR Receiver in the Advanced Comms tool")
-            IR_RECEIVER_ENABLED = False
-        else:
+        if IR_RECEIVER_ENABLED:
             Sensor.__init__(self, port, "SERIAL")
             self.set_descriptor("Remote Control")
 
@@ -560,12 +571,13 @@ class Remote(Sensor):
             before handling the code value
         if the IR Receiver is not enabled, this will return -1
         '''
-        if IR_RECEIVER_ENABLED:
-            return ir_receiver.nextcode()
-        else:
-            print("Error with the Remote Controller")
-            print("Please enable the IR Receiver in the Advanced Comms tool")
-            return -1
+        # if IR_RECEIVER_ENABLED:
+        import ir_receiver
+        return ir_receiver.nextcode()
+        # else:
+        #     print("Error with the Remote Controller")
+        #     print("Please enable the IR Receiver in the Advanced Comms tool")
+        #     return -1
 ##########################
 
 
@@ -603,6 +615,7 @@ class LineFollower(Sensor):
         From 0 to 1023
         May return a list of -1 when there's a read error
         '''
+
         _grab_read()
         try:
             five_vals = line_sensor.read_sensor()
@@ -629,6 +642,7 @@ class LineFollower(Sensor):
             through the Line Sensor Calibration tool
         May return all -1 on a read error
         '''
+
         five_vals = [-1,-1,-1,-1,-1]
 
 
@@ -712,6 +726,27 @@ class LineFollower(Sensor):
             return "Right"
         return "Unknown"
 
+
+#######################################################################
+#
+# SERVO
+#
+#######################################################################
+
+class Servo(Sensor):
+    
+    def __init__(self, port="SERVO", gpg=None):
+        Sensor.__init__(self, port, "SERVO")
+        gopigo.enable_servo()
+        self.set_descriptor("Servo Motor")
+        
+    def rotate_servo(self, servo_position):
+        if servo_position > 180:
+            servo_position = 180
+        if servo_position < 0:
+            servo_position = 0
+        gopigo.servo(servo_position)
+        
             
 #######################################################################
 #
@@ -719,7 +754,7 @@ class LineFollower(Sensor):
 #
 #######################################################################
 try:
-    from Distance_Sensor import distance_sensor
+    from di_sensors import distance_sensor
 
     class DistanceSensor(Sensor, distance_sensor.DistanceSensor):
         '''
@@ -756,7 +791,7 @@ try:
             while (mm > 8000 or mm < 5) and attempt < 3:
                 _grab_read()
                 try:
-                    mm = self.readRangeSingleMillimeters()
+                    mm = self.read_range_single()
                 except:
                     mm = 0
                 _release_read()
