@@ -57,8 +57,8 @@ class EasyGoPiGo():
         On Init, set speed to half-way, so GoPiGo is predictable
             and not too fast.
         '''
-        DEFAULT_SPEED = 128
-        gopigo.set_speed(DEFAULT_SPEED)
+        self.DEFAULT_SPEED = 128
+        gopigo.set_speed(self.DEFAULT_SPEED)
 
         self.mutex = None
         if use_mutex is True:
@@ -138,7 +138,7 @@ class EasyGoPiGo():
         if self.mutex:
             self.mutex.acquire()
         try:
-            gopigo.set_speed(DEFAULT_SPEED)
+            gopigo.set_speed(self.DEFAULT_SPEED)
         except:
             pass
         if self.mutex:
