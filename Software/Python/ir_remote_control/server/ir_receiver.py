@@ -35,7 +35,7 @@ def run_server():
         except socket.timeout:
 
             # if we encounter a timeout, then it means nothing is pressed at the given moment
-            last_recv_or_code = "NO_PRESS"
+            last_recv_or_code = NO_PRESS
             continue
 
         # read a maximum of 16 characters
