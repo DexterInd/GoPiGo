@@ -1,8 +1,9 @@
 import socket
 import sys
-import signal
 import time
 import threading
+
+NO_PRESS = "NO_KEYPRESS"
 
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -15,7 +16,9 @@ print ('starting up on %s port %s' % server_address)
 sock.bind(server_address)
 sock.listen(1)
 sock.settimeout(0.5) # socket timeout
-last_recv_or_code="NO_PRESS"
+
+last_recv_or_code = NO_PRESS
+previous_keypress = NO_PRESS
 
 # This runs in a background thread and keeps on updating a global variable so that the only the latest value is returned when the scripts asks for data
 def run_server():
@@ -31,7 +34,7 @@ def run_server():
         except socket.timeout:
 
             # if we encounter a timeout, then it means nothing is pressed at the given moment
-            last_recv_or_code = "NO_PRESS"
+            last_recv_or_code = NO_PRESS
             continue
 
         # read a maximum of 16 characters
@@ -48,7 +51,6 @@ th = threading.Thread(target=run_server)
 th.daemon = True
 th.start()
 
-
 def nextcode(consume=True):
     '''
     Returns the key that was last read by the background thread.
@@ -56,7 +58,18 @@ def nextcode(consume=True):
     If consume is set to False, this key will be returned until changed
     '''
     global last_recv_or_code
+    global previous_keypress
+
     send_back=last_recv_or_code
+
+    # print("send_back: {} previous_keypress: {}".format(send_back,previous_keypress))
+
     if consume:
-        last_recv_or_code=""
+        if previous_keypress == send_back:
+            return ""
+        if send_back == NO_PRESS:
+            return ""
+
+    previous_keypress = send_back
+
     return send_back
