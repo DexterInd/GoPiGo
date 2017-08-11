@@ -573,7 +573,9 @@ class Remote(Sensor):
         '''
         # if IR_RECEIVER_ENABLED:
         import ir_receiver
-        return ir_receiver.nextcode()
+        key = ir_receiver.nextcode(consume=False)
+        # print(key)
+        return key
         # else:
         #     print("Error with the Remote Controller")
         #     print("Please enable the IR Receiver in the Advanced Comms tool")
