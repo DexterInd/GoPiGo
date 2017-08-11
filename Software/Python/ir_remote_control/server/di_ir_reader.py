@@ -35,6 +35,7 @@ class GracefullExiter:
     def exit_gracefully(self, signum, frame):
         self.exit_now = True
 
+saved_previous_key = ""
 
 # Compare the key value which was read by the IR receiver with the fingerprints that we had recorded for each value
 def compare_with_button(inp):
@@ -323,6 +324,8 @@ def compare_with_button(inp):
         if found_flag:
             print keys[key]
             sock.sendall(keys[key])
+            global saved_previous_key
+            saved_previous_key = keys[key]
         else:
             print "NO_MATCH"
             sock.sendall("NO_MATCH")
@@ -467,6 +470,23 @@ def main(process_ir):
 
             detected_sig_buf.append(pulse_us)
     else:
+        # Send to socket client
+        try:
+            # Create a TCP/IP socket
+            sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
+            server_address = ('localhost', 21852)
+            # print 'connecting to %s port %s' % server_address
+            sock.connect(server_address)
+
+            # print 'sending "%s"' % str(i)
+            sock.sendall(saved_previous_key)
+
+        except socket.error:
+            print "Unable to connect to the server"
+        finally:
+            # print 'Closing socket'
+            sock.close()
         if debug:
             print "n:",pulse_us
 
