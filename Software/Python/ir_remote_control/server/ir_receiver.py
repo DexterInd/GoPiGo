@@ -1,6 +1,5 @@
 import socket
 import sys
-import signal
 import time
 import threading
 
