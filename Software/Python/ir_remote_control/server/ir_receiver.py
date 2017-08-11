@@ -4,6 +4,8 @@ import signal
 import time
 import threading
 
+NO_PRESS = "NO_KEYPRESS"
+
 # Create a TCP/IP socket
 sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # reuse the port on future connections
@@ -15,7 +17,9 @@ print ('starting up on %s port %s' % server_address)
 sock.bind(server_address)
 sock.listen(1)
 sock.settimeout(0.5) # socket timeout
-last_recv_or_code="NO_PRESS"
+
+last_recv_or_code = NO_PRESS
+previous_keypress = NO_PRESS
 
 # This runs in a background thread and keeps on updating a global variable so that the only the latest value is returned when the scripts asks for data
 def run_server():
@@ -50,8 +54,23 @@ th.start()
 
 # function to be used from a script where this module is imported
 # use this function to see which buttons are pressed on the remote
-def nextcode():
+def nextcode(consume=True):
+    '''
+    Returns the key that was last read by the background thread.
+    If consume is set to True, this key will only be returned once.
+    If consume is set to False, this key will be returned until changed
+    '''
     global last_recv_or_code
+    global previous_keypress
+
     send_back=last_recv_or_code
-    last_recv_or_code=""
+    # print("send_back: {} previous_keypress: {}".format(send_back,previous_keypress))
+
+    if consume:
+        if previous_keypress == send_back:
+            return ""
+        if send_back == NO_PRESS:
+            return ""
+
+    previous_keypress = send_back
     return send_back
