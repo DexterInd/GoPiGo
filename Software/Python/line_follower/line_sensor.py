@@ -124,8 +124,12 @@ def read_sensor():
     try:
         output_values = []
         bus.write_i2c_block_data(address, 1, aRead_cmd + [unused, unused, unused])
+        
+        # for some unknown reason we need to discard the first reading
+        # otherwise we're not up to date
         number = bus.read_i2c_block_data(address, 1)
-
+        number = bus.read_i2c_block_data(address, 1)
+        
         # for each IR sensor on the line follower
         for i in range(5):
             # calculate the 2-byte number we got
