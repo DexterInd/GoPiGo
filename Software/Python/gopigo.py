@@ -80,6 +80,8 @@ m1_cmd      		=[111]     	#Control motor1
 m2_cmd    			=[112]     	#Control motor2
 read_motor_speed_cmd=[114]		#Get motor speed back
 
+ir_last_value       =[121]
+
 volt_cmd			=[118]		#Read the voltage of the batteries
 us_cmd				=[117]		#Read the distance from the ultrasonic sensor
 led_cmd				=[108]		#Turn On/Off the LED's
@@ -664,7 +666,7 @@ def dht(sensor_type=0):
 
 def check_version():
 	global version
-	
+
 	if version == 0:
 		for i in range(10):
 			raw=analogRead(7)
@@ -675,3 +677,52 @@ def check_version():
 			version=14
 
 	return version
+
+#Read IR Sensor Value on D11
+
+def ir_read():
+
+    write_i2c_block(address,ir_last_value+[0,0,0])  # The usual commands
+    time.sleep(.08)                                 # Nothing special here either, copied from pervious work
+    try:
+        b1=bus.read_byte(address)   # Bus 1 will have the data
+        b2=bus.read_byte(address)   # Bus 2 will be empty
+
+    except IOError:
+        return -1
+    if(b1 == 78):
+        return 12   # Up Button
+    elif(b1 == 43):
+        return 13   # Down Button
+    elif(b1 == 110):
+        return 14   # Left Button
+    elif(b1 == 30):
+        return 15   # Right Button was pressed
+    elif(b1 == 126):
+        return 16   # OK button was pressed
+    elif(b1 == 75):
+        return 1    # 1 Button was pressued
+    elif(b1 == 51):
+        return 2    # 2 Button was pressed
+    elif(b1 == 39):
+        return 3    # 3 Button was pressed
+    elif(b1 == 103):
+        return 4    # 4 Button was pressed
+    elif(b1 == 115):
+        return 5    # 5 Button was pressed
+    elif(b1 == 66):
+        return 6    # 6 Button was pressed
+    elif(b1 == 119):
+        return 7    # 7 Button was pressed
+    elif(b1 == 99):
+        return 8    # 8 Button was pressed
+    elif(b1 == 82):
+        return 9    # 9 Button was pressed
+    elif(b1 == 90):
+        return 0    # 0 button pressed
+    elif(b1 == 94):
+        return 10   # * was pressed
+    elif(b1 == 86):
+        return 11   # # Was pressed
+    else:
+        return -1   # Error occured
