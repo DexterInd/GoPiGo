@@ -555,6 +555,7 @@ class Remote(Sensor):
             IR_RECEIVER_ENABLED = True
         except:
             IR_RECEIVER_ENABLED = False
+            raise ImportError("IR sensor not enabled")
 
         if IR_RECEIVER_ENABLED:
             Sensor.__init__(self, port, "SERIAL")
@@ -569,15 +570,14 @@ class Remote(Sensor):
         No preprocessing
         You have to check that length > 0
             before handling the code value
-        if the IR Receiver is not enabled, this will return -1
         '''
-        # if IR_RECEIVER_ENABLED:
-        import ir_receiver
-        return ir_receiver.nextcode()
-        # else:
-        #     print("Error with the Remote Controller")
-        #     print("Please enable the IR Receiver in the Advanced Comms tool")
-        #     return -1
+        if IR_RECEIVER_ENABLED:
+            import ir_receiver
+            key = ir_receiver.nextcode(consume=False)
+        else:
+            key = ""
+        
+        return key
 ##########################
 
 
