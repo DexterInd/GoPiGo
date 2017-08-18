@@ -1,0 +1,59 @@
+Version 2.0.10 July 17, 2017 
+  Unsigned manager overflow problem in Samsung36
+Version 2.09 July 2, 2017 
+  Updated pin numbers for Circuit Playground Express
+  Added 8-bit Sony test to examples/pattern.ino
+Version 2.08 May 18, 2017 
+  Converted MATCH and ABS_MATCH from macros to methods saving
+    over 1K of program space on "dump.ino" for example.
+  Changed the extent of lead out on Sony 8 protocol
+  Made cmdType and cmdData in CYKM protocol public
+Version 2.07 May 5, 2017 
+  Fixed problem with dumpResults related to CYKM.
+  Miscellaneous changes to facilitate integration into
+    Adafruit_CircuitPlayground library.
+Version 2.06 May 5, 2017 
+  Added protocol 12 CYKM. A protocol designed by me Chris Young
+    to facilitate transmission and reception of keyboard and
+    mouse commands. Some documentation in the files. More
+    detailed documentation will be available in the manual
+    soon.
+Version 2.05 April 30, 2017 
+  Added support for Adafruit Circuit Playground Express with
+    SAMD 21 processor using its built-in IR receiver and transmitter.
+    Built-in receiver on GPIO 39. Automatically selects output on
+    GPIO 29 as default.
+  Expanded IRLibcombo.h to support unsupported protocol 91 in 
+    addition to 90. Allows you to work with 2 unsupported protocols.
+Version 2.04 March 21, 2017 
+  Typo in IRLibSAMD21.h
+Version 2.03 March 17, 2017 
+  Removed restrictions on Adafruit Feather 32u4 pin 9 
+Version 2.02 March 15, 2017 
+  Expanded support for SAMD 21. Now can use any available PWM
+    pins for output. TCC0 and TCC1 selected automatically based
+    on pin number. Receiving using 50 microsecond interrupt defaults
+    to using TC3 however TC4 and TC5 can be used optionally to avoid
+    conflicts with other libraries. GCLK0 is used for both sending and
+    receiving however it uses the default 48 MHz clock source without
+    any divisor so it's safe to use despite the fact it's normally 
+    reserved for internal Arduino infrastructure.
+Version 2.01 February 28, 2017
+  Added preliminary support for SAMD 21 platforms such as
+    Arduino Zero, Arduino M0 Pro, and Adafruit Feather M0.
+  Note: Documentation has not yet been updated to support SAMD 21.
+    See IRLib2/SAMD21.txt for details.
+
+Version beta 0.11 September 21, 2016
+  Fixed extra character in IRLibProtocols/IRLibCombo.h
+
+Additional release beta version 0.1 September 20, 2016
+  Major rewrite of IRLib1 restructuring everything
+  Added auto resume feature when using external buffer
+  But fixes
+  Included new protocols which were previously supported only
+    by sample code into the main libraries.
+  See users manual Appendix A for details of changes and explanation
+    of reasons that this is no longer backward-compatible with IRLib1.
+  Added Section 2 Beginners Tutorial and long-awaited Section 3 on
+    how to add new protocols.
