@@ -9,6 +9,7 @@
 // John       25 Sep 14         Changes for div8 fuse settings.
 // Karan      01 June 15        Changes for v16 and IR control added
 // Karan	  18 Aug 15			Minor changes to improve stability
+// John     18 Aug 17     Adding IR Receiver into Firmware.
 //
 // These files have been made available online through a Creative Commons Attribution-ShareAlike 3.0  license.
 // (http://creativecommons.org/licenses/by-sa/3.0/)
@@ -52,7 +53,7 @@ SoftwareServo servo1;
 
 #define debug 0             //Make 0 to disable debugging
 
-#define ver 16              //Firmware version (10 ->1.0)
+#define ver 17              //Firmware version (10 ->1.0)
 
 //Command list received from the Raspberry Pi
 #define fwd_cmd         119     //Move forward with PID
