@@ -64,15 +64,29 @@ class EasyGoPiGo():
         if use_mutex is True:
             self.mutex = Mutex()
 
-    def volt(self):
+    def __ifMutexAcquire(self):
+        """
+        Acquires the I2C if the ``use_mutex`` parameter of the constructor was set to ``True``.
+
+        """
         if self.mutex:
             self.mutex.acquire()
+
+    def __ifMutexRelease(self):
+        """
+        Releases the I2C if the ``use_mutex`` parameter of the constructor was set to ``True``.
+
+        """
+        if self.mutex:
+            self.mutex.release()
+
+    def volt(self):
+        self.__ifMutexAcquire()
         try:
             voltage = gopigo.volt()
         except:
             voltage = 0
-        if self.mutex:
-            self.mutex.release()
+        self.__ifMutexRelease()
         return voltage
 
     def stop(self):
@@ -83,127 +97,103 @@ class EasyGoPiGo():
             pass
 
     def forward(self):
-        if self.mutex:
-            self.mutex.acquire()
+        self.__ifMutexAcquire()
         try:
             val = gopigo.forward()
         except Exception as e:
             print("easygopigo fwd: {}".format(e))
             pass
-        if self.mutex:
-            self.mutex.release()
+        self.__ifMutexRelease()
 
     def backward(self):
-        if self.mutex:
-            self.mutex.acquire()
+        self.__ifMutexAcquire()
         try:
             val = gopigo.backward()
         except Exception as e:
             print("easygopigo bwd: {}".format(e))
             pass
-        if self.mutex:
-            self.mutex.release()
+        self.__ifMutexRelease()
 
     def left(self):
-        if self.mutex:
-            self.mutex.acquire()
+        self.__ifMutexAcquire()
         try:
             gopigo.left()
         except:
             pass
-        if self.mutex:
-            self.mutex.release()
+        self.__ifMutexRelease()
 
     def right(self):
-        if self.mutex:
-            self.mutex.acquire()
+        self.__ifMutexAcquire()
         try:
             gopigo.right()
         except:
             pass
-        if self.mutex:
-            self.mutex.release()
+        self.__ifMutexRelease()
 
     def set_speed(self,new_speed):
-        if self.mutex:
-            self.mutex.acquire()
+        self.__ifMutexAcquire()
         try:
             gopigo.set_speed(new_speed)
         except:
             pass
-        if self.mutex:
-            self.mutex.release()
+        self.__ifMutexRelease()
 
     def reset_speed(self):
-        if self.mutex:
-            self.mutex.acquire()
+        self.__ifMutexAcquire()
         try:
             gopigo.set_speed(self.DEFAULT_SPEED)
         except:
             pass
-        if self.mutex:
-            self.mutex.release()
+        self.__ifMutexRelease()
 
     def set_left_speed(self,new_speed):
-        if self.mutex:
-            self.mutex.acquire()
+        self.__ifMutexAcquire()
         try:
             gopigo.set_left_speed(new_speed)
         except:
             pass
-        if self.mutex:
-            self.mutex.release()
+        self.__ifMutexRelease()
 
     def set_right_speed(self,new_speed):
-        if self.mutex:
-            self.mutex.acquire()
+        self.__ifMutexAcquire()
         try:
             gopigo.set_right_speed(new_speed)
         except:
             pass
-        if self.mutex:
-            self.mutex.release()
+        self.__ifMutexRelease()
 
     def led_on(self,led_id):
-        if self.mutex:
-            self.mutex.acquire()
+        self.__ifMutexAcquire()
         try:
             gopigo.led_on(led_id)
         except:
             pass
-        if self.mutex:
-            self.mutex.release()
+        self.__ifMutexRelease()
 
     def led_off(self,led_id):
-        if self.mutex:
-            self.mutex.acquire()
+        self.__ifMutexAcquire()
         try:
             gopigo.led_off(led_id)
         except:
             pass
-        if self.mutex:
-            self.mutex.release()
+        self.__ifMutexRelease()
 
     def trim_read(self):
-        if self.mutex:
-            self.mutex.acquire()
+        self.__ifMutexAcquire()
         try:
             current_trim = int(gopigo.trim_read())
         except:
             pass
-        if self.mutex:
-            self.mutex.release()
+        self.__ifMutexRelease()
         return current_trim
 
     def trim_write(self,set_trim_to):
-        if self.mutex:
-            self.mutex.acquire()
+        self.__ifMutexAcquire()
         try:
             gopigo.trim_write(int(set_trim_to))
         except:
             pass
-        if self.mutex:
-            self.mutex.release()
+        self.__ifMutexRelease()
 
 
 
@@ -299,6 +289,22 @@ class DigitalSensor(Sensor):
         if use_mutex is True:
             self.mutex = Mutex()
 
+    def __ifMutexAcquire(self):
+        """
+        Acquires the I2C if the ``use_mutex`` parameter of the constructor was set to ``True``.
+
+        """
+        if self.mutex:
+            self.mutex.acquire()
+
+    def __ifMutexRelease(self):
+        """
+        Releases the I2C if the ``use_mutex`` parameter of the constructor was set to ``True``.
+
+        """
+        if self.mutex:
+            self.mutex.release()
+
     def read(self):
         '''
         tries to get a value up to 10 times.
@@ -309,15 +315,13 @@ class DigitalSensor(Sensor):
         error_count = 0
 
         while not okay and error_count < 10:
-            if self.mutex:
-                self.mutex.acquire()
+            self.__ifMutexAcquire()
             try:
                 rtn = int(gopigo.digitalRead(self.getPortID()))
                 okay = True
             except:
                 error_count += 1
-            if self.mutex:
-                self.mutex.release()
+            self.__ifMutexRelease()
 
         if error_count > 10:
             return -1
@@ -326,14 +330,12 @@ class DigitalSensor(Sensor):
 
     def write(self, power):
         self.value = power
-        if self.mutex:
-            self.mutex.acquire()
+        self.__ifMutexAcquire()
         try:
             return_value = gopigo.digitalWrite(self.getPortID(), power)
         except:
             pass
-        if self.mutex:
-            self.mutex.release()
+        self.__ifMutexRelease()
         return return_value
 ##########################
 
@@ -353,15 +355,29 @@ class AnalogSensor(Sensor):
         if use_mutex is True:
             self.mutex = Mutex()
 
-    def read(self):
+    def __ifMutexAcquire(self):
+        """
+        Acquires the I2C if the ``use_mutex`` parameter of the constructor was set to ``True``.
+
+        """
         if self.mutex:
             self.mutex.acquire()
+
+    def __ifMutexRelease(self):
+        """
+        Releases the I2C if the ``use_mutex`` parameter of the constructor was set to ``True``.
+
+        """
+        if self.mutex:
+            self.mutex.release()
+
+    def read(self):
+        self.__ifMutexAcquire()
         try:
             self.value = gopigo.analogRead(self.getPortID())
         except:
             pass
-        if self.mutex:
-            self.mutex.release()
+        self.__ifMutexRelease()
         return self.value
 
     def percent_read(self):
@@ -376,14 +392,12 @@ class AnalogSensor(Sensor):
 
     def write(self, power):
         self.value = power
-        if self.mutex:
-            self.mutex.acquire()
+        self.__ifMutexAcquire()
         try:
             return_value = gopigo.analogWrite(self.getPortID(), power)
         except:
             pass
-        if self.mutex:
-            self.mutex.release()
+        self.__ifMutexRelease()
         return return_value
 ##########################
 
@@ -438,17 +452,31 @@ class UltraSonicSensor(AnalogSensor):
         if use_mutex is True:
             self.mutex = Mutex()
 
-    def is_too_close(self):
-        too_close = False
+    def __ifMutexAcquire(self):
+        """
+        Acquires the I2C if the ``use_mutex`` parameter of the constructor was set to ``True``.
+
+        """
         if self.mutex:
             self.mutex.acquire()
+
+    def __ifMutexRelease(self):
+        """
+        Releases the I2C if the ``use_mutex`` parameter of the constructor was set to ``True``.
+
+        """
+        if self.mutex:
+            self.mutex.release()
+
+    def is_too_close(self):
+        too_close = False
+        self.__ifMutexAcquire()
         try:
             if gopigo.us_dist(PORTS[self.port]) < self.get_safe_distance():
                 too_close = True
         except:
             pass
-        if self.mutex:
-            self.mutex.release()
+        self.__ifMutexRelease()
         return too_close
 
     def set_safe_distance(self, dist):
@@ -468,15 +496,13 @@ class UltraSonicSensor(AnalogSensor):
         readings =[]
         skip = 0
         while len(readings) < 3:
-            if self.mutex:
-                self.mutex.acquire()
+            self.__ifMutexAcquire()
             try:
                 value = gopigo.corrected_us_dist(PORTS[self.port])
             except Exception as e:
                 print("UltraSonicSensor read(): {}".format(e))
                 pass
-            if self.mutex:
-                self.mutex.release()
+            self.__ifMutexRelease()
             if value < 300 and value > 0:
                 readings.append(value)
             else:
@@ -655,6 +681,22 @@ class LineFollower(Sensor):
         if use_mutex is True:
             self.mutex = Mutex()
 
+    def __ifMutexAcquire(self):
+        """
+        Acquires the I2C if the ``use_mutex`` parameter of the constructor was set to ``True``.
+
+        """
+        if self.mutex:
+            self.mutex.acquire()
+
+    def __ifMutexRelease(self):
+        """
+        Releases the I2C if the ``use_mutex`` parameter of the constructor was set to ``True``.
+
+        """
+        if self.mutex:
+            self.mutex.release()
+
     def read_raw_sensors(self):
         '''
         Returns raw values from all sensors
@@ -662,14 +704,12 @@ class LineFollower(Sensor):
         May return a list of -1 when there's a read error
         '''
 
-        if self.mutex:
-            self.mutex.acquire()
+        self.__ifMutexAcquire()
         try:
             five_vals = line_sensor.read_sensor()
         except:
             pass
-        if self.mutex:
-            self.mutex.release()
+        self.__ifMutexRelease()
         debug ("raw values {}".format(five_vals))
 
         if five_vals != -1:
@@ -829,6 +869,22 @@ try:
                 print(e)
                 raise ValueError("Distance Sensor not found")
 
+        def __ifMutexAcquire(self):
+            """
+            Acquires the I2C if the ``use_mutex`` parameter of the constructor was set to ``True``.
+
+            """
+            if self.mutex:
+                self.mutex.acquire()
+
+        def __ifMutexRelease(self):
+            """
+            Releases the I2C if the ``use_mutex`` parameter of the constructor was set to ``True``.
+
+            """
+            if self.mutex:
+                self.mutex.release()
+
         # Returns the values in mm
         readings = []
         def read_mm(self):
@@ -843,14 +899,12 @@ try:
             # smaller than 8m or bigger than 5 mm.
             # if sensor insists on that value, then pass it on
             while (mm > 8000 or mm < 5) and attempt < 3:
-                if self.mutex:
-                    self.mutex.acquire()
+                self.__ifMutexAcquire()
                 try:
                     mm = self.read_range_single()
                 except:
                     mm = 0
-                if self.mutex:
-                    self.mutex.release()
+                self.__ifMutexRelease()
                 attempt = attempt + 1
                 time.sleep(0.001)
 
