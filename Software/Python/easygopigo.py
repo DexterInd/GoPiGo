@@ -583,6 +583,7 @@ class Remote(Sensor):
         You have to check that length > 0
             before handling the code value
         '''
+
         if IR_RECEIVER_ENABLED:
             import ir_receiver
             key = ir_receiver.nextcode(consume=False)
@@ -590,6 +591,7 @@ class Remote(Sensor):
             key = ""
         
         return key
+
 ##########################
 
 
