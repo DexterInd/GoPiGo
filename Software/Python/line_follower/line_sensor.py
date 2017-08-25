@@ -166,7 +166,7 @@ def get_sensorval():
 
 
 def set_black_line():
-	global black_line,white_line,range_col
+	global black_line, white_line, range_col
 	for i in range(5):
 		val=read_sensor()
 	# print (val)

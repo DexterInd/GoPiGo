@@ -207,20 +207,20 @@ install_line_follower(){
     then
         sudo mv $PIHOME/black_line.txt $PIHOME/Dexter/black_line.txt
     else
-        sudo touch $PIHOME/Dexter/black_line.txt
+        sudo cp $PIHOME/Dexter/GoPiGo/Software/Python/line_follower/black_line.txt $PIHOME/Dexter/black_line.txt
     fi
 
     if file_exists "$PIHOME/white_line.txt"
     then
         sudo mv $PIHOME/white_line.txt $PIHOME/Dexter/white_line.txt
     else
-        sudo touch $PIHOME/Dexter/white_line.txt
+        sudo cp $PIHOME/Dexter/GoPiGo/Software/Python/line_follower/white_line.txt $PIHOME/Dexter/white_line.txt
     fi
     if file_exists "$PIHOME/range_line.txt"
     then
         sudo mv $PIHOME/range_line.txt $PIHOME/Dexter/range_line.txt
     else
-        sudo touch $PIHOME/Dexter/range_line.txt
+        sudo cp $PIHOME/Dexter/GoPiGo/Software/Python/line_follower/range_line.txt $PIHOME/Dexter/range_line.txt
     fi
 
     sudo chmod 666 $PIHOME/Dexter/*line.txt
