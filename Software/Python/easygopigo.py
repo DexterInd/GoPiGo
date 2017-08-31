@@ -351,6 +351,11 @@ class AnalogSensor(Sensor):
 
     def percent_read(self):
         value = int(self.read()) * 100 // self._max_value
+        # Some sensors - like the loudness_sensor - 
+        # can actually return higher than 100% so let's clip it
+        # and keep classrooms within an acceptable noise level
+        if value > 100:
+            value = 100
         # print(value)
         return value
 
