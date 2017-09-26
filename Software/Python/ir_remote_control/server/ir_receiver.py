@@ -24,7 +24,7 @@ previous_keypress = NO_PRESS
 def run_server():
     global last_recv_or_code
 
-    # each loop handles one key at a time
+    # each loop handles one keypress at a time
     # so there's only going to be a new socket for each loop
     while True:
         try:
@@ -51,8 +51,6 @@ th = threading.Thread(target=run_server)
 th.daemon = True
 th.start()
 
-# function to be used from a script where this module is imported
-# use this function to see which buttons are pressed on the remote
 def nextcode(consume=True):
     '''
     Returns the key that was last read by the background thread.
@@ -69,7 +67,11 @@ def nextcode(consume=True):
         if previous_keypress == send_back:
             return ""
         if send_back == NO_PRESS:
+            # we're now getting a NO_PRESS, key has been released
+            # send an empty string but remember state
+            previous_keypress = send_back
             return ""
 
     previous_keypress = send_back
+
     return send_back

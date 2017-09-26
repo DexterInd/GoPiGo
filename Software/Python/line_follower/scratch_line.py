@@ -42,7 +42,7 @@ def get_black_line():
 	try:
 		with open(file_b, 'rb') as f:
 			black_line = pickle.load(f)
-	except Exception, e:
+	except Exception as e:
 		# print e
 		black_line=[0]*5
 	return black_line
@@ -53,7 +53,7 @@ def get_white_line():
 	try:
 		with open(file_w, 'rb') as f:
 			white_line = pickle.load(f)
-	except Exception, e:
+	except Exception as e:
 		# print e
 		white_line=[0]*5
 	return white_line
@@ -64,7 +64,7 @@ def get_range():
 	try:
 		with open(file_r, 'rb') as f:
 			range_col = pickle.load(f)
-	except Exception, e:
+	except Exception as e:
 		# print e
 		range_col=[0]*5
 	return range_col
