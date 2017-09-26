@@ -10,6 +10,14 @@ This repository contains source code, firmware and design materials for the GoPi
 
 ![ GoPiGo ](https://raw.githubusercontent.com/DexterInd/GoPiGo/master/GoPiGo_Front_Facing_Camera300.jpg)
 
+# Quick Install
+
+In order to quick install the `GoPiGo` repository, open up a terminal and type the following command:
+```
+sudo curl -kL dexterindustries.com/update_gopigo | bash
+```
+The same command can be used for updating the `GoPiGo` to the latest version.
+
 # See Also
 
 - [Dexter Industries] (http://www.dexterindustries.com/GoPiGo)

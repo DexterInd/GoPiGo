@@ -337,6 +337,7 @@ class AnalogSensor(Sensor):
         debug("AnalogSensor init")
         self.value = 0
         self.pin = ANALOG
+        self._max_value = 1024
         Sensor.__init__(self, port, pinmode)
 
     def read(self):
@@ -349,7 +350,12 @@ class AnalogSensor(Sensor):
         return self.value
 
     def percent_read(self):
-        value = int(self.read()) * 100 // 1024
+        value = int(self.read()) * 100 // self._max_value
+
+        # limit percent_read to a max of 100%. We don't want to encourage
+        # classrooms into shouting matches with the sound sensor
+        if value > 100:
+            value = 100
         # print(value)
         return value
 
@@ -387,7 +393,18 @@ class SoundSensor(AnalogSensor):
         debug("Sound Sensor on port "+port)
         AnalogSensor.__init__(self, port, "INPUT")
         self.set_descriptor("Sound sensor")
+##########################
 
+
+class LoudnessSensor(AnalogSensor):
+    """
+    Creates a Loudness sensor
+    """
+    def __init__(self, port="A1",gpg=None):
+        debug("Loudness Sensor on port "+port)
+        AnalogSensor.__init__(self, port, "INPUT")
+        self.set_descriptor("Loudness sensor")
+        self._max_value = 100
 ##########################
 
 
@@ -555,6 +572,7 @@ class Remote(Sensor):
             IR_RECEIVER_ENABLED = True
         except:
             IR_RECEIVER_ENABLED = False
+            raise ImportError("IR sensor not enabled")
 
         if IR_RECEIVER_ENABLED:
             Sensor.__init__(self, port, "SERIAL")
@@ -569,15 +587,14 @@ class Remote(Sensor):
         No preprocessing
         You have to check that length > 0
             before handling the code value
-        if the IR Receiver is not enabled, this will return -1
         '''
-        # if IR_RECEIVER_ENABLED:
-        import ir_receiver
-        return ir_receiver.nextcode()
-        # else:
-        #     print("Error with the Remote Controller")
-        #     print("Please enable the IR Receiver in the Advanced Comms tool")
-        #     return -1
+        if IR_RECEIVER_ENABLED:
+            import ir_receiver
+            key = ir_receiver.nextcode(consume=False)
+        else:
+            key = ""
+        
+        return key
 ##########################
 
 
@@ -824,6 +841,91 @@ try:
 except:
     print("Distance Sensor likely not installed")
     pass
+
+#######################################################################
+#
+# GROVE DHT Sensor
+#
+#######################################################################
+
+class DHTSensor(Sensor):
+    '''
+    Support for the Adafruit DHT sensor, blue or white
+    All imports are done internally so it's done on a as needed basis only
+        as in many cases the DHT sensor is not connected.
+    '''
+    def __init__(self, port="SERIAL", gpg=None, sensor_type=0):
+        try:
+            Sensor.__init__(self, port, "INPUT")
+        except:
+            raise
+
+        try:
+            self.sensor_type = sensor_type
+
+            if self.sensor_type == 0:
+                self.set_descriptor("Blue DHT Sensor")
+            else:
+                self.set_descriptor("White DHT Sensor")
+
+        except Exception as e:
+            print("DHTSensor: {}".format(e))
+            raise ValueError("DHT Sensor not found")
+
+    def read_temperature(self):
+        '''
+        Return values may be a float, or error strings
+        TBD: raise errors instead of returning strings
+        import done internally so it's done on a as needed basis only
+        '''
+
+        from di_sensors import DHT
+
+        _grab_read()
+        temp = DHT.dht(self.sensor_type)[0]
+        _release_read()
+
+        if temp == -2:
+            return "Bad reading, trying again"
+        elif temp == -3:
+            return "Run the program as sudo"
+        else:
+            # print("Temperature = %.02fC"%temp)
+            return temp
+
+    def read_humidity(self):
+        '''
+        Return values may be a float, or error strings
+        TBD: raise errors instead of returning strins
+        '''
+        from di_sensors import DHT
+
+        _grab_read()
+        humidity = DHT.dht(self.sensor_type)[1]
+        _release_read()
+
+        if humidity == -2:
+            return "Bad reading, trying again"
+        elif humidity == -3:
+            return "Run the program as sudo"
+        else:
+            # print("Humidity = %.02f%%"%humidity)
+            return humidity
+
+    def read(self):
+        from di_sensors import DHT
+
+        _grab_read()
+        [temp , humidity]=DHT.dht(self.sensor_type)
+        _release_read()
+
+        if temp ==-2.0 or humidity == -2.0:
+            return "Bad reading, trying again"
+        elif temp ==-3.0 or humidity == -3.0:
+            return "Run the program as sudo"
+        else:
+            print("Temperature = %.02fC Humidity = %.02f%%"%(temp, humidity))
+            return [temp, humidity]
 
 #######################################################################
 
