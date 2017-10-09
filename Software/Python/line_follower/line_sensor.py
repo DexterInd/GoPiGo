@@ -101,15 +101,6 @@ def statisticalNoiseReduction(values, std_factor_threshold = 2):
 
     return filtered_values
 
-# Write I2C block
-def write_i2c_block(address, block):
-	try:
-		return bus.write_i2c_block_data(address, 1, block)
-	except IOError:
-		if debug:
-			print ("IOError")
-		return -1
-
 # Function for reading line follower's values off of its IR sensor
 def read_sensor():
     address = 0x06
