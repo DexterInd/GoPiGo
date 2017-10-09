@@ -1,4 +1,6 @@
-# Scratch_Line.  This file adapts the line follower to Scratch.  
+#!/usr/bin/env python3
+
+# Scratch_Line.  This file adapts the line follower to Scratch.
 
 import line_sensor
 import time
@@ -86,7 +88,7 @@ def absolute_line_pos():
 
 	raw_vals=line_sensor.get_sensorval()
 	# print (raw_vals)
-	
+
 	# updated to handle the case where the line follower is not answering
 	for i in range(5):
 		if raw_vals[i] == -1:
@@ -95,11 +97,11 @@ def absolute_line_pos():
 			line_pos[i]=1
 		else:
 			line_pos[i]=0
-			
+
 	# print line_pos
 	return line_pos
-	
-	
+
+
 #Action to run when a line is detected
 def line_sensor_val_scratch():
 	# Values returned for the positions in scratch
@@ -117,11 +119,11 @@ def line_sensor_val_scratch():
 	# [0,0,0,0,0]	6	# All sensors reading white (has veered off course)
 	#				7	# Any thing else (erratic reading)
 	curr=absolute_line_pos()
-	
+
 	if curr== mid or curr == mid1:
 		return 0
 	elif curr == small_l:
-		return -1	
+		return -1
 	elif curr == small_l1:
 		return -2
 	elif curr == left:
@@ -129,7 +131,7 @@ def line_sensor_val_scratch():
 	elif curr == left1:
 		return -4
 	elif curr == small_r:
-		return 1	
+		return 1
 	elif curr == small_r1:
 		return 2
 	elif curr == right:
@@ -142,32 +144,32 @@ def line_sensor_val_scratch():
 		return 6
 	else:
 		return 7
-	
+
 def line_sensor_vals():
 	#if the line is in the middle, keep moving straight
 	#if the line is slightly left of right, keep moving straight
 	curr=absolute_line_pos()
 	if curr==small_r or curr==small_l or curr==mid or curr==mid1:
 		return '0'
-		
+
 	#If the line is towards the sligh left, turn slight right
 	elif curr==small_l1:
 		return '-1'
 	elif curr==left or curr==left1:
 		return '-2'
-		
+
 	#If the line is towards the sligh right, turn slight left
 	elif curr==small_r1:
 		return '1'
 	elif curr==right or curr==right1:
 		return '2'
-	elif curr==stop: 
+	elif curr==stop:
 		return '3'
 	else:
 		return '4'
-		
-		
-if __name__ == "__main__":	
+
+
+if __name__ == "__main__":
 	while True:
-		print line_sensor_vals()		
+		print(line_sensor_vals())
 		time.sleep(poll_time)

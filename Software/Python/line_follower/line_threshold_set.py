@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Dexter Industries line sensor basic example
 #
 # This program is used to set the white and black threshold that we are going to use for the line sensor.
@@ -38,15 +38,15 @@ def get_sensorval():
 		#else:
 			#Read once more to clear buffer and remove junk values
 		#	val=line_sensor.read_sensor()
-	
+
 print "WHITE LINE SETUP"
-while True:	
+while True:
 	print "\nKeep all the sensors over a white strip and press ENTER",
 	raw_input()
 	print "--> Line sensor readings: ",
 	get_sensorval()
 	print get_sensorval()
-	print "If the reading look good, press 'y' and Enter to continue, any other key to read again" 
+	print "If the reading look good, press 'y' and Enter to continue, any other key to read again"
 	inp=raw_input()
 	if inp=='y':
 		line_sensor.set_white_line()
@@ -55,17 +55,16 @@ print "White Line values set:",
 print line_sensor.get_white_line()
 
 print "BLACK LINE SETUP"
-while True:	
+while True:
 	print "\nKeep all the sensors over a black strip and press ENTER",
 	raw_input()
 	print "--> Line sensor readings: ",
 	get_sensorval()
 	print get_sensorval()
-	print "If the reading look good, press 'y' and Enter to continue, any other key to read again" 
+	print "If the reading look good, press 'y' and Enter to continue, any other key to read again"
 	inp=raw_input()
 	if inp=='y':
 		line_sensor.set_black_line()
 		break
 print "Black Line values set:",
 print line_sensor.get_black_line()
-
