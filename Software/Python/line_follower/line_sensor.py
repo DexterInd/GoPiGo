@@ -134,15 +134,15 @@ def read_sensor():
 
     for step in range(5):
         # calculate the 16-bit number we got
-        sensor_buffer[i].append(bytes_list[2 * step] * 256 + bytes_list[2 * step + 1])
+        sensor_buffer[step].append(bytes_list[2 * step] * 256 + bytes_list[2 * step + 1])
 
         # if there're too many elements in the list
         # then remove one
-        if len(sensor_buffer[i]) > max_buffer_length:
-            sensor_buffer[i].pop(0)
+        if len(sensor_buffer[step]) > max_buffer_length:
+            sensor_buffer[step].pop(0)
 
         # eliminate outlier values and select the most recent one
-        filtered_value = statisticalNoiseReduction(sensor_buffer[i], 2)[-1]
+        filtered_value = statisticalNoiseReduction(sensor_buffer[step], 2)[-1]
 
         # append the value to the corresponding IR sensor
         output_values.append(filtered_value)
