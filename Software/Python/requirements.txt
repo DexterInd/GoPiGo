@@ -1,2 +1,2 @@
 future
-quick2wire
+quick2wire-api
