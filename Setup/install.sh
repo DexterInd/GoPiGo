@@ -81,6 +81,12 @@ install_dependencies() {
     sudo pip install -U RPi.GPIO
     sudo pip install pyusb
     sudo pip install numpy
+    sudo pip install python-periphery
+    sudo pip3 install -U RPi.GPIO
+    sudo pip3 install pyusb
+    sudo pip3 install numpy
+    sudo pip3 install python-periphery
+
 
     feedback "Dependencies installed"
 }

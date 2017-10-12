@@ -41,8 +41,7 @@ import struct
 import operator
 import pickle
 import numpy
-
-from quick2wire import i2c
+from periphery import I2C, I2CError
 
 debug = 0
 
@@ -107,24 +106,26 @@ def read_sensor():
     command = 0x03
     unused = 0x00
 
-    # communicate with the line follower sensor
     try:
-        with i2c.I2CMaster(bus_number) as bus:
-            bus.transaction(i2c.writing(address, [register,command] + 3 * [unused]))
-            bus.transaction(i2c.writing(address, [register]))
-            read_results = bus.transaction(i2c.reading(address, 10))
+        i2c = I2C('/dev/i2c-' + str(bus_number))
 
-    except IOError as error:
-        # return list of -1s on error
+        read_bytes = 10 * [0]
+        msgs = [
+            I2C.Message([register, command] + 3 * [unused]),
+            I2C.Message(read_bytes, read=True)
+        ]
+        i2c.transfer(address, msgs)
+    except I2CError as error:
         return 5 * [-1]
 
     # unpack bytes received and process them
-    bytes_list = struct.unpack('10B',read_results[0])
+    # bytes_list = struct.unpack('10B',read_results[0])
     output_values = []
+    input_values = msgs[1].data
 
     for step in range(5):
         # calculate the 16-bit number we got
-        sensor_buffer[step].append(bytes_list[2 * step] * 256 + bytes_list[2 * step + 1])
+        sensor_buffer[step].append(input_values[2 * step] * 256 + input_values[2 * step + 1])
 
         # if there're too many elements in the list
         # then remove one
