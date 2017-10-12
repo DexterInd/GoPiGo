@@ -123,7 +123,7 @@ def read_sensor():
     # unpack bytes received and process them
     # bytes_list = struct.unpack('10B',read_results[0])
     output_values = []
-    input_values = msgs[1].data
+    input_values = msg2.data
 
     for step in range(5):
         # calculate the 16-bit number we got
