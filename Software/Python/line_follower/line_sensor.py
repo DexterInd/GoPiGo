@@ -41,7 +41,18 @@ import struct
 import operator
 import pickle
 import numpy
+
 from periphery import I2C, I2CError
+# We are using [python-periphery] package because with the
+# latest kernel versions (>v4.4.50-v7) and with the [python-smbus] package
+# the line follower no longer works. The issue is with the line follower,
+# which doesn't know how to process repeated starts from the master.
+# With [python-periphery] package, it's possible to avoid issuing
+# repeated start conditions and instead just use start/stop conditions.
+# original report: https://github.com/raspberrypi/firmware/issues/828
+# dev issue      : https://github.com/RobertLucian/GoPiGo/issues/8
+# PR             : https://github.com/DexterInd/GoPiGo/pull/273
+
 
 debug = 0
 
