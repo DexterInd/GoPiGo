@@ -110,11 +110,13 @@ def read_sensor():
         i2c = I2C('/dev/i2c-' + str(bus_number))
 
         read_bytes = 10 * [0]
-        msgs = [
-            I2C.Message([register, command] + 3 * [unused]),
-            I2C.Message(read_bytes, read=True)
-        ]
-        i2c.transfer(address, msgs)
+        msg1 = [ I2C.Message([register, command] + 3 * [unused]) ]
+        msg2 = [ I2C.Message(read_bytes, read=True) ]
+        # we meed to do 2 transfers so we can avoid using repeated starts
+        # repeated starts don't go hand in hand with the line follower
+        i2c.transfer(address, msg1)
+        i2c.transfer(address, msg2)
+
     except I2CError as error:
         return 5 * [-1]
 
