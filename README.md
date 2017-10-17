@@ -14,7 +14,7 @@ This repository contains source code, firmware and design materials for the GoPi
 
 In order to quick install the `GoPiGo` repository, open up a terminal and type the following command:
 ```
-sudo curl -L dexterindustries.com/update_gopigo | bash
+sudo curl -kL dexterindustries.com/update_gopigo | bash
 ```
 The same command can be used for updating the `GoPiGo` to the latest version.
 
