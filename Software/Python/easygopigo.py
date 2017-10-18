@@ -718,10 +718,7 @@ class LineFollower(Sensor):
         May return "Unknown"
         This method is not intelligent enough to handle intersections.
         '''
-        five_vals = [-1,-1,-1,-1,-1]
-
-        if _is_read_open():
-            five_vals = self.read()
+        five_vals = self.read()
 
         if five_vals == [0, 0, 1, 0, 0] or five_vals == [0, 1, 1, 1, 0]:
             return "center"
