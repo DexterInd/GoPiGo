@@ -73,7 +73,7 @@ def _release_read():
         pass
     read_is_open = True
     # print("released")
-    
+
 
 class EasyGoPiGo():
     '''
@@ -83,12 +83,12 @@ class EasyGoPiGo():
     '''
     def __init__(self):
         '''
-        On Init, set speed to half-way, so GoPiGo is predictable 
+        On Init, set speed to half-way, so GoPiGo is predictable
             and not too fast.
         '''
         DEFAULT_SPEED = 128
         gopigo.set_speed(DEFAULT_SPEED)
-        
+
     def volt(self):
         _grab_read()
         try:
@@ -122,13 +122,13 @@ class EasyGoPiGo():
             print("easygopigo bwd: {}".format(e))
             pass
         _release_read()
-            
+
     def left(self):
         _grab_read()
         try:
             gopigo.left()
         except:
-            pass    
+            pass
         _release_read()
 
     def right(self):
@@ -146,15 +146,15 @@ class EasyGoPiGo():
         except:
             pass
         _release_read()
-        
+
     def reset_speed(self):
         _grab_read()
         try:
             gopigo.set_speed(DEFAULT_SPEED)
         except:
             pass
-        _release_read()       
-        
+        _release_read()
+
     def set_left_speed(self,new_speed):
         _grab_read()
         try:
@@ -170,7 +170,7 @@ class EasyGoPiGo():
         except:
             pass
         _release_read()
-        
+
     def led_on(self,led_id):
         _grab_read()
         try:
@@ -178,7 +178,7 @@ class EasyGoPiGo():
         except:
             pass
         _release_read()
-        
+
     def led_off(self,led_id):
         _grab_read()
         try:
@@ -186,16 +186,16 @@ class EasyGoPiGo():
         except:
             pass
         _release_read()
-        
+
     def trim_read(self):
         _grab_read()
         try:
-            current_trim = int(gopigo.trim_read()) 
+            current_trim = int(gopigo.trim_read())
         except:
             pass
         _release_read()
         return current_trim
-        
+
     def trim_write(self,set_trim_to):
         _grab_read()
         try:
@@ -345,13 +345,13 @@ class AnalogSensor(Sensor):
         try:
             self.value = gopigo.analogRead(self.getPortID())
         except:
-            pass            
+            pass
         _release_read()
         return self.value
 
     def percent_read(self):
         value = int(self.read()) * 100 // self._max_value
-        # Some sensors - like the loudness_sensor - 
+        # Some sensors - like the loudness_sensor -
         # can actually return higher than 100% so let's clip it
         # and keep classrooms within an acceptable noise level
         if value > 100:
@@ -556,7 +556,7 @@ class ButtonSensor(DigitalSensor):
     def __init__(self, port="D11",gpg=None):
         DigitalSensor.__init__(self, port, "INPUT")
         self.set_descriptor("Button sensor")
-        
+
     def is_button_pressed(self):
         return self.read() == 1
 ##########################
@@ -594,7 +594,7 @@ class Remote(Sensor):
             key = ir_receiver.nextcode(consume=False)
         else:
             key = ""
-        
+
         return key
 
 ##########################
@@ -697,17 +697,17 @@ class LineFollower(Sensor):
         while True:
             pos = self.read_position()
             debug(pos)
-            if pos == "Center":
+            if pos == "center":
                 gopigo.forward()
-            elif pos == "Left":
+            elif pos == "left":
                 gopigo.set_right_speed(0)
                 gopigo.set_left_speed(slight_turn_speed)
-            elif pos == "Right":
+            elif pos == "right":
                 gopigo.set_right_speed(slight_turn_speed)
                 gopigo.set_left_speed(0)
-            elif pos == "Black":
+            elif pos == "black":
                 gopigo.stop()
-            elif pos == "White":
+            elif pos == "white":
                 gopigo.stop()
 
     def read_position(self):
@@ -724,26 +724,26 @@ class LineFollower(Sensor):
             five_vals = self.read()
 
         if five_vals == [0, 0, 1, 0, 0] or five_vals == [0, 1, 1, 1, 0]:
-            return "Center"
+            return "center"
         if five_vals == [1, 1, 1, 1, 1]:
-            return "Black"
+            return "black"
         if five_vals == [0, 0, 0, 0, 0]:
-            return "White"
+            return "white"
         if five_vals == [0, 1, 1, 0, 0] or \
            five_vals == [0, 1, 0, 0, 0] or \
            five_vals == [1, 0, 0, 0, 0] or \
            five_vals == [1, 1, 0, 0, 0] or \
            five_vals == [1, 1, 1, 0, 0] or \
            five_vals == [1, 1, 1, 1, 0]:
-            return "Left"
+            return "left"
         if five_vals == [0, 0, 0, 1, 0] or \
            five_vals == [0, 0, 1, 1, 0] or \
            five_vals == [0, 0, 0, 0, 1] or \
            five_vals == [0, 0, 0, 1, 1] or \
            five_vals == [0, 0, 1, 1, 1] or \
            five_vals == [0, 1, 1, 1, 1]:
-            return "Right"
-        return "Unknown"
+            return "right"
+        return "unknown"
 
 
 #######################################################################
@@ -753,23 +753,23 @@ class LineFollower(Sensor):
 #######################################################################
 
 class Servo(Sensor):
-    
+
     def __init__(self, port="SERVO", gpg=None):
         Sensor.__init__(self, port, "SERVO")
         gopigo.enable_servo()
         self.set_descriptor("Servo Motor")
-        
+
     def rotate_servo(self, servo_position):
         if servo_position > 180:
             servo_position = 180
         if servo_position < 0:
             servo_position = 0
         gopigo.servo(servo_position)
-        
-            
+
+
 #######################################################################
 #
-# DistanceSensor 
+# DistanceSensor
 #
 #######################################################################
 try:
@@ -793,18 +793,18 @@ try:
             except Exception as e:
                 print(e)
                 raise ValueError("Distance Sensor not found")
-                
+
         # Returns the values in mm
         readings = []
         def read_mm(self):
-            
+
             # 8190 is what the sensor sends when it's out of range
             # we're just setting a default value
             mm = 8190
             readings = []
             attempt = 0
-            
-            # try 3 times to have a reading that is 
+
+            # try 3 times to have a reading that is
             # smaller than 8m or bigger than 5 mm.
             # if sensor insists on that value, then pass it on
             while (mm > 8000 or mm < 5) and attempt < 3:
@@ -816,26 +816,26 @@ try:
                 _release_read()
                 attempt = attempt + 1
                 time.sleep(0.001)
-                
+
             # add the reading to our last 3 readings
             # a 0 value is possible when sensor is not found
             if (mm < 8000 and mm > 5) or mm == 0:
                 readings.append(mm)
             if len(readings) > 3:
                 readings.pop(0)
-            
+
             # calculate an average and limit it to 5 > X > 3000
             if len(readings) > 1: # avoid division by 0
                 mm = round(sum(readings) / float(len(readings)))
             if mm > 3000:
                 mm = 3000
-                
+
             return mm
-            
+
         def read(self):
             cm = self.read_mm()//10
             return (cm)
-            
+
         def read_inches(self):
             cm = self.read()
             return cm / 2.54
