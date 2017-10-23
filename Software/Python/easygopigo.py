@@ -221,7 +221,7 @@ class Sensor():
         isAnalog
         isDigital
     '''
-    def __init__(self, port, pinmode):
+    def __init__(self, port, pinmode, use_mutex=False):
         '''
         port = one of PORTS keys
         pinmode = "INPUT", "OUTPUT", "SERIAL" (which gets ignored), "SERVO"
@@ -230,6 +230,7 @@ class Sensor():
         debug(pinmode)
         self.setPort(port)
         self.setPinMode(pinmode)
+        self.use_mutex = use_mutex
         if pinmode == "INPUT" or pinmode == "OUTPUT":
             try:
                 gopigo.pinMode(self.getPortID(), self.getPinMode())
@@ -273,9 +274,8 @@ class DigitalSensor(Sensor):
     def __init__(self, port, pinmode, use_mutex = False):
         debug("DigitalSensor init")
         self.pin = DIGITAL
-        Sensor.__init__(self, port, pinmode)
+        Sensor.__init__(self, port, pinmode, use_mutex)
 
-        self.use_mutex = use_mutex
 
     def read(self):
         '''
@@ -325,9 +325,7 @@ class AnalogSensor(Sensor):
         self.value = 0
         self.pin = ANALOG
         self._max_value = 1024
-        Sensor.__init__(self, port, pinmode)
-
-        self.use_mutex = use_mutex
+        Sensor.__init__(self, port, pinmode, use_mutex)
 
     def read(self):
         _ifMutexAcquire(self.use_mutex)
@@ -341,7 +339,7 @@ class AnalogSensor(Sensor):
 
     def percent_read(self):
         value = int(self.read()) * 100 // self._max_value
-        # Some sensors - like the loudness_sensor - 
+        # Some sensors - like the loudness_sensor -
         # can actually return higher than 100% so let's clip it
         # and keep classrooms within an acceptable noise level
         if value > 100:
@@ -369,9 +367,9 @@ class LightSensor(AnalogSensor):
     self.pin takes a value of 0 when on analog pin (default value)
         takes a value of 1 when on digital pin
     """
-    def __init__(self, port="A1", gpg=None):
+    def __init__(self, port="A1", gpg = None, use_mutex = False):
         debug("LightSensor init")
-        AnalogSensor.__init__(self, port, "INPUT")
+        AnalogSensor.__init__(self, port, "INPUT", use_mutex)
         self.set_descriptor("Light sensor")
 ##########################
 
@@ -380,9 +378,9 @@ class SoundSensor(AnalogSensor):
     """
     Creates a sound sensor
     """
-    def __init__(self, port="A1",gpg=None):
+    def __init__(self, port="A1", gpg = None, use_mutex = False):
         debug("Sound Sensor on port "+port)
-        AnalogSensor.__init__(self, port, "INPUT")
+        AnalogSensor.__init__(self, port, "INPUT", use_mutex)
         self.set_descriptor("Sound sensor")
 ##########################
 
@@ -391,9 +389,9 @@ class LoudnessSensor(AnalogSensor):
     """
     Creates a Loudness sensor
     """
-    def __init__(self, port="A1",gpg=None):
+    def __init__(self, port="A1", gpg = None, use_mutex = False):
         debug("Loudness Sensor on port "+port)
-        AnalogSensor.__init__(self, port, "INPUT")
+        AnalogSensor.__init__(self, port, "INPUT", use_mutex)
         self.set_descriptor("Loudness sensor")
         self._max_value = 100
 ##########################
@@ -403,12 +401,10 @@ class UltraSonicSensor(AnalogSensor):
 
     def __init__(self, port="A1", gpg=None, use_mutex = False):
         debug("Ultrasonic Sensor on port "+port)
-        AnalogSensor.__init__(self, port, "INPUT")
+        AnalogSensor.__init__(self, port, "INPUT", use_mutex)
         self.safe_distance = 300
         self.set_descriptor("Ultrasonic sensor")
         self.port = port
-
-        self.use_mutex = use_mutex
 
     def is_too_close(self):
         too_close = False
@@ -483,8 +479,8 @@ class Buzzer(AnalogSensor):
     soundoff() -> which is the same as sound(0)
     soundon() -> which is the same as sound(254), max value
     '''
-    def __init__(self, port="D11", gpg=None):
-        AnalogSensor.__init__(self, port, "OUTPUT")
+    def __init__(self, port="D11", gpg=None, use_mutex = False):
+        AnalogSensor.__init__(self, port, "OUTPUT", use_mutex)
         self.set_descriptor("Buzzer")
         self.power = 254
 
@@ -521,8 +517,8 @@ class Buzzer(AnalogSensor):
 
 
 class Led(AnalogSensor):
-    def __init__(self, port="D11",gpg=None):
-        AnalogSensor.__init__(self, port, "OUTPUT")
+    def __init__(self, port = "D11", gpg = None, use_mutex = False):
+        AnalogSensor.__init__(self, port, "OUTPUT", use_mutex)
         self.set_descriptor("LED")
 
     def light_on(self, power):
@@ -541,16 +537,16 @@ class Led(AnalogSensor):
 
 
 class MotionSensor(DigitalSensor):
-    def __init__(self, port="D11",gpg=None):
-        DigitalSensor.__init__(self, port, "INPUT")
+    def __init__(self, port = "D11", gpg = None, use_mutex = False):
+        DigitalSensor.__init__(self, port, "INPUT", use_mutex)
         self.set_descriptor("Motion Sensor")
 ##########################
 
 
 class ButtonSensor(DigitalSensor):
 
-    def __init__(self, port="D11",gpg=None):
-        DigitalSensor.__init__(self, port, "INPUT")
+    def __init__(self, port = "D11", gpg = None, use_mutex = False):
+        DigitalSensor.__init__(self, port, "INPUT", use_mutex)
         self.set_descriptor("Button sensor")
 
     def is_button_pressed(self):
@@ -560,7 +556,7 @@ class ButtonSensor(DigitalSensor):
 
 class Remote(Sensor):
 
-    def __init__(self, port="SERIAL",gpg=None):
+    def __init__(self, port = "SERIAL", gpg = None, use_mutex = False):
         global IR_RECEIVER_ENABLED
         # IR Receiver
         try:
@@ -571,7 +567,7 @@ class Remote(Sensor):
             raise ImportError("IR sensor not enabled")
 
         if IR_RECEIVER_ENABLED:
-            Sensor.__init__(self, port, "SERIAL")
+            Sensor.__init__(self, port, "SERIAL", use_mutex)
             self.set_descriptor("Remote Control")
 
     def is_enabled(self):
@@ -613,9 +609,13 @@ class LineFollower(Sensor):
     4. the gpg argument is ignored. Needed for future compatibility
     '''
 
-    def __init__(self, port="I2C", pinmode="", gpg=None, use_mutex = False):
+    def __init__(self,
+                port = "I2C",
+                pinmode = "",
+                gpg = None,
+                use_mutex = False):
         try:
-            Sensor.__init__(self, port, "INPUT")
+            Sensor.__init__(self, port, "INPUT", use_mutex)
             self.set_descriptor("Line Follower")
             self.last_3_reads = []
             self.white_line = self.get_white_calibration()
@@ -691,7 +691,7 @@ class LineFollower(Sensor):
         debug ("current avg: {}".format(avg_vals))
         return avg_vals
 
-    def follow_line(self,fwd_speed=80):
+    def follow_line(self, fwd_speed = 80):
         slight_turn_speed=int(.7*fwd_speed)
         while True:
             pos = self.read_position()
@@ -753,8 +753,8 @@ class LineFollower(Sensor):
 
 class Servo(Sensor):
 
-    def __init__(self, port="SERVO", gpg=None):
-        Sensor.__init__(self, port, "SERVO")
+    def __init__(self, port="SERVO", gpg=None, use_mutex = False):
+        Sensor.__init__(self, port, "SERVO", use_mutex)
         gopigo.enable_servo()
         self.set_descriptor("Servo Motor")
 
@@ -783,7 +783,7 @@ try:
             self.use_mutex = use_mutex
 
             try:
-                Sensor.__init__(self, port, "INPUT")
+                Sensor.__init__(self, port, "INPUT", use_mutex)
 
                 _ifMutexAcquire(self.use_mutex)
                 try:
@@ -859,9 +859,13 @@ class DHTSensor(Sensor):
     All imports are done internally so it's done on a as needed basis only
         as in many cases the DHT sensor is not connected.
     '''
-    def __init__(self, port="SERIAL", gpg=None, sensor_type=0, use_mutex=False):
+    def __init__(self,
+                    port="SERIAL",
+                    gpg=None,
+                    sensor_type=0,
+                    use_mutex=False):
         try:
-            Sensor.__init__(self, port, "INPUT")
+            Sensor.__init__(self, port, "INPUT", use_mutex)
         except:
             raise
 
