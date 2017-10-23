@@ -65,9 +65,9 @@ class EasyGoPiGo():
         On Init, set speed to half-way, so GoPiGo is predictable
             and not too fast.
         '''
+
         self.DEFAULT_SPEED = 128
         gopigo.set_speed(self.DEFAULT_SPEED)
-
         self.use_mutex = use_mutex
 
     def volt(self):
@@ -102,7 +102,9 @@ class EasyGoPiGo():
         except Exception as e:
             print("easygopigo bwd: {}".format(e))
             pass
-        _ifMutexRelease(self.use_mutex)
+        finally:
+            _ifMutexRelease(self.use_mutex)
+
 
     def left(self):
         _ifMutexAcquire(self.use_mutex)
@@ -110,7 +112,9 @@ class EasyGoPiGo():
             gopigo.left()
         except:
             pass
-        _ifMutexRelease(self.use_mutex)
+        finally:
+            _ifMutexRelease(self.use_mutex)
+
 
     def right(self):
         _ifMutexAcquire(self.use_mutex)
@@ -126,7 +130,8 @@ class EasyGoPiGo():
             gopigo.set_speed(new_speed)
         except:
             pass
-        _ifMutexRelease(self.use_mutex)
+        finally:
+            _ifMutexRelease(self.use_mutex)
 
     def reset_speed(self):
         _ifMutexAcquire(self.use_mutex)
@@ -134,7 +139,8 @@ class EasyGoPiGo():
             gopigo.set_speed(self.DEFAULT_SPEED)
         except:
             pass
-        _ifMutexRelease(self.use_mutex)
+        finally:
+            _ifMutexRelease(self.use_mutex)
 
     def set_left_speed(self,new_speed):
         _ifMutexAcquire(self.use_mutex)
@@ -150,7 +156,8 @@ class EasyGoPiGo():
             gopigo.set_right_speed(new_speed)
         except:
             pass
-        _ifMutexRelease(self.use_mutex)
+        finally:
+            _ifMutexRelease(self.use_mutex)
 
     def led_on(self,led_id):
         _ifMutexAcquire(self.use_mutex)
@@ -158,7 +165,8 @@ class EasyGoPiGo():
             gopigo.led_on(led_id)
         except:
             pass
-        _ifMutexRelease(self.use_mutex)
+        finally:
+            _ifMutexRelease(self.use_mutex)
 
     def led_off(self,led_id):
         _ifMutexAcquire(self.use_mutex)
@@ -166,7 +174,8 @@ class EasyGoPiGo():
             gopigo.led_off(led_id)
         except:
             pass
-        _ifMutexRelease(self.use_mutex)
+        finally:
+            _ifMutexRelease(self.use_mutex)
 
     def trim_read(self):
         _ifMutexAcquire(self.use_mutex)
@@ -335,6 +344,7 @@ class AnalogSensor(Sensor):
             pass
         finally:
             _ifMutexRelease(self.use_mutex)
+
         return self.value
 
     def percent_read(self):
@@ -696,17 +706,17 @@ class LineFollower(Sensor):
         while True:
             pos = self.read_position()
             debug(pos)
-            if pos == "Center":
+            if pos == "center":
                 gopigo.forward()
-            elif pos == "Left":
+            elif pos == "left":
                 gopigo.set_right_speed(0)
                 gopigo.set_left_speed(slight_turn_speed)
-            elif pos == "Right":
+            elif pos == "right":
                 gopigo.set_right_speed(slight_turn_speed)
                 gopigo.set_left_speed(0)
-            elif pos == "Black":
+            elif pos == "black":
                 gopigo.stop()
-            elif pos == "White":
+            elif pos == "white":
                 gopigo.stop()
 
     def read_position(self):
@@ -717,32 +727,29 @@ class LineFollower(Sensor):
         May return "Unknown"
         This method is not intelligent enough to handle intersections.
         '''
-        five_vals = [-1,-1,-1,-1,-1]
-
-        if _is_read_open():
-            five_vals = self.read()
+        five_vals = self.read()
 
         if five_vals == [0, 0, 1, 0, 0] or five_vals == [0, 1, 1, 1, 0]:
-            return "Center"
+            return "center"
         if five_vals == [1, 1, 1, 1, 1]:
-            return "Black"
+            return "black"
         if five_vals == [0, 0, 0, 0, 0]:
-            return "White"
+            return "white"
         if five_vals == [0, 1, 1, 0, 0] or \
            five_vals == [0, 1, 0, 0, 0] or \
            five_vals == [1, 0, 0, 0, 0] or \
            five_vals == [1, 1, 0, 0, 0] or \
            five_vals == [1, 1, 1, 0, 0] or \
            five_vals == [1, 1, 1, 1, 0]:
-            return "Left"
+            return "left"
         if five_vals == [0, 0, 0, 1, 0] or \
            five_vals == [0, 0, 1, 1, 0] or \
            five_vals == [0, 0, 0, 0, 1] or \
            five_vals == [0, 0, 0, 1, 1] or \
            five_vals == [0, 0, 1, 1, 1] or \
            five_vals == [0, 1, 1, 1, 1]:
-            return "Right"
-        return "Unknown"
+            return "right"
+        return "unknown"
 
 
 #######################################################################
@@ -752,6 +759,7 @@ class LineFollower(Sensor):
 #######################################################################
 
 class Servo(Sensor):
+
 
     def __init__(self, port="SERVO", gpg=None, use_mutex = False):
         Sensor.__init__(self, port, "SERVO", use_mutex)
