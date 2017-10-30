@@ -61,6 +61,7 @@ def nextcode(consume=True):
     global previous_keypress
 
     send_back=last_recv_or_code
+
     # print("send_back: {} previous_keypress: {}".format(send_back,previous_keypress))
 
     if consume:
