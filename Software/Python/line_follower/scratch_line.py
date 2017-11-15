@@ -142,32 +142,32 @@ def line_sensor_val_scratch():
 		return 6
 	else:
 		return 7
-	
+
 def line_sensor_vals():
 	#if the line is in the middle, keep moving straight
 	#if the line is slightly left of right, keep moving straight
 	curr=absolute_line_pos()
 	if curr==small_r or curr==small_l or curr==mid or curr==mid1:
 		return '0'
-		
+
 	#If the line is towards the sligh left, turn slight right
 	elif curr==small_l1:
 		return '-1'
 	elif curr==left or curr==left1:
 		return '-2'
-		
+
 	#If the line is towards the sligh right, turn slight left
 	elif curr==small_r1:
 		return '1'
 	elif curr==right or curr==right1:
 		return '2'
-	elif curr==stop: 
+	elif curr==stop:
 		return '3'
 	else:
 		return '4'
-		
-		
-if __name__ == "__main__":	
+
+
+if __name__ == "__main__":
 	while True:
-		print line_sensor_vals()		
+		print(line_sensor_vals())
 		time.sleep(poll_time)

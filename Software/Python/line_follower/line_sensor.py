@@ -34,8 +34,6 @@ from builtins import input
 # the integer division and input()
 # mind your parentheses!
 
-
-import smbus
 import time
 import math
 import RPi.GPIO as GPIO
@@ -44,23 +42,25 @@ import operator
 import pickle
 import numpy
 
-debug =0
+from periphery import I2C, I2CError
+# We are using [python-periphery] package because with the
+# latest kernel versions (>v4.4.50-v7) and with the [python-smbus] package
+# the line follower no longer works. The issue is with the line follower,
+# which doesn't know how to process repeated starts from the master.
+# With [python-periphery] package, it's possible to avoid issuing
+# repeated start conditions and instead just use start/stop conditions.
+# original report: https://github.com/raspberrypi/firmware/issues/828
+# dev issue      : https://github.com/RobertLucian/GoPiGo/issues/8
+# PR             : https://github.com/DexterInd/GoPiGo/pull/273
+
+
+debug = 0
 
 rev = GPIO.RPI_REVISION
 if rev == 2 or rev == 3:
-	bus = smbus.SMBus(1)
+	bus_number = 1
 else:
-	bus = smbus.SMBus(0)
-
-# I2C Address of Arduino
-address = 0x06
-
-# Command Format
-# analogRead() command format header
-aRead_cmd = [3]
-
-# This allows us to be more specific about which commands contain unused bytes
-unused = 0
+	bus_number = 0
 
 #Add a multipler to each sensor
 multp=[-10,-5,0,5,10]
@@ -110,50 +110,51 @@ def statisticalNoiseReduction(values, std_factor_threshold = 2):
 
     return filtered_values
 
-# Write I2C block
-def write_i2c_block(address, block):
-	try:
-		return bus.write_i2c_block_data(address, 1, block)
-	except IOError:
-		if debug:
-			print ("IOError")
-		return -1
-
 # Function for reading line follower's values off of its IR sensor
 def read_sensor():
+    address = 0x06
+    register = 0x01
+    command = 0x03
+    unused = 0x00
+
     try:
-        output_values = []
-        bus.write_i2c_block_data(address, 1, aRead_cmd + [unused, unused, unused])
+        i2c = I2C('/dev/i2c-' + str(bus_number))
+
+        read_bytes = 10 * [0]
+        msg1 = [ I2C.Message([register, command] + 3 * [unused]) ]
+        msg2 = [ I2C.Message(read_bytes, read=True) ]
+        # we meed to do 2 transfers so we can avoid using repeated starts
+        # repeated starts don't go hand in hand with the line follower
+        i2c.transfer(address, msg1)
+        i2c.transfer(address, msg2)
         
-        # for some unknown reason we need to discard the first reading
-        # otherwise we're not up to date
-        number = bus.read_i2c_block_data(address, 1)
-        number = bus.read_i2c_block_data(address, 1)
-        
-        # for each IR sensor on the line follower
-        for i in range(5):
-            # calculate the 2-byte number we got
-            sensor_buffer[i].append(number[2 * i] * 256 + number[2 * i + 1])
-
-            # if there're too many elements in the list
-            # then remove one
-            if len(sensor_buffer[i]) > max_buffer_length:
-                sensor_buffer[i].pop(0)
-
-            # eliminate outlier values and select the most recent one
-            filtered_value = statisticalNoiseReduction(sensor_buffer[i], 2)[-1]
-
-            # append the value to the corresponding IR sensor
-            output_values.append(filtered_value)
-
-        return output_values
-
-    except IOError:
+    except I2CError as error:
         return 5 * [-1]
 
+    # unpack bytes received and process them
+    # bytes_list = struct.unpack('10B',read_results[0])
+    output_values = []
+    input_values = msg2[0].data
+
+    for step in range(5):
+        # calculate the 16-bit number we got
+        sensor_buffer[step].append(input_values[2 * step] * 256 + input_values[2 * step + 1])
+
+        # if there're too many elements in the list
+        # then remove one
+        if len(sensor_buffer[step]) > max_buffer_length:
+            sensor_buffer[step].pop(0)
+
+        # eliminate outlier values and select the most recent one
+        filtered_value = statisticalNoiseReduction(sensor_buffer[step], 2)[-1]
+
+        # append the value to the corresponding IR sensor
+        output_values.append(filtered_value)
+
+    return output_values
 
 def get_sensorval():
-	
+
 	# updated to avoid an infinite loop
 	attempt = 0
 	while attempt < 5:
@@ -165,7 +166,7 @@ def get_sensorval():
 			#Read once more to clear buffer and remove junk values
 			val=read_sensor()
 			attempt = attempt + 1
-			
+
 	return val
 
 
