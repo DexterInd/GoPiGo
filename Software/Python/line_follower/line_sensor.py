@@ -127,7 +127,7 @@ def read_sensor():
         # repeated starts don't go hand in hand with the line follower
         i2c.transfer(address, msg1)
         i2c.transfer(address, msg2)
-
+        
     except I2CError as error:
         return 5 * [-1]
 
