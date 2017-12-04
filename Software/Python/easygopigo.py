@@ -16,10 +16,23 @@ except:
 
 # the following libraries may or may not be installed
 # nor needed
-try:
-    from I2C_mutex import *
-except:
-    pass
+from I2C_mutex import Mutex
+
+mutex = Mutex()
+
+def _ifMutexAcquire(mutex_enabled = False):
+    """
+    Acquires the I2C if the ``use_mutex`` parameter of the constructor was set to ``True``.
+    """
+    if mutex_enabled:
+        mutex.acquire()
+
+def _ifMutexRelease(mutex_enabled = False):
+    """
+    Releases the I2C if the ``use_mutex`` parameter of the constructor was set to ``True``.
+    """
+    if mutex_enabled:
+        mutex.release()
 
 try:
     from line_follower import line_sensor
@@ -34,45 +47,11 @@ except:
     except:
         is_line_follower_accessible = False
 
-old_settings = ''
-fd = ''
 ##########################
-
-read_is_open = True
-global_lock = None
 
 def debug(in_str):
     if False:
         print(in_str)
-
-
-def _grab_read():
-    '''
-    first acquire at the process level,
-    then at the thread level.
-    '''
-    global read_is_open
-    # print("acquiring")
-    try:
-        I2C_Mutex_Acquire()
-    except Exception as e:
-        print("_grab_read: {}".format(e))
-        pass
-    # while read_is_open is False:
-    #     time.sleep(0.01)
-    read_is_open = False
-    # print("acquired")
-
-
-def _release_read():
-    global read_is_open
-    try:
-        I2C_Mutex_Release()
-    except Exception as e:
-        print("_release_read: {}".format(e))
-        pass
-    read_is_open = True
-    # print("released")
 
 
 class EasyGoPiGo():
@@ -81,21 +60,23 @@ class EasyGoPiGo():
     this makes the gopigo thread safe and process safe
     if mutex is not available, then it's just a direct access to gopigo
     '''
-    def __init__(self):
+    def __init__(self, use_mutex = False):
         '''
         On Init, set speed to half-way, so GoPiGo is predictable
             and not too fast.
         '''
-        DEFAULT_SPEED = 128
-        gopigo.set_speed(DEFAULT_SPEED)
+
+        self.DEFAULT_SPEED = 128
+        gopigo.set_speed(self.DEFAULT_SPEED)
+        self.use_mutex = use_mutex
 
     def volt(self):
-        _grab_read()
+        _ifMutexAcquire(self.use_mutex)
         try:
             voltage = gopigo.volt()
         except:
             voltage = 0
-        _release_read()
+        _ifMutexRelease(self.use_mutex)
         return voltage
 
     def stop(self):
@@ -106,103 +87,112 @@ class EasyGoPiGo():
             pass
 
     def forward(self):
-        _grab_read()
+        _ifMutexAcquire(self.use_mutex)
         try:
             val = gopigo.forward()
         except Exception as e:
             print("easygopigo fwd: {}".format(e))
             pass
-        _release_read()
+        _ifMutexRelease(self.use_mutex)
 
     def backward(self):
-        _grab_read()
+        _ifMutexAcquire(self.use_mutex)
         try:
             val = gopigo.backward()
         except Exception as e:
             print("easygopigo bwd: {}".format(e))
             pass
-        _release_read()
+        finally:
+            _ifMutexRelease(self.use_mutex)
+
 
     def left(self):
-        _grab_read()
+        _ifMutexAcquire(self.use_mutex)
         try:
             gopigo.left()
         except:
             pass
-        _release_read()
+        finally:
+            _ifMutexRelease(self.use_mutex)
+
 
     def right(self):
-        _grab_read()
+        _ifMutexAcquire(self.use_mutex)
         try:
             gopigo.right()
         except:
             pass
-        _release_read()
+        _ifMutexRelease(self.use_mutex)
 
     def set_speed(self,new_speed):
-        _grab_read()
+        _ifMutexAcquire(self.use_mutex)
         try:
             gopigo.set_speed(new_speed)
         except:
             pass
-        _release_read()
+        finally:
+            _ifMutexRelease(self.use_mutex)
 
     def reset_speed(self):
-        _grab_read()
+        _ifMutexAcquire(self.use_mutex)
         try:
-            gopigo.set_speed(DEFAULT_SPEED)
+            gopigo.set_speed(self.DEFAULT_SPEED)
         except:
             pass
-        _release_read()
+        finally:
+            _ifMutexRelease(self.use_mutex)
 
     def set_left_speed(self,new_speed):
-        _grab_read()
+        _ifMutexAcquire(self.use_mutex)
         try:
             gopigo.set_left_speed(new_speed)
         except:
             pass
-        _release_read()
+        _ifMutexRelease(self.use_mutex)
 
     def set_right_speed(self,new_speed):
-        _grab_read()
+        _ifMutexAcquire(self.use_mutex)
         try:
             gopigo.set_right_speed(new_speed)
         except:
             pass
-        _release_read()
+        finally:
+            _ifMutexRelease(self.use_mutex)
 
     def led_on(self,led_id):
-        _grab_read()
+        _ifMutexAcquire(self.use_mutex)
         try:
             gopigo.led_on(led_id)
         except:
             pass
-        _release_read()
+        finally:
+            _ifMutexRelease(self.use_mutex)
 
     def led_off(self,led_id):
-        _grab_read()
+        _ifMutexAcquire(self.use_mutex)
         try:
             gopigo.led_off(led_id)
         except:
             pass
-        _release_read()
+        finally:
+            _ifMutexRelease(self.use_mutex)
 
     def trim_read(self):
-        _grab_read()
+        _ifMutexAcquire(self.use_mutex)
         try:
             current_trim = int(gopigo.trim_read())
         except:
             pass
-        _release_read()
+        _ifMutexRelease(self.use_mutex)
         return current_trim
 
     def trim_write(self,set_trim_to):
-        _grab_read()
+        _ifMutexAcquire(self.use_mutex)
         try:
             gopigo.trim_write(int(set_trim_to))
         except:
             pass
-        _release_read()
+        _ifMutexRelease(self.use_mutex)
 
 
 
@@ -240,7 +230,7 @@ class Sensor():
         isAnalog
         isDigital
     '''
-    def __init__(self, port, pinmode):
+    def __init__(self, port, pinmode, use_mutex=False):
         '''
         port = one of PORTS keys
         pinmode = "INPUT", "OUTPUT", "SERIAL" (which gets ignored), "SERVO"
@@ -249,6 +239,7 @@ class Sensor():
         debug(pinmode)
         self.setPort(port)
         self.setPinMode(pinmode)
+        self.use_mutex = use_mutex
         if pinmode == "INPUT" or pinmode == "OUTPUT":
             try:
                 gopigo.pinMode(self.getPortID(), self.getPinMode())
@@ -289,10 +280,11 @@ class DigitalSensor(Sensor):
     '''
     Implements read and write methods
     '''
-    def __init__(self, port, pinmode):
+    def __init__(self, port, pinmode, use_mutex = False):
         debug("DigitalSensor init")
         self.pin = DIGITAL
-        Sensor.__init__(self, port, pinmode)
+        Sensor.__init__(self, port, pinmode, use_mutex)
+
 
     def read(self):
         '''
@@ -304,13 +296,14 @@ class DigitalSensor(Sensor):
         error_count = 0
 
         while not okay and error_count < 10:
-            _grab_read()
+            _ifMutexAcquire(self.use_mutex)
             try:
                 rtn = int(gopigo.digitalRead(self.getPortID()))
                 okay = True
             except:
                 error_count += 1
-            _release_read()
+            finally:
+                _ifMutexRelease(self.use_mutex)
 
         if error_count > 10:
             return -1
@@ -319,12 +312,15 @@ class DigitalSensor(Sensor):
 
     def write(self, power):
         self.value = power
-        _grab_read()
+
+        _ifMutexAcquire(self.use_mutex)
         try:
             return_value = gopigo.digitalWrite(self.getPortID(), power)
         except:
             pass
-        _release_read()
+        finally:
+            _ifMutexRelease(self.use_mutex)
+
         return return_value
 ##########################
 
@@ -333,20 +329,22 @@ class AnalogSensor(Sensor):
     '''
     implements read and write methods
     '''
-    def __init__(self, port, pinmode):
+    def __init__(self, port, pinmode, use_mutex = False):
         debug("AnalogSensor init")
         self.value = 0
         self.pin = ANALOG
         self._max_value = 1024
-        Sensor.__init__(self, port, pinmode)
+        Sensor.__init__(self, port, pinmode, use_mutex)
 
     def read(self):
-        _grab_read()
+        _ifMutexAcquire(self.use_mutex)
         try:
             self.value = gopigo.analogRead(self.getPortID())
         except:
             pass
-        _release_read()
+        finally:
+            _ifMutexRelease(self.use_mutex)
+
         return self.value
 
     def percent_read(self):
@@ -361,12 +359,13 @@ class AnalogSensor(Sensor):
 
     def write(self, power):
         self.value = power
-        _grab_read()
+        _ifMutexAcquire(self.use_mutex)
         try:
             return_value = gopigo.analogWrite(self.getPortID(), power)
         except:
             pass
-        _release_read()
+        finally:
+            _ifMutexRelease(self.use_mutex)
         return return_value
 ##########################
 
@@ -378,9 +377,9 @@ class LightSensor(AnalogSensor):
     self.pin takes a value of 0 when on analog pin (default value)
         takes a value of 1 when on digital pin
     """
-    def __init__(self, port="A1", gpg=None):
+    def __init__(self, port="A1", gpg = None, use_mutex = False):
         debug("LightSensor init")
-        AnalogSensor.__init__(self, port, "INPUT")
+        AnalogSensor.__init__(self, port, "INPUT", use_mutex)
         self.set_descriptor("Light sensor")
 ##########################
 
@@ -389,9 +388,9 @@ class SoundSensor(AnalogSensor):
     """
     Creates a sound sensor
     """
-    def __init__(self, port="A1",gpg=None):
+    def __init__(self, port="A1", gpg = None, use_mutex = False):
         debug("Sound Sensor on port "+port)
-        AnalogSensor.__init__(self, port, "INPUT")
+        AnalogSensor.__init__(self, port, "INPUT", use_mutex)
         self.set_descriptor("Sound sensor")
 ##########################
 
@@ -400,9 +399,9 @@ class LoudnessSensor(AnalogSensor):
     """
     Creates a Loudness sensor
     """
-    def __init__(self, port="A1",gpg=None):
+    def __init__(self, port="A1", gpg = None, use_mutex = False):
         debug("Loudness Sensor on port "+port)
-        AnalogSensor.__init__(self, port, "INPUT")
+        AnalogSensor.__init__(self, port, "INPUT", use_mutex)
         self.set_descriptor("Loudness sensor")
         self._max_value = 100
 ##########################
@@ -410,22 +409,23 @@ class LoudnessSensor(AnalogSensor):
 
 class UltraSonicSensor(AnalogSensor):
 
-    def __init__(self, port="A1",gpg=None):
+    def __init__(self, port="A1", gpg=None, use_mutex = False):
         debug("Ultrasonic Sensor on port "+port)
-        AnalogSensor.__init__(self, port, "INPUT")
+        AnalogSensor.__init__(self, port, "INPUT", use_mutex)
         self.safe_distance = 300
         self.set_descriptor("Ultrasonic sensor")
         self.port = port
 
     def is_too_close(self):
         too_close = False
-        _grab_read()
+        _ifMutexAcquire(self.use_mutex)
         try:
             if gopigo.us_dist(PORTS[self.port]) < self.get_safe_distance():
                 too_close = True
         except:
             pass
-        _release_read()
+        finally:
+            _ifMutexRelease(self.use_mutex)
         return too_close
 
     def set_safe_distance(self, dist):
@@ -445,13 +445,15 @@ class UltraSonicSensor(AnalogSensor):
         readings =[]
         skip = 0
         while len(readings) < 3:
-            _grab_read()
+            _ifMutexAcquire(self.use_mutex)
             try:
                 value = gopigo.corrected_us_dist(PORTS[self.port])
             except Exception as e:
                 print("UltraSonicSensor read(): {}".format(e))
                 pass
-            _release_read()
+            finally:
+                _ifMutexRelease(self.use_mutex)
+
             if value < 300 and value > 0:
                 readings.append(value)
             else:
@@ -487,8 +489,8 @@ class Buzzer(AnalogSensor):
     soundoff() -> which is the same as sound(0)
     soundon() -> which is the same as sound(254), max value
     '''
-    def __init__(self, port="D11",gpg=None):
-        AnalogSensor.__init__(self, port, "OUTPUT")
+    def __init__(self, port="D11", gpg=None, use_mutex = False):
+        AnalogSensor.__init__(self, port, "OUTPUT", use_mutex)
         self.set_descriptor("Buzzer")
         self.power = 254
 
@@ -525,8 +527,8 @@ class Buzzer(AnalogSensor):
 
 
 class Led(AnalogSensor):
-    def __init__(self, port="D11",gpg=None):
-        AnalogSensor.__init__(self, port, "OUTPUT")
+    def __init__(self, port = "D11", gpg = None, use_mutex = False):
+        AnalogSensor.__init__(self, port, "OUTPUT", use_mutex)
         self.set_descriptor("LED")
 
     def light_on(self, power):
@@ -545,16 +547,16 @@ class Led(AnalogSensor):
 
 
 class MotionSensor(DigitalSensor):
-    def __init__(self, port="D11",gpg=None):
-        DigitalSensor.__init__(self, port, "INPUT")
+    def __init__(self, port = "D11", gpg = None, use_mutex = False):
+        DigitalSensor.__init__(self, port, "INPUT", use_mutex)
         self.set_descriptor("Motion Sensor")
 ##########################
 
 
 class ButtonSensor(DigitalSensor):
 
-    def __init__(self, port="D11",gpg=None):
-        DigitalSensor.__init__(self, port, "INPUT")
+    def __init__(self, port = "D11", gpg = None, use_mutex = False):
+        DigitalSensor.__init__(self, port, "INPUT", use_mutex)
         self.set_descriptor("Button sensor")
 
     def is_button_pressed(self):
@@ -564,7 +566,7 @@ class ButtonSensor(DigitalSensor):
 
 class Remote(Sensor):
 
-    def __init__(self, port="SERIAL",gpg=None):
+    def __init__(self, port = "SERIAL", gpg = None, use_mutex = False):
         global IR_RECEIVER_ENABLED
         # IR Receiver
         try:
@@ -575,7 +577,7 @@ class Remote(Sensor):
             raise ImportError("IR sensor not enabled")
 
         if IR_RECEIVER_ENABLED:
-            Sensor.__init__(self, port, "SERIAL")
+            Sensor.__init__(self, port, "SERIAL", use_mutex)
             self.set_descriptor("Remote Control")
 
     def is_enabled(self):
@@ -617,9 +619,13 @@ class LineFollower(Sensor):
     4. the gpg argument is ignored. Needed for future compatibility
     '''
 
-    def __init__(self, port="I2C", pinmode="",gpg=None):
+    def __init__(self,
+                port = "I2C",
+                pinmode = "",
+                gpg = None,
+                use_mutex = False):
         try:
-            Sensor.__init__(self, port, "INPUT")
+            Sensor.__init__(self, port, "INPUT", use_mutex)
             self.set_descriptor("Line Follower")
             self.last_3_reads = []
             self.white_line = self.get_white_calibration()
@@ -628,6 +634,8 @@ class LineFollower(Sensor):
         except:
             raise ValueError("Line Follower Library not found")
 
+        self.use_mutex = use_mutex
+
     def read_raw_sensors(self):
         '''
         Returns raw values from all sensors
@@ -635,12 +643,13 @@ class LineFollower(Sensor):
         May return a list of -1 when there's a read error
         '''
 
-        _grab_read()
+        _ifMutexAcquire(self.use_mutex)
         try:
             five_vals = line_sensor.read_sensor()
         except:
             pass
-        _release_read()
+        finally:
+            _ifMutexRelease(self.use_mutex)
         debug ("raw values {}".format(five_vals))
 
         if five_vals != -1:
@@ -692,7 +701,7 @@ class LineFollower(Sensor):
         debug ("current avg: {}".format(avg_vals))
         return avg_vals
 
-    def follow_line(self,fwd_speed=80):
+    def follow_line(self, fwd_speed = 80):
         slight_turn_speed=int(.7*fwd_speed)
         while True:
             pos = self.read_position()
@@ -751,8 +760,9 @@ class LineFollower(Sensor):
 
 class Servo(Sensor):
 
-    def __init__(self, port="SERVO", gpg=None):
-        Sensor.__init__(self, port, "SERVO")
+
+    def __init__(self, port="SERVO", gpg=None, use_mutex = False):
+        Sensor.__init__(self, port, "SERVO", use_mutex)
         gopigo.enable_servo()
         self.set_descriptor("Servo Motor")
 
@@ -777,15 +787,19 @@ try:
         Wrapper to measure the distance in cms from the DI distance sensor.
         Connect the distance sensor to I2C port.
         '''
-        def __init__(self, port="I2C",gpg=None):
+        def __init__(self, port="I2C", gpg=None, use_mutex = False):
+            self.use_mutex = use_mutex
+
             try:
-                Sensor.__init__(self, port, "INPUT")
-                _grab_read()
+                Sensor.__init__(self, port, "INPUT", use_mutex)
+
+                _ifMutexAcquire(self.use_mutex)
                 try:
                     distance_sensor.DistanceSensor.__init__(self)
                 except:
                     pass
-                _release_read()
+                finally:
+                    _ifMutexRelease(self.use_mutex)
                 self.set_descriptor("Distance Sensor")
             except Exception as e:
                 print(e)
@@ -805,12 +819,12 @@ try:
             # smaller than 8m or bigger than 5 mm.
             # if sensor insists on that value, then pass it on
             while (mm > 8000 or mm < 5) and attempt < 3:
-                _grab_read()
+                _ifMutexAcquire(self.use_mutex)
                 try:
                     mm = self.read_range_single()
                 except:
                     mm = 0
-                _release_read()
+                _ifMutexRelease(self.use_mutex)
                 attempt = attempt + 1
                 time.sleep(0.001)
 
@@ -853,11 +867,17 @@ class DHTSensor(Sensor):
     All imports are done internally so it's done on a as needed basis only
         as in many cases the DHT sensor is not connected.
     '''
-    def __init__(self, port="SERIAL", gpg=None, sensor_type=0):
+    def __init__(self,
+                    port="SERIAL",
+                    gpg=None,
+                    sensor_type=0,
+                    use_mutex=False):
         try:
-            Sensor.__init__(self, port, "INPUT")
+            Sensor.__init__(self, port, "INPUT", use_mutex)
         except:
             raise
+
+        self.use_mutex = use_mutex
 
         try:
             self.sensor_type = sensor_type
@@ -880,9 +900,9 @@ class DHTSensor(Sensor):
 
         from di_sensors import DHT
 
-        _grab_read()
+        _ifMutexAcquire(self.use_mutex)
         temp = DHT.dht(self.sensor_type)[0]
-        _release_read()
+        _ifMutexRelease(self.use_mutex)
 
         if temp == -2:
             return "Bad reading, trying again"
@@ -899,9 +919,9 @@ class DHTSensor(Sensor):
         '''
         from di_sensors import DHT
 
-        _grab_read()
+        _ifMutexAcquire(self.use_mutex)
         humidity = DHT.dht(self.sensor_type)[1]
-        _release_read()
+        _ifMutexRelease(self.use_mutex)
 
         if humidity == -2:
             return "Bad reading, trying again"
@@ -914,9 +934,9 @@ class DHTSensor(Sensor):
     def read(self):
         from di_sensors import DHT
 
-        _grab_read()
+        _ifMutexAcquire(self.use_mutex)
         [temp , humidity]=DHT.dht(self.sensor_type)
-        _release_read()
+        _ifMutexRelease(self.use_mutex)
 
         if temp ==-2.0 or humidity == -2.0:
             return "Bad reading, trying again"
