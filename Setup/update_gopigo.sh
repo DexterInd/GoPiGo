@@ -12,9 +12,9 @@ GOPIGO_DIR=$DEXTER_PATH/GoPiGo
 if folder_exists $GOPIGO_DIR; then
     echo "GoPiGo Directory Exists"
     cd $DEXTER_PATH/GoPiGo  # Go to directory
-    sudo git fetch origin       # Hard reset the git files
-    sudo git reset --hard
-    sudo git merge origin/master
+    git fetch origin       # Hard reset the git files
+    git reset --hard
+    git merge origin/master
 else
     cd $DEXTER_PATH
     git clone https://github.com/DexterInd/GoPiGo
@@ -25,5 +25,5 @@ change_branch  $BRANCH # change to a branch we're working on.
 pushd $DEXTER_PATH/GoPiGo/Setup > /dev/null
 feedback "--> UPDATING LIBRARIES"
 feedback "------------------"
-sudo bash ./install.sh
+bash ./install.sh
 popd > /dev/null
