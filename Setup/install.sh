@@ -72,20 +72,20 @@ display_welcome_msg() {
 
 install_dependencies() {
     if ! quiet_mode ; then
-        apt-get update
+        sudo apt-get update
     fi
     echo " "
     feedback "Installing Dependencies"
     feedback "======================="
-    apt-get install python-pip git libi2c-dev python-serial python-rpi.gpio i2c-tools python-smbus arduino minicom libnss-mdns python-dev -y
-    pip install -U RPi.GPIO
-    pip install pyusb
-    pip install numpy
-    pip install python-periphery==1.1.0
-    pip3 install -U RPi.GPIO
-    pip3 install pyusb
-    pip3 install numpy
-    pip3 install python-periphery==1.1.0
+    sudo apt-get install python-pip git libi2c-dev python-serial python-rpi.gpio i2c-tools python-smbus arduino minicom libnss-mdns python-dev -y
+    sudo pip install -U RPi.GPIO
+    sudo pip install pyusb
+    sudo pip install numpy
+    sudo pip install python-periphery==1.1.0
+    sudo pip3 install -U RPi.GPIO
+    sudo pip3 install pyusb
+    sudo pip3 install numpy
+    sudo pip3 install python-periphery==1.1.0
 
 
     feedback "Dependencies installed"
@@ -95,8 +95,8 @@ install_DHT() {
     # Install the DHT library
     feedback "Installing DHT library"
     pushd $ROBOT_DIR/Software/Python/sensor_examples/dht/Adafruit_Python_DHT > /dev/null
-    python setup.py install
-    python3 setup.py install
+    sudo python setup.py install
+    sudo python3 setup.py install
     popd > /dev/null
 }
 
@@ -107,13 +107,13 @@ install_wiringpi() {
     # we can do either the curl - it works just fine
     # sudo curl https://raw.githubusercontent.com/DexterInd/script_tools/master/update_wiringpi.sh | bash
     # or call the version that's already on the SD card
-    bash $DEXTERSCRIPT/update_wiringpi.sh
+    sudo bash $DEXTERSCRIPT/update_wiringpi.sh
     # done with WiringPi
 
     # remove wiringPi directory if present
     if [ -d wiringPi ]
     then
-        rm -r wiringPi
+        sudo rm -r wiringPi
     fi
     # End check if WiringPi installed
     echo " "
@@ -125,13 +125,13 @@ install_spi_i2c() {
     if grep -q "#blacklist i2c-bcm2708" /etc/modprobe.d/raspi-blacklist.conf; then
         echo "I2C already removed from blacklist"
     else
-        sed -i -e 's/blacklist i2c-bcm2708/#blacklist i2c-bcm2708/g' /etc/modprobe.d/raspi-blacklist.conf
+        sudo sed -i -e 's/blacklist i2c-bcm2708/#blacklist i2c-bcm2708/g' /etc/modprobe.d/raspi-blacklist.conf
         echo "I2C removed from blacklist"
     fi
     if grep -q "#blacklist spi-bcm2708" /etc/modprobe.d/raspi-blacklist.conf; then
         echo "SPI already removed from blacklist"
     else
-        sed -i -e 's/blacklist spi-bcm2708/#blacklist spi-bcm2708/g' /etc/modprobe.d/raspi-blacklist.conf
+        sudo sed -i -e 's/blacklist spi-bcm2708/#blacklist spi-bcm2708/g' /etc/modprobe.d/raspi-blacklist.conf
         echo "SPI removed from blacklist"
     fi
 
@@ -164,7 +164,7 @@ install_spi_i2c() {
     echo dtparam=i2c1=on >> /boot/config.txt
     echo dtparam=i2c_arm=on >> /boot/config.txt
 
-    adduser pi i2c
+    sudo adduser pi i2c
     echo " "
 }
 
@@ -211,30 +211,30 @@ install_line_follower(){
     # otherwise create new ones
     if file_exists "$PIHOME/black_line.txt"
     then
-        mv $PIHOME/black_line.txt $PIHOME/Dexter/black_line.txt
+        sudo mv $PIHOME/black_line.txt $PIHOME/Dexter/black_line.txt
     else
-        cp $PIHOME/Dexter/GoPiGo/Software/Python/line_follower/black_line.txt $PIHOME/Dexter/black_line.txt
+        sudo cp $PIHOME/Dexter/GoPiGo/Software/Python/line_follower/black_line.txt $PIHOME/Dexter/black_line.txt
     fi
 
     if file_exists "$PIHOME/white_line.txt"
     then
-        mv $PIHOME/white_line.txt $PIHOME/Dexter/white_line.txt
+        sudo mv $PIHOME/white_line.txt $PIHOME/Dexter/white_line.txt
     else
-        cp $PIHOME/Dexter/GoPiGo/Software/Python/line_follower/white_line.txt $PIHOME/Dexter/white_line.txt
+        sudo cp $PIHOME/Dexter/GoPiGo/Software/Python/line_follower/white_line.txt $PIHOME/Dexter/white_line.txt
     fi
     if file_exists "$PIHOME/range_line.txt"
     then
-        mv $PIHOME/range_line.txt $PIHOME/Dexter/range_line.txt
+        sudo mv $PIHOME/range_line.txt $PIHOME/Dexter/range_line.txt
     else
-        cp $PIHOME/Dexter/GoPiGo/Software/Python/line_follower/range_line.txt $PIHOME/Dexter/range_line.txt
+        sudo cp $PIHOME/Dexter/GoPiGo/Software/Python/line_follower/range_line.txt $PIHOME/Dexter/range_line.txt
     fi
 
-    chmod 666 $PIHOME/Dexter/*line.txt
+    sudo chmod 666 $PIHOME/Dexter/*line.txt
 
 }
 
 install_control_panel(){
-    cp "$ROBOT_DIR/Software/Python/control_panel/gopigo_control_panel.desktop" $PIHOME/Desktop
+    sudo cp "$ROBOT_DIR/Software/Python/control_panel/gopigo_control_panel.desktop" $PIHOME/Desktop
 }
 
 call_for_reboot() {
