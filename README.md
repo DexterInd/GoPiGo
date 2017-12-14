@@ -19,7 +19,7 @@ sudo sh -c "curl -kL dexterindustries.com/update_gopigo | bash"
 
 In order to quick install the GoPiGo package(s) without root privileges (except for anything else that comes with it), use the following command:
 ```
-curl -kL dexterindustris.com/update_gopigo | bash
+curl -kL dexterindustries.com/update_gopigo | bash
 ```
 
 # See Also
