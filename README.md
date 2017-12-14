@@ -12,11 +12,15 @@ This repository contains source code, firmware and design materials for the GoPi
 
 # Quick Install
 
-In order to quick install the `GoPiGo` repository, open up a terminal and type the following command:
+For installing the GoPiGo package(s) with root privileges, use one of the following command:
 ```
-sudo curl -kL dexterindustries.com/update_gopigo | bash
+sudo sh -c "curl -kL dexterindustries.com/update_gopigo | bash"
 ```
-The same command can be used for updating the `GoPiGo` to the latest version.
+
+In order to quick install the GoPiGo package(s) without root privileges, use the following command:
+```
+curl -kL dexterindustris.com/update_gopigo | bash
+```
 
 # See Also
 
