@@ -39,8 +39,7 @@ echo " "
 
 check_root_user() {
     if [[ $EUID -ne 0 ]]; then
-        feedback "FAIL!  This script must be run as such: sudo ./install.sh"
-        exit 1
+        feedback "No root permissions: the update script will not install python libraries."
     fi
     echo " "
 }
