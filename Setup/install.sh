@@ -159,8 +159,8 @@ install_spi_i2c() {
     feedback "Making I2C changes in /boot/config.txt . . ."
     feedback "================================================"
 
-    echo dtparam=i2c1=on >> /boot/config.txt
-    echo dtparam=i2c_arm=on >> /boot/config.txt
+    sudo sh -c "echo dtparam=i2c1=on >> /boot/config.txt"
+    sudo sh -c "echo dtparam=i2c_arm=on >> /boot/config.txt"
 
     sudo adduser pi i2c
     echo " "
@@ -268,10 +268,10 @@ install_dependencies
 
 
 #Copy Software Servo
-cp -R $ROBOT_DIR/Firmware/SoftwareServo/ /usr/share/arduino/libraries/
+sudo cp -R $ROBOT_DIR/Firmware/SoftwareServo/ /usr/share/arduino/libraries/
 
-chmod +x gopigo
-cp gopigo /usr/bin
+sudo chmod +x gopigo
+sudo cp gopigo /usr/bin
 
 cd $ROBOT_DIR/Software/Python
 python setup.py install
