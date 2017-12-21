@@ -25,5 +25,5 @@ change_branch  $BRANCH # change to a branch we're working on.
 pushd $DEXTER_PATH/GoPiGo/Setup > /dev/null
 feedback "--> UPDATING LIBRARIES"
 feedback "------------------"
-sudo bash ./install.sh
+bash ./install.sh
 popd > /dev/null
