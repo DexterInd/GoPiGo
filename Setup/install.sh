@@ -39,8 +39,7 @@ echo " "
 
 check_root_user() {
     if [[ $EUID -ne 0 ]]; then
-        feedback "FAIL!  This script must be run as such: sudo ./install.sh"
-        exit 1
+        feedback "No root permissions: the update script will not install python libraries."
     fi
     echo " "
 }
@@ -77,16 +76,15 @@ install_dependencies() {
     echo " "
     feedback "Installing Dependencies"
     feedback "======================="
-    sudo apt-get install python-pip git libi2c-dev python-serial python-rpi.gpio i2c-tools python-smbus arduino minicom libnss-mdns python-dev -y
-    sudo pip install -U RPi.GPIO
-    sudo pip install pyusb
-    sudo pip install numpy
-    sudo pip install python-periphery==1.1.0
-    sudo pip3 install -U RPi.GPIO
-    sudo pip3 install pyusb
-    sudo pip3 install numpy
-    sudo pip3 install python-periphery==1.1.0
-
+    sudo apt-get install python-pip git libi2c-dev python-serial python-rpi.gpio i2c-tools python-smbus arduino minicom libnss-mdns python-dev build-essential libffi-dev -y
+    pip install -U RPi.GPIO
+    pip install pyusb
+    pip install numpy
+    pip install python-periphery==1.1.0
+    pip3 install -U RPi.GPIO
+    pip3 install pyusb
+    pip3 install numpy
+    pip3 install python-periphery==1.1.0
 
     feedback "Dependencies installed"
 }
@@ -95,8 +93,8 @@ install_DHT() {
     # Install the DHT library
     feedback "Installing DHT library"
     pushd $ROBOT_DIR/Software/Python/sensor_examples/dht/Adafruit_Python_DHT > /dev/null
-    sudo python setup.py install
-    sudo python3 setup.py install
+    python setup.py install
+    python3 setup.py install
     popd > /dev/null
 }
 
@@ -161,8 +159,8 @@ install_spi_i2c() {
     feedback "Making I2C changes in /boot/config.txt . . ."
     feedback "================================================"
 
-    echo dtparam=i2c1=on >> /boot/config.txt
-    echo dtparam=i2c_arm=on >> /boot/config.txt
+    sudo sh -c "echo dtparam=i2c1=on >> /boot/config.txt"
+    sudo sh -c "echo dtparam=i2c_arm=on >> /boot/config.txt"
 
     sudo adduser pi i2c
     echo " "
@@ -270,10 +268,10 @@ install_dependencies
 
 
 #Copy Software Servo
-cp -R $ROBOT_DIR/Firmware/SoftwareServo/ /usr/share/arduino/libraries/
+sudo cp -R $ROBOT_DIR/Firmware/SoftwareServo/ /usr/share/arduino/libraries/
 
-chmod +x gopigo
-cp gopigo /usr/bin
+sudo chmod +x gopigo
+sudo cp gopigo /usr/bin
 
 cd $ROBOT_DIR/Software/Python
 python setup.py install
