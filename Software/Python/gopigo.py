@@ -54,12 +54,12 @@ try:
         print("No GoPiGo3 detected.")
         print("WARNING:  If you are using the GoPiGo3 hardware this software will not work!")
         print("WARNING:  If you are using the GoPiGo3 hardware this software will not work!")
-        print("WARNING:  Quitting!")
-        sys.exit()
+        time.sleep(5)
 except:
     print("This library is for the GoPiGo1 and GoPiGo2.")
     print("No GoPiGo3 Library Detected.")
     print("WARNING:  If you are using the GoPiGo3 hardware this software will not work!")
+    time.sleep(5)
 
 WHEEL_RAD=3.25
 WHEEL_CIRC=2*math.pi*WHEEL_RAD
