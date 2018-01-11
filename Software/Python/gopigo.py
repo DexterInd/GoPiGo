@@ -43,6 +43,24 @@ import math
 import struct
 import subprocess
 
+# Test GoPiGo vs GoPiGo3
+# If
+try:
+    import gopigo3
+    try:
+        GPG3 = gopigo3.GoPiGo3()
+    except:
+        print("This library (gopigo.py) is for the GoPiGo1 and GoPiGo2.")
+        print("No GoPiGo3 detected.")
+        print("WARNING:  If you are using the GoPiGo3 hardware this software will not work!")
+        print("WARNING:  If you are using the GoPiGo3 hardware this software will not work!")
+        print("WARNING:  Quitting!")
+        sys.exit()
+except:
+    print("This library is for the GoPiGo1 and GoPiGo2.")
+    print("No GoPiGo3 Library Detected.")
+    print("WARNING:  If you are using the GoPiGo3 hardware this software will not work!")
+
 WHEEL_RAD=3.25
 WHEEL_CIRC=2*math.pi*WHEEL_RAD
 PPR = 18 # encoder Pulses Per Revolution
@@ -664,7 +682,7 @@ def dht(sensor_type=0):
 
 def check_version():
 	global version
-	
+
 	if version == 0:
 		for i in range(10):
 			raw=analogRead(7)
