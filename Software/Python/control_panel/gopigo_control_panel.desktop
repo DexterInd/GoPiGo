@@ -1,0 +1,9 @@
+[Desktop Entry]
+Encoding=UTF-8
+Type=Application
+Name=GoPiGo Control Panel
+Comment=GoPiGo Control Panel
+#Icon=/usr/share/icons/gnome/scalable/devices/input-gaming-symbolic.svg
+Icon=/home/pi/Dexter/GoPiGo/Software/Python/control_panel/GoPiGo.png
+Exec=lxterminal  --title "GoPiGo Control Panel - Do not close this window!" --command "gksu python /home/pi/Dexter/GoPiGo/Software/Python/control_panel/control_panel_gui.py"
+NoDisplay=true

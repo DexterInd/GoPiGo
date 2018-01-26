@@ -1,12 +1,23 @@
-#GoPiGo
+## Installing
 
 This is the install script for the GoPiGo which installs all the packages and libraries need for running the GoPiGo.
 
-To run the script, first make it executable:
-> chmod +x install.sh
+For installing the GoPiGo you should only enter one of the 2 following command(s):
+```
+# for installing the python packages with root permissions (except anything else which will ran as root) run this
+sudo sh -c "curl -kL dexterindustries.com/update_tools | bash"
 
-and then run it:
-> ./install.sh
+# for installing the python packages with user permissions (except anything else which will ran as root) run this
+curl -kL dexterindustries.com/update_tools | bash
+```
+
+Or if you want the classic way, you can clone the repository, change directory to this folder and then enter the following command:
+```
+# for root privileges
+sudo bash install.sh
+
+# for user privileges
+```
 
 Make sure that you are connected to the internet before starting.
 

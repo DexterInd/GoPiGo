@@ -11,9 +11,12 @@
 **Usage:**
 - Make robot_web_server.py executable
 
- >      chmod +x robot_web_server.py
+ >      sudo chmod +x robot_web_server.py
 
 - Run robot_web_server.py
+
+ >      sudo ./robot_web_server.py
+ 
 - Open a web browser on any computer or mobile device and enter the following in the address bar:
 
  >      dex.local:98
@@ -38,7 +41,7 @@ This repository contains source code, firmware and design materials for the GoPi
 
 ## License
 GoPiGo for the Raspberry Pi: an open source robotics platform for the Raspberry Pi.
-Copyright (C) 2015  Dexter Industries
+Copyright (C) 2017  Dexter Industries
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

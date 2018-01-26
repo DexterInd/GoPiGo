@@ -8,9 +8,10 @@ poll_time=0.01
 
 # Calibration Files.  These are fixed positions because we assume
 # The user is using Raspbian for Robots.
-file_b="/home/pi/Desktop/GoPiGo/Software/Python/line_follower/black_line.txt"
-file_w="/home/pi/Desktop/GoPiGo/Software/Python/line_follower/white_line.txt"
-file_r="/home/pi/Desktop/GoPiGo/Software/Python/line_follower/range_line.txt"
+dir_path="/home/pi/Dexter/"
+file_b=dir_path+"black_line.txt"
+file_w=dir_path+"white_line.txt"
+file_r=dir_path+"range_line.txt"
 
 last_val=[0]*5
 curr=[0]*5
@@ -41,7 +42,7 @@ def get_black_line():
 	try:
 		with open(file_b, 'rb') as f:
 			black_line = pickle.load(f)
-	except Exception, e:
+	except Exception as e:
 		# print e
 		black_line=[0]*5
 	return black_line
@@ -52,7 +53,7 @@ def get_white_line():
 	try:
 		with open(file_w, 'rb') as f:
 			white_line = pickle.load(f)
-	except Exception, e:
+	except Exception as e:
 		# print e
 		white_line=[0]*5
 	return white_line
@@ -63,7 +64,7 @@ def get_range():
 	try:
 		with open(file_r, 'rb') as f:
 			range_col = pickle.load(f)
-	except Exception, e:
+	except Exception as e:
 		# print e
 		range_col=[0]*5
 	return range_col
@@ -84,11 +85,18 @@ def absolute_line_pos():
 	# print "Threshold:" + str(threshold)
 
 	raw_vals=line_sensor.get_sensorval()
+	# print (raw_vals)
+	
+	# updated to handle the case where the line follower is not answering
 	for i in range(5):
-		if raw_vals[i]>threshold[i]:
+		if raw_vals[i] == -1:
+			line_pos[i] = -1
+		elif raw_vals[i]>threshold[i]:
 			line_pos[i]=1
 		else:
 			line_pos[i]=0
+			
+	# print line_pos
 	return line_pos
 	
 	
@@ -134,30 +142,32 @@ def line_sensor_val_scratch():
 		return 6
 	else:
 		return 7
-	
+
 def line_sensor_vals():
 	#if the line is in the middle, keep moving straight
 	#if the line is slightly left of right, keep moving straight
 	curr=absolute_line_pos()
 	if curr==small_r or curr==small_l or curr==mid or curr==mid1:
 		return '0'
-		
+
 	#If the line is towards the sligh left, turn slight right
 	elif curr==small_l1:
 		return '-1'
 	elif curr==left or curr==left1:
 		return '-2'
-		
+
 	#If the line is towards the sligh right, turn slight left
 	elif curr==small_r1:
 		return '1'
 	elif curr==right or curr==right1:
 		return '2'
-	elif curr==stop: 
+	elif curr==stop:
 		return '3'
 	else:
 		return '4'
-if __name__ == "__main__":	
+
+
+if __name__ == "__main__":
 	while True:
-		print line_sensor_vals()		
+		print(line_sensor_vals())
 		time.sleep(poll_time)

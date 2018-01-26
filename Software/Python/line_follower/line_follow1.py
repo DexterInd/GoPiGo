@@ -8,7 +8,7 @@
 # http://www.dexterindustries.com/
 '''
 ## License
- Copyright (C) 2015  Dexter Industries
+ Copyright (C) 2017  Dexter Industries
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -20,6 +20,14 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/gpl-3.0.txt>.
 '''
+from __future__ import print_function
+from __future__ import division
+from builtins import input
+
+# the above lines are meant for Python3 compatibility.
+# they force the use of Python3 functionality for print(), 
+# the integer division and input()
+# mind your parentheses!
 import line_sensor
 import time
 import gopigo
@@ -81,14 +89,14 @@ def absolute_line_pos():
 #GoPiGo actions
 def go_straight():
 	if msg_en:
-		print "Going straight"
+		print("Going straight")
 	if gpg_en:
 		gopigo.set_speed(fwd_speed)
 		gopigo.fwd()
 		
 def turn_slight_left():
 	if msg_en:
-		print "Turn slight left"
+		print("Turn slight left")
 	if gpg_en:
 		gopigo.set_right_speed(slight_turn_speed)
 		gopigo.set_left_speed(fwd_speed)
@@ -96,14 +104,14 @@ def turn_slight_left():
 		
 def turn_left():
 	if msg_en:
-		print "Turn left"
+		print("Turn left")
 	if gpg_en:
 		gopigo.set_speed(turn_speed)
 		gopigo.left()
 		
 def turn_slight_right():
 	if msg_en:
-		print "Turn slight right"
+		print("Turn slight right")
 	if gpg_en:
 		gopigo.set_right_speed(fwd_speed)
 		gopigo.set_left_speed(slight_turn_speed)
@@ -111,20 +119,20 @@ def turn_slight_right():
 
 def turn_right():
 	if msg_en:
-		print "Turn right"
+		print("Turn right")
 	if gpg_en:
 		gopigo.set_speed(turn_speed)
 		gopigo.right()
 	
 def stop_now():
 	if msg_en:
-		print "Stop"
+		print("Stop")
 	if gpg_en:
 		gopigo.stop()
 		
 def go_back():
 	if msg_en:
-		print "Go Back"
+		print("Go Back")
 	if gpg_en:
 		gopigo.set_speed(turn_speed)
 		gopigo.bwd()
@@ -154,12 +162,12 @@ def run_gpg(curr):
 while True:
 	last_val=curr
 	curr=absolute_line_pos()
-	print curr
+	print(curr)
 	
 	#white line reached
 	if curr== stop1:
 		if msg_en:
-			print "White found, last cmd running"
+			print("White found, last cmd running")
 		for i in range(5):
 			run_gpg(last_val)
 	else:		

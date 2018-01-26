@@ -10,7 +10,7 @@
 '''
 ## License
  GoPiGo for the Raspberry Pi: an open source robotics platform for the Raspberry Pi.
- Copyright (C) 2015  Dexter Industries
+ Copyright (C) 2017  Dexter Industries
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -57,105 +57,115 @@ along with this program.  If not, see <http://www.gnu.org/licenses/gpl-3.0.txt>.
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+from __future__ import print_function
+from __future__ import division
+from builtins import input
+# the above lines are meant for Python3 compatibility.
+# they force the use of Python3 functionality for print(), 
+# the integer division and input()
+# mind your parentheses!
 
 import logging
 import math
 import time
-import Queue
+try:
+	import Queue as queue
+except:
+	import queue 
 import threading
 import gopigo
 #--------------------------------------------------------------------------------------------------- 
 debug=0
 class RobotController:
   
-    MAX_UPDATE_TIME_DIFF = 0.25
-    TIME_BETWEEN_SERVO_SETTING_UPDATES = 1.0
-    
-    JOYSTICK_DEAD_ZONE = 0.1
-    
-    MOTION_COMMAND_TIMEOUT = 2.0 # If no commands for the motors are recieved in this time then
-                                 # the motors (drive and servo) are set to zero speed
-    speed_l=200
-    speed_r=200
-    #-----------------------------------------------------------------------------------------------
-    def __init__( self ):
-        gopigo.set_speed(200)
-        gopigo.stop()
-        #gopigo.fwd()
-        
-        self.lastServoSettingsSendTime = 0.0
-        self.lastUpdateTime = 0.0
-        self.lastMotionCommandTime = time.time()
-    
-    #-----------------------------------------------------------------------------------------------
-    def __del__( self ):
-        
-        self.disconnect()
-    
-    #-----------------------------------------------------------------------------------------------
-    def disconnect( self ):
-        print "Closing"
-       
-    def normaliseJoystickData( self, joystickX, joystickY ):
-        stickVectorLength = math.sqrt( joystickX**2 + joystickY**2 )
-        if stickVectorLength > 1.0:
-            joystickX /= stickVectorLength
-            joystickY /= stickVectorLength
-        
-        if stickVectorLength < self.JOYSTICK_DEAD_ZONE:
-            joystickX = 0.0
-            joystickY = 0.0
-            
-        return ( joystickX, joystickY )
+	MAX_UPDATE_TIME_DIFF = 0.25
+	TIME_BETWEEN_SERVO_SETTING_UPDATES = 1.0
+	
+	JOYSTICK_DEAD_ZONE = 0.1
+	
+	MOTION_COMMAND_TIMEOUT = 2.0 # If no commands for the motors are recieved in this time then
+								 # the motors (drive and servo) are set to zero speed
+	speed_l=200
+	speed_r=200
+	#-----------------------------------------------------------------------------------------------
+	def __init__( self ):
+		gopigo.set_speed(200)
+		gopigo.stop()
+		#gopigo.fwd()
+		
+		self.lastServoSettingsSendTime = 0.0
+		self.lastUpdateTime = 0.0
+		self.lastMotionCommandTime = time.time()
+	
+	#-----------------------------------------------------------------------------------------------
+	def __del__( self ):
+		
+		self.disconnect()
+	
+	#-----------------------------------------------------------------------------------------------
+	def disconnect( self ):
+		print ("Closing")
+	   
+	def normaliseJoystickData( self, joystickX, joystickY ):
+		stickVectorLength = math.sqrt( joystickX**2 + joystickY**2 )
+		if stickVectorLength > 1.0:
+			joystickX /= stickVectorLength
+			joystickY /= stickVectorLength
+		
+		if stickVectorLength < self.JOYSTICK_DEAD_ZONE:
+			joystickX = 0.0
+			joystickY = 0.0
+			
+		return ( joystickX, joystickY )
 
-    def centreNeck( self ):
-        #gopigo.set_right_speed(0)
+	def centreNeck( self ):
+		#gopigo.set_right_speed(0)
 		pass
-       
-    def setMotorJoystickPos( self, joystickX, joystickY ):
-        joystickX, joystickY = self.normaliseJoystickData( joystickX, joystickY )
-        if debug:
-			print "Left joy",joystickX, joystickY
+	
+	def setMotorJoystickPos( self, joystickX, joystickY ):
+		joystickX, joystickY = self.normaliseJoystickData( joystickX, joystickY )
+		if debug:
+			print( "Left joy",joystickX, joystickY)
 			#print self.speed_l*joystickY
-        #gopigo.set_left_speed(int(self.speed_l*joystickY))
-        #gopigo.fwd()
-        if joystickX > .5:
-			print "Left"
+		#gopigo.set_left_speed(int(self.speed_l*joystickY))
+		#gopigo.fwd()
+		if joystickX > .5:
+			print( "Left")
 			gopigo.left()
-        elif joystickX <-.5:
-			print "Right"
+		elif joystickX <-.5:
+			print ("Right")
 			gopigo.right()
-        elif joystickY > .5:
-			print "Fwd"
+		elif joystickY > .5:
+			print ("Fwd")
 			gopigo.fwd()
-        elif joystickY < -.5:
-			print "Back"
+		elif joystickY < -.5:
+			print ("Back")
 			gopigo.bwd()
-        else:
-			print "Stop"
+		else:
+			print ("Stop")
 			gopigo.stop()
 		
-    def setNeckJoystickPos( self, joystickX, joystickY ):
-        #print "g"
-        joystickX, joystickY = self.normaliseJoystickData( joystickX, joystickY )
-        if debug:	
-			print "Right joy",joystickX, joystickY
-			#print self.speed_r*joystickY
-        #gopigo.set_right_speed(int(self.speed_r*joystickY))
-        #gopigo.fwd()
-        #self.lastMotionCommandTime = time.time()
+	def setNeckJoystickPos( self, joystickX, joystickY ):
+		#print ("g")
+		joystickX, joystickY = self.normaliseJoystickData( joystickX, joystickY )
+		if debug:	
+			print ("Right joy",joystickX, joystickY)
+			#print (self.speed_r*joystickY)
+		#gopigo.set_right_speed(int(self.speed_r*joystickY))
+		#gopigo.fwd()
+		#self.lastMotionCommandTime = time.time()
 
-    def update( self ):
-        if debug:	
-			print "Updating"
-        curTime = time.time()
-        timeDiff = min( curTime - self.lastUpdateTime, self.MAX_UPDATE_TIME_DIFF )
-        
-        # Turn off the motors if we haven't received a motion command for a while
-        #if curTime - self.lastMotionCommandTime > self.MOTION_COMMAND_TIMEOUT:
+	def update( self ):
+		if debug:	
+			print ("Updating")
+		curTime = time.time()
+		timeDiff = min( curTime - self.lastUpdateTime, self.MAX_UPDATE_TIME_DIFF )
+		
+		# Turn off the motors if we haven't received a motion command for a while
+		#if curTime - self.lastMotionCommandTime > self.MOTION_COMMAND_TIMEOUT:
 		#	self.leftMotorSpeed = 0.0
 		#	self.rightMotorSpeed = 0.0
 		#	self.panSpeed = 0.0
 		#	self.tiltSpeed = 0.0
 
-        self.lastUpdateTime = curTime
+		self.lastUpdateTime = curTime

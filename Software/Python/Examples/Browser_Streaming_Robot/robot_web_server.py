@@ -9,7 +9,7 @@
 '''
 ## License
  GoPiGo for the Raspberry Pi: an open source robotics platform for the Raspberry Pi.
- Copyright (C) 2015  Dexter Industries
+ Copyright (C) 2017  Dexter Industries
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -56,6 +56,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/gpl-3.0.txt>.
 # CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
 # OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
 # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+from __future__ import print_function
+from __future__ import division
+from builtins import input
+# the above lines are meant for Python3 compatibility.
+# they force the use of Python3 functionality for print(), 
+# the integer division and input()
+# mind your parentheses!
 
 import logging
 
@@ -78,20 +85,24 @@ import tornado.web
 import tornado.escape
 import sockjs.tornado
 import threading
-import Queue
+
 import camera_streamer
 import robot_controller
 import json
 import gopigo
 import subprocess
 import sys
+try:
+    import Queue as queue
+except:
+    import queue 
 robot = None
 
 cameraStreamer = None
 scriptPath = os.path.dirname( __file__ )
 webPath = os.path.abspath( file_location)
-print webPath
-robotConnectionResultQueue = Queue.Queue()
+print (webPath)
+robotConnectionResultQueue = queue.Queue()
 isClosing = False
 
 #--------------------------------------------------------------------------------------------------- 

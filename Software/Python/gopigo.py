@@ -1,18 +1,25 @@
 #!/usr/bin/env python
-########################################################################                                                                  
-# This library is used for communicating with the GoPiGo.                                
-# http://www.dexterindustries.com/GoPiGo/                                                                
+from __future__ import print_function
+from __future__ import division
+# the above lines are meant for Python3 compatibility.
+# they force the use of Python3 functionality for print()
+# and the integer division
+# mind your parentheses!
+
+########################################################################
+# This library is used for communicating with the GoPiGo.
+# http://www.dexterindustries.com/GoPiGo/
 # History
 # ------------------------------------------------
 # Author	Date      		Comments
 # Karan		30 March 14  	Initial Authoring
-# 			02 July  14		Removed bugs and some features added (v0.9) 
+# 			02 July  14		Removed bugs and some features added (v0.9)
 #			26 Aug	 14		Code commenting and cleanup
-																		
+#			07 June  16		DHT example added
 '''
 ## License
  GoPiGo for the Raspberry Pi: an open source robotics platform for the Raspberry Pi.
- Copyright (C) 2015  Dexter Industries
+ Copyright (C) 2017  Dexter Industries
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -26,26 +33,33 @@ GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/gpl-3.0.txt>.
-'''      
+'''
 #
 ########################################################################
 
-import serial, time
-import smbus
-import math
-import RPi.GPIO as GPIO
-import struct
-
-import smbus
+import sys
 import time
+import math
+import struct
 import subprocess
 
-# for RPI version 1, use "bus = smbus.SMBus(0)"
-rev = GPIO.RPI_REVISION
-if rev == 2 or rev == 3:
-	bus = smbus.SMBus(1) 
+WHEEL_RAD=3.25
+WHEEL_CIRC=2*math.pi*WHEEL_RAD
+PPR = 18 # encoder Pulses Per Revolution
+
+if sys.platform == 'uwp':
+	import winrt_smbus as smbus
+	bus = smbus.SMBus(1)
 else:
-	bus = smbus.SMBus(0) 
+	import RPi.GPIO as GPIO
+	import smbus
+
+	# for RPI version 1, use "bus = smbus.SMBus(0)"
+	rev = GPIO.RPI_REVISION
+	if rev == 2 or rev == 3:
+		bus = smbus.SMBus(1)
+	else:
+		bus = smbus.SMBus(0)
 
 # This is the address for the GoPiGo
 address = 0x08
@@ -75,7 +89,7 @@ fw_ver_cmd			=[20]		#Read the firmware version
 en_enc_cmd			=[51]		#Enable the encoders
 dis_enc_cmd			=[52]		#Disable the encoders
 read_enc_status_cmd	=[53]		#Read encoder status
-en_servo_cmd		=[61]		#Enable the servo's	
+en_servo_cmd		=[61]		#Enable the servo's
 dis_servo_cmd		=[60]		#Disable the servo's
 set_left_speed_cmd	=[70]		#Set the speed of the right motor
 set_right_speed_cmd	=[71]		#Set the speed of the left motor
@@ -85,7 +99,7 @@ timeout_status_cmd	=[82]		#Read the timeout status
 enc_read_cmd		=[53]		#Read encoder values
 trim_test_cmd		=[30]		#Test the trim values
 trim_write_cmd		=[31]		#Write the trim values
-trim_read_cmd		=[32]		
+trim_read_cmd		=[32]
 
 digital_write_cmd   =[12]      	#Digital write on a port
 digital_read_cmd    =[13]      	#Digital read on a port
@@ -102,6 +116,10 @@ cpu_speed_cmd		=[25]
 # LED_L_PIN=17
 # LED_R_PIN=16
 
+#port definition
+analogPort=15
+digitalPort=10
+
 #LED setup
 LED_L=1
 LED_R=0
@@ -110,6 +128,7 @@ LED_R=0
 unused = 0
 
 v16_thresh=790
+version = 0
 
 '''
 #Enable slow i2c (for better stability)
@@ -117,7 +136,7 @@ def en_slow_i2c():
 	#subprocess.call('sudo rmmod i2c_bcm2708',shell=True)
 	subprocess.call('sudo modprobe i2c_bcm2708 baudrate=70000',shell=True)
 '''
-	
+
 #Write I2C block
 def write_i2c_block(address,block):
 	try:
@@ -126,7 +145,7 @@ def write_i2c_block(address,block):
 		return op
 	except IOError:
 		if debug:
-			print "IOError"
+			print ("IOError")
 		return -1
 	return 1
 
@@ -137,8 +156,8 @@ def writeNumber(value):
 		time.sleep(.005)
 	except IOError:
 		if debug:
-			print "IOError"
-		return -1	
+			print ("IOError")
+		return -1
 	return 1
 
 #Read a byte from the GoPiGo
@@ -148,35 +167,57 @@ def readByte():
 		time.sleep(.005)
 	except IOError:
 		if debug:
-			print "IOError"
-		return -1	
+			print ("IOError")
+		return -1
 	return number
 
 #Control Motor 1
 def motor1(direction,speed):
 	return write_i2c_block(address,m1_cmd+[direction,speed,0])
-	
+
 #Control Motor 2
 def motor2(direction,speed):
 	return write_i2c_block(address,m2_cmd+[direction,speed,0])
-	
+
 #Move the GoPiGo forward
-def fwd():
+def fwd(dist=0): #distance is in cm
+	try:
+		if dist>0:
+			# this casting to int doesn't seem necessary
+			pulse=int(PPR*(dist//WHEEL_CIRC) )
+			enc_tgt(1,1,pulse)
+	except Exception as e:
+		print ("gopigo fwd: {}".format(e))
+		pass
 	return write_i2c_block(address,motor_fwd_cmd+[0,0,0])
-	
+
+# support more explicit spelling for forward function
+forward=fwd
+
 #Move the GoPiGo forward without PID
 def motor_fwd():
 	return write_i2c_block(address,motor_fwd_cmd+[0,0,0])
 
 #Move GoPiGo back
-def bwd():
+def bwd(dist=0):
+	try:
+		if dist>0:
+			# this casting to int doesn't seem necessary
+			pulse=int(PPR*(dist//WHEEL_CIRC) )
+			enc_tgt(1,1,pulse)
+	except Exception as e:
+		print ("gopigo bwd: {}".format(e))
+		pass
 	return write_i2c_block(address,motor_bwd_cmd+[0,0,0])
+
+# support more explicit spelling for backward function
+backward=bwd
 
 #Move GoPiGo back without PID control
 def motor_bwd():
 	return write_i2c_block(address,motor_bwd_cmd+[0,0,0])
 
-#Turn GoPiGo Left slow (one motor off, better control)	
+#Turn GoPiGo Left slow (one motor off, better control)
 def left():
 	return write_i2c_block(address,left_cmd+[0,0,0])
 
@@ -192,14 +233,47 @@ def right():
 def right_rot():
 	return write_i2c_block(address,right_rot_cmd+[0,0,0])
 
+DPR = 360.0/64
+# turn x degrees to the right
+def turn_right(degrees):
+	pulse = int(degrees//DPR)
+	enc_tgt(1,0,pulse)
+	right()
+
+def turn_right_wait_for_completion(degrees):
+	'''
+	Same as turn_right() but blocking
+	'''
+	turn_right(degrees)
+	pulse = int(degrees//DPR)
+	while enc_read(0) < pulse:
+		pass
+
+
+# turn x degrees to the left
+def turn_left(degrees):
+	pulse = int(degrees//DPR)
+	enc_tgt(0,1,pulse)
+	left()
+
+def turn_left_wait_for_completion(degrees):
+	'''
+	same as turn_left() but blocking.
+	'''
+	turn_left(degrees)
+	pulse = int(degrees//DPR)
+	while enc_read(1) < pulse:
+		pass
+
+
 #Stop the GoPiGo
 def stop():
 	return write_i2c_block(address,stop_cmd+[0,0,0])
-	
+
 #Increase the speed
 def increase_speed():
 	return write_i2c_block(address,ispd_cmd+[0,0,0])
-	
+
 #Decrease the speed
 def decrease_speed():
 	return write_i2c_block(address,dspd_cmd+[0,0,0])
@@ -222,7 +296,7 @@ def trim_read():
 		b2=bus.read_byte(address)
 	except IOError:
 		return -1
-		
+
 	if b1!=-1 and b2!=-1:
 		v=b1*256+b2
 		if v==255:
@@ -230,7 +304,7 @@ def trim_read():
 		return v
 	else:
 		return -1
-		
+
 #Write the trim value to EEPROM, where -100=0 and 100=200
 def trim_write(value):
 	if value>100:
@@ -239,7 +313,7 @@ def trim_write(value):
 		value=-100
 	value+=100
 	write_i2c_block(address,trim_write_cmd+[value,0,0])
-	
+
 
 # Arduino Digital Read
 def digitalRead(pin):
@@ -251,7 +325,7 @@ def digitalRead(pin):
 		return n
 	else:
 		return -2
-		
+
 # Arduino Digital Write
 def digitalWrite(pin, value):
 	#if pin ==10 or pin ==0 or pin ==1 or pin==5 or pin ==16 or pin==17 :
@@ -273,7 +347,7 @@ def pinMode(pin, mode):
 	return 1
 	# else:
 		# return -2
-	
+
 # Read analog value from Pin
 def analogRead(pin):
 	#if pin == 1 :
@@ -287,7 +361,7 @@ def analogRead(pin):
 	return b1* 256 + b2
 	#else:
 	#	return -2
-		
+
 # Write PWM
 def analogWrite(pin, value):
 	if pin == 10 :
@@ -295,7 +369,7 @@ def analogWrite(pin, value):
 		return 1
 	else:
 		return -2
-		
+
 #Read voltage
 #	return:	voltage in V
 def volt():
@@ -306,14 +380,14 @@ def volt():
 		b2=bus.read_byte(address)
 	except IOError:
 		return -1
-	
+
 	if b1!=-1 and b2!=-1:
 		v=b1*256+b2
-		v=(5*float(v)/1024)/.4
+		v=(5*float(v)/1024)/0.4
 		return round(v,2)
 	else:
 		return -1
-	
+
 #Read board revision
 #	return:	voltage in V
 def brd_rev():
@@ -325,7 +399,7 @@ def brd_rev():
 	except IOError:
 		return -1
 	return b1* 256 + b2
-		
+
 #Read ultrasonic sensor
 #	arg:
 #		pin -> 	Pin number on which the US sensor is connected
@@ -344,6 +418,22 @@ def us_dist(pin):
 	else:
 		return -1
 
+def corrected_us_dist(pin):
+	'''
+	based on lab experiments, the US sensor has to be corrected
+	with the following equation:
+		(x+4.41)/1.423
+	This seems to give the best results for the sensors on hand
+	'''
+	raw_data = float(us_dist(pin))
+
+	if raw_data > 0:
+		corrected_data = (raw_data + 4.41)  / 1.423
+	else:
+		corrected_data = raw_data
+	# print(raw_data,corrected_data)
+	return int(corrected_data)
+
 def read_motor_speed():
 	write_i2c_block(address,read_motor_speed_cmd+[unused,unused,unused])
 	try:
@@ -353,18 +443,18 @@ def read_motor_speed():
 		return [-1,-1]
 	return [s1,s2]
 
-		
+
 #Turn led on
 #	arg:
 #		l_id: 1 for left LED and 0 for right LED
 def led_on(l_id):
-	if version > 14:
+	if check_version() > 14:
 		r_led=16
 		l_led=17
 	else:
 		r_led=5
 		l_led=10
-	
+
 	if l_id==LED_L or l_id==LED_R:
 		if l_id==LED_L:
 			pinMode(l_led,"OUTPUT")
@@ -380,13 +470,13 @@ def led_on(l_id):
 #	arg:
 #		l_id: 1 for left LED and 0 for right LED
 def led_off(l_id):
-	if version>14:
+	if check_version()>14:
 		r_led=16
 		l_led=17
 	else:
 		r_led=5
 		l_led=10
-		
+
 	if l_id==LED_L or l_id==LED_R:
 		if l_id==LED_L:
 			pinMode(l_led,"OUTPUT")
@@ -397,26 +487,27 @@ def led_off(l_id):
 		return 1
 	else:
 		return -1
-		
+
 #Set servo position
 #	arg:
 #		position: angle in degrees to set the servo at
 def servo(position):
 	write_i2c_block(address,servo_cmd+[position,0,0])
 	#time.sleep(.05)
-	
+
 #Set encoder targeting on
 #arg:
 #	m1: 0 to disable targeting for m1, 1 to enable it
 #	m2:	1 to disable targeting for m2, 1 to enable it
 #	target: number of encoder pulses to target (18 per revolution)
 def enc_tgt(m1,m2,target):
+#	print("enc_tgt m1 {} m2 {} target {}".format(m1,m2,target))
 	if m1>1 or m1<0 or m2>1 or m2<0:
 		return -1
 	m_sel=m1*2+m2
-	write_i2c_block(address,enc_tgt_cmd+[m_sel,target/256,target%256])
+	write_i2c_block(address,enc_tgt_cmd+[m_sel,target//256,target%256])
 	return 1
-	
+
 #Read encoder value
 #	arg:
 #		motor -> 	0 for motor1 and 1 for motor2
@@ -434,7 +525,7 @@ def enc_read(motor):
 		return v
 	else:
 		return -1
-		
+
 #Returns the firmware version
 def fw_ver():
 	write_i2c_block(address,fw_ver_cmd+[0,0,0])
@@ -449,11 +540,11 @@ def fw_ver():
 #Enable the encoders (enabled by default)
 def enable_encoders():
 	return write_i2c_block(address,en_enc_cmd+[0,0,0])
-	
+
 #Disable the encoders (use this if you don't want to use the encoders)
 def disable_encoders():
 	return write_i2c_block(address,dis_enc_cmd+[0,0,0])
-	
+
 #Enables the servo
 def enable_servo():
 	return write_i2c_block(address,en_servo_cmd+[0,0,0])
@@ -471,7 +562,7 @@ def set_left_speed(speed):
 	elif speed <0:
 		speed =0
 	return write_i2c_block(address,set_left_speed_cmd+[speed,0,0])
-	
+
 #Set speed of the right motor
 #	arg:
 #		speed-> 0-255
@@ -498,12 +589,12 @@ def set_speed(speed):
 #	arg:
 #		timeout-> 0-65535 (timeout in ms)
 def enable_com_timeout(timeout):
-	return write_i2c_block(address,en_com_timeout_cmd+[timeout/256,timeout%256,0]) 
+	return write_i2c_block(address,en_com_timeout_cmd+[timeout//256,timeout%256,0])
 
 #Disable communication time-out
 def disable_com_timeout():
 	return write_i2c_block(address,dis_com_timeout_cmd+[0,0,0])
-	
+
 #Read the status register on the GoPiGo
 #	Gets a byte, 	b0-enc_status
 #					b1-timeout_status
@@ -511,9 +602,10 @@ def disable_com_timeout():
 #						l[1]-timeout_status
 def read_status():
 	st=bus.read_byte(address)
-	st_reg=[st & (1 <<0),(st & (1 <<1))/2]
+	# Karan, can you double check this one?
+	st_reg=[st & (1 <<0),(st & (1 <<1))//2]
 	return st_reg
-	 
+
 #Read encoder status
 #	return:	0 if encoder target is reached
 
@@ -533,12 +625,12 @@ def ir_read_signal():
 		write_i2c_block(address,ir_read_cmd+[unused,unused,unused])
 		time.sleep(.1)
 		data_back= bus.read_i2c_block_data(address, 1)[0:21]
-		if data_back[1]<>255:
+		if data_back[1]!=255:
 			return data_back
 		return [-1]*21
 	except IOError:
 		return [-1]*21
-		
+
 # Grove - Infrared Receiver- set the pin on which the Grove IR sensor is connected
 def ir_recv_pin(pin):
 	write_i2c_block(address,ir_recv_pin_cmd+[pin,unused,unused])
@@ -550,13 +642,36 @@ def cpu_speed():
 		b1=bus.read_byte(address)
 		b2=bus.read_byte(address)
 	except IOError:
-		return -1	
+		return -1
 	return b1
-		
-for i in range(10):
-	raw=analogRead(7)
+
+# Read the DHT sensor connected to the serial port
+def dht(sensor_type=0):
+	try:
+		import Adafruit_DHT
+		if sensor_type==0: #blue sensor
+			sensor = Adafruit_DHT.DHT11
+		elif sensor_type==1: #white sensor
+			sensor = Adafruit_DHT.DHT22
+		pin = 15 #connected to the serial port on the GoPiGo, RX pin
+		humidity, temperature = Adafruit_DHT.read_retry(sensor, pin,retries=3,delay_seconds=.1)
+		if humidity is not None and temperature is not None:
+			return [temperature,humidity]
+		else:
+			return [-2.0,-2.0]
+	except RuntimeError:
+		return [-3.0,-3.0]
+
+def check_version():
+	global version
 	
-if raw>v16_thresh:
-	version=16
-else:
-	version=14
+	if version == 0:
+		for i in range(10):
+			raw=analogRead(7)
+
+		if raw>v16_thresh:
+			version=16
+		else:
+			version=14
+
+	return version

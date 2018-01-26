@@ -1,0 +1,3 @@
+#!/bin/bash
+REPO_PATH=$(readlink -f $(dirname $0) | grep -E -o "^(.*?\\GoPiGo)")
+python $REPO_PATH/Software/Python/other_scripts/gopigo_status.py

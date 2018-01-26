@@ -134,7 +134,7 @@ Board.prototype.analogWrite = function(pin, value) {
 Board.prototype.digitalRead = function(pin) {
   var writeRet = this.writeBytes(commands.dRead.concat([pin, commands.unused, commands.unused]))
   if (writeRet) {
-    return this.readByte()
+    return this.readByte()[0]
   } else {
     return false
   }

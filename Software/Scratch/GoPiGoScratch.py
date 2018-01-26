@@ -1,13 +1,13 @@
 #!/usr/bin/python
-###############################################################################################################                                                               
+###############################################################################################################	
 # This library is for using the GoPiGo with Scratch
-# http://www.dexterindustries.com/GoPiGo/                                                                
+# http://www.dexterindustries.com/GoPiGo/
 # History
 # ------------------------------------------------
-# Author     Date      		Comments
-# Karan      28 July 14  	Initial Authoring                                                            
+# Author	 Date	  		Comments
+# Karan	  28 July 14  	Initial Authoring
 # These files have been made available online through a Creative Commons Attribution-ShareAlike 3.0  license.
-# (http://creativecommons.org/licenses/by-sa/3.0/)           
+# (http://creativecommons.org/licenses/by-sa/3.0/)		   
 # 
 # Based on the BrickPi Scratch Library written by Jaikrishna
 #
@@ -17,7 +17,7 @@
 '''
 ## License
  GoPiGo for the Raspberry Pi: an open source robotics platform for the Raspberry Pi.
- Copyright (C) 2015  Dexter Industries
+ Copyright (C) 2017  Dexter Industries
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -34,7 +34,19 @@ along with this program.  If not, see <http://www.gnu.org/licenses/gpl-3.0.txt>.
 '''
 
 import scratch,sys,threading,math
+import re # regular expressions
+import os # to handle folder paths
 from gopigo import *
+
+try:
+	sys.path.insert(0, '/home/pi/Dexter/PivotPi/Software/Scratch/')
+	import PivotPiScratch
+	pivotpi_available=True
+except:
+	pivotpi_available=False
+
+defaultCameraFolder="/home/pi/Desktop/"
+cameraFolder = defaultCameraFolder
 
 en_gpg=1
 en_debug=1
@@ -48,20 +60,26 @@ DPR = 360.0/64
 WHEEL_RAD = 3.25 # Wheels are ~6.5 cm diameter. 
 CHASS_WID = 13.5 # Chassis is ~13.5 cm wide.
 
+# Regex patterns
+# GET Distance for ultrasonic sensor
+# valid commands: GET_DIST, GET DIST, GET_DISTANCE and GET DISTANCE
+regexUSsensor = "^GET(\s|_)DIST(ANCE)?"   
+comp_regexUSsensor = re.compile(regexUSsensor, re.IGNORECASE)
+
 ## This should probably be moved into a gopigo python module.
 def cm2pulse(dist):
-    '''
-    Calculate the number of pulses to move the chassis dist cm.
-    pulses = dist * [pulses/revolution]/[dist/revolution]
-    '''
-    wheel_circ = 2*math.pi*WHEEL_RAD # [cm/rev] cm traveled per revolution of wheel
-    print 'WHEEL_RAD',WHEEL_RAD
-    revs = dist/wheel_circ
-    print 'revs',revs
-    PPR = 18 # [p/rev] encoder Pulses Per wheel Revolution
-    pulses = PPR*revs # [p] encoder pulses required to move dist cm.
-    print 'pulses',pulses
-    return pulses
+	'''
+	Calculate the number of pulses to move the chassis dist cm.
+	pulses = dist * [pulses/revolution]/[dist/revolution]
+	'''
+	wheel_circ = 2*math.pi*WHEEL_RAD # [cm/rev] cm traveled per revolution of wheel
+	#print 'WHEEL_RAD',WHEEL_RAD
+	revs = dist/wheel_circ
+	#print 'revs',revs
+	PPR = 18 # [p/rev] encoder Pulses Per wheel Revolution
+	pulses = PPR*revs # [p] encoder pulses required to move dist cm.
+	#print 'pulses',pulses
+	return pulses
 
 fw_version=fw_ver()
 print "GoPiGo Scratch: Current firmware version:",fw_ver()
@@ -73,39 +91,39 @@ else:
 	sys.exit()
 
 try:
-    s = scratch.Scratch()
-    if s.connected:
-        print "GoPiGo Scratch: Connected to Scratch successfully"
+	s = scratch.Scratch()
+	if s.connected:
+		print "GoPiGo Scratch: Connected to Scratch successfully"
 	#else:
-    #sys.exit(0)
+	#sys.exit(0)
 except scratch.ScratchError:
-    print "GoPiGo Scratch: Scratch is either not opened or remote sensor connections aren't enabled"
-    #sys.exit(0)
+	print "GoPiGo Scratch: Scratch is either not opened or remote sensor connections aren't enabled"
+	#sys.exit(0)
 
-class myThread (threading.Thread):     
-    def __init__(self, threadID, name, counter):
-        threading.Thread.__init__(self)
-        self.threadID = threadID
-        self.name = name
-        self.counter = counter
-    def run(self):
-        while running:
-            time.sleep(.2)              # sleep for 200 ms
+class myThread (threading.Thread):	 
+	def __init__(self, threadID, name, counter):
+		threading.Thread.__init__(self)
+		self.threadID = threadID
+		self.name = name
+		self.counter = counter
+	def run(self):
+		while running:
+			time.sleep(.2)			  # sleep for 200 ms
 
-thread1 = myThread(1, "Thread-1", 1)        #Setup and start the thread
+thread1 = myThread(1, "Thread-1", 1)		#Setup and start the thread
 thread1.setDaemon(True)
 
 stop()
 
 try:
-    s.broadcast('READY')
+	s.broadcast('READY')
 except NameError:
 	print "GoPiGo Scratch: Unable to Broadcast"
 while True:
-    try:
+	try:
 		m = s.receive()
 
-		while m[0] == 'sensor-update' :
+		while m==None or m[0] == 'sensor-update' :
 			m = s.receive()
 
 		msg = m[1]
@@ -233,7 +251,8 @@ while True:
 				servo(srv_pos)
 				
 		# Get distance from the ultrasonic sensor connected to port A1
-		elif msg.lower()=="GET_DIST".lower():
+		#elif msg.lower()=="GET_DIST".lower():
+		elif comp_regexUSsensor.match(msg):
 			if en_debug:
 				print "Received distance request."
 				print msg
@@ -280,45 +299,30 @@ while True:
 				s.sensorupdate({'button':button})
 				
 		# Get the value from the sound sensor connected to port A1
-		# elif msg=="SOUND":
-			# # print "LIGHTS!"
-			# pin = 1
-			# try:
-				# sound = analogRead(pin)
-			# except:
-				# if en_debug:
-					# e = sys.exc_info()[1]
-					# print "Error reading sound sensor: " + str(e)
-			# if en_debug:
-				# print "Sound Sensor Reading: " + str(sound)
-			# if en_gpg:
-				# s.sensorupdate({'sound':sound})
-			
 		elif msg.lower()=="SOUND".lower():
 			pin = 1
+			sample = 50
+			count = 0
 			print "Sound"
 			try:
-				d=[]
-				i=0
-				len=100
-				window_size=10
-				t=1
 				peak=0
-				for j in range(t*50):
-					analog_read_value=analogRead(1)
+				for j in range(sample):
+					analog_read_value=analogRead(pin)
+					print ("{}".format(analog_read_value))
 					# Print non zero values
-					if analog_read_value<>0:
+					if analog_read_value != 0:
 						peak += analog_read_value
+						count += 1
 	
-				avg = peak/(t*100)
-				# print avg
+				avg = peak/(count*2) # the *2 is a leftover from a previous error, kept for backwards compatibility
+				print ("avg: {}".format(avg))
 
 			except:
 				if en_debug:
 					e = sys.exc_info()[1]
 					print "Error reading sound sensor: " + str(e)
 			if en_debug:
-				print "Sound Sensor Reading: ",peak
+				print "Sound Sensor Reading:(peak,average) ",peak,avg
 			if en_gpg:
 				s.sensorupdate({'sound':avg})
 
@@ -362,31 +366,32 @@ while True:
 				s.sensorupdate({'motion':motion})
 				
 		# Get the value from the IR remote when a button is pressed
-		# IR Sensor goes on A1 Pin.
+		# IR Sensor goes on Serial Port.
 		elif msg.lower()=="IR".lower():
 			print "IR!"
 			if en_ir_sensor==0:
-				import lirc
-				sockid = lirc.init("keyes", blocking = False)
+				import ir_receiver
 				en_ir_sensor=1
 			try:
-				a= lirc.nextcode()  # press 1 
-				if len(a) !=0:
-					print a[0]
+				a= ir_receiver.nextcode()  # press a button on the remote 
+				if len(a) !=0: 
+					print a
+				else:
+					a=[0]	#eturn 0 if no keypress found 
 			except:
 				if en_debug:
 					e = sys.exc_info()[1]
 					print "Error reading IR sensor: " + str(a)
 			if en_debug:
-				print "IR Reading: " + str(a[0])
+				print "IR Reading: " + str(a)
 			if en_gpg: 
-				s.sensorupdate({'ir':a[0]})
+				s.sensorupdate({'ir':a})
 				
 		# Get the value from the Dexter Industries line sensor
 		elif msg.lower()=="LINE".lower():
 			try:
 				import sys
-				sys.path.insert(0, '/home/pi/Desktop/GoPiGo/Software/Python/line_follower')
+				sys.path.insert(0, '/home/pi/Dexter/GoPiGo/Software/Python/line_follower')
 				# import line_sensor
 				import scratch_line
 			except ImportError:
@@ -426,36 +431,92 @@ while True:
 					s.sensorupdate({'read_ir':read_ir[0]})		
 				else:
 					s.sensorupdate({'read_ir':""})
-					
+
+		# CREATE FOLDER TO SAVE PHOTOS IN
+
+		elif msg[:6].lower()=="FOLDER".lower():
+			print "Camera folder"
+			try:
+				cameraFolder=defaultCameraFolder+str(msg[6:])
+				if not os.path.exists(cameraFolder):
+					pi=1000  # uid and gid of user pi
+					os.makedirs(cameraFolder)
+					os.chown(cameraFolder,pi,pi)
+					s.sensorupdate({"folder":"created"})
+				else:
+					s.sensorupdate({"folder":"set"})
+			except:
+				print "error with folder name"
+
+		# TAKE A PICTURE
+
 		elif msg.lower()=="TAKE_PICTURE".lower():
-			print "TAKE_PICTURE!" 
+			print "TAKE_PICTURE" 
+			pi=1000  # uid and gid of user pi
 			try:
 				from subprocess import call
 				import datetime
-				cmd_start="raspistill -o /home/pi/Desktop/img_"
-				cmd_end=".jpg -w 640 -h 480 -t 1"
-				dt=str(datetime.datetime.now())
-				dt=dt.replace(' ','_',10)
-				call ([cmd_start+dt+cmd_end], shell=True)
+				newimage = "{}/img_{}.jpg".format(cameraFolder,str(datetime.datetime.now()).replace(" ","_",10))
+				photo_cmd="raspistill -o {} -w 640 -h 480 -t 1".format(newimage)
+				#print photo_cmd
+	#				cmd_end=" -w 640 -h 480 -t 1"
+	#				dt=str(datetime.datetime.now())
+	#				dt=dt.replace(' ','_',10)
+				call ([photo_cmd], shell=True)
+				os.chown(newimage,pi,pi)
 				print "Picture Taken"
+				s.sensorupdate({'camera':"Picture Taken"})	
 			except:
 				if en_debug:
 					e = sys.exc_info()[1]
 					print "Error taking picture"
 				s.sensorupdate({'camera':"Error"})	
-			s.sensorupdate({'camera':"Picture Taken"})	
 
 					
+		elif msg.lower() =="DHT".lower():
+			BLUE = 0  # currently only supporting the blue DHT sensor
+			if en_debug:
+				print "DHT" 
+			if en_gpg:
+				[dht_temp, dht_humidity] = dht(BLUE)
+				if dht_temp == -2.0 or dht_humidity == -2.0:
+					print("DHT sensor: bad reading" )
+				elif dht_temp == -3.0 or dht_humidity == -3.0:
+					print("DHT sensor: not sudo" )
+				s.sensorupdate({'temperature':dht_temp})
+				s.sensorupdate({'humidity':dht_humidity})
+
+		elif (msg[:5].lower()=="SPEAK".lower()):
+			try:
+				if en_gpg:
+					from subprocess import call
+					cmd_beg = "espeak -ven+f1 "
+					in_text = msg[len("SPEAK"):]
+					cmd_end = " 2>/dev/null"
+
+					call([cmd_beg+"\""+in_text+"\""+cmd_end], shell=True)
+				if en_debug:
+					print(msg)
+			except:
+				print("Issue with espeak")
+
+		# PIVOTPI
+		elif pivotpi_available==True and PivotPiScratch.isPivotPiMsg(msg):
+			pivotsensors = PivotPiScratch.handlePivotPi(msg)
+			# print "Back from PivotPi",pivotsensors
+			s.sensorupdate(pivotsensors)
+
+								
 		else: 
 			if en_debug:
 				print "Ignoring Command: ", msg
 				
 		
-    except KeyboardInterrupt:
-        running= False
-        print "GoPiGo Scratch: Disconnected from Scratch"
-        break
-    except (scratch.scratch.ScratchConnectionError,NameError) as e:
+	except KeyboardInterrupt:
+		running= False
+		print "GoPiGo Scratch: Disconnected from Scratch"
+		break
+	except (scratch.scratch.ScratchConnectionError,NameError) as e:
 		while True:
 			#thread1.join(0)
 			print "GoPiGo Scratch: Scratch connection error, Retrying"
@@ -467,3 +528,5 @@ while True:
 				break;
 			except scratch.ScratchError:
 				print "GoPiGo Scratch: Scratch is either not opened or remote sensor connections aren't enabled\n..............................\n"
+	except ValueError as e:
+		print e

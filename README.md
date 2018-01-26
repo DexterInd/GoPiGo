@@ -10,15 +10,28 @@ This repository contains source code, firmware and design materials for the GoPi
 
 ![ GoPiGo ](https://raw.githubusercontent.com/DexterInd/GoPiGo/master/GoPiGo_Front_Facing_Camera300.jpg)
 
+# Quick Install
+
+For installing the python package(s) of the GoPiGo with root privileges (except for anything else that comes with it), use one of the following command:
+```
+sudo sh -c "curl -kL dexterindustries.com/update_gopigo | bash"
+```
+
+In order to quick install the GoPiGo package(s) without root privileges (except for anything else that comes with it), use the following command:
+```
+curl -kL dexterindustries.com/update_gopigo | bash
+```
+
 # See Also
 
 - [Dexter Industries] (http://www.dexterindustries.com/GoPiGo)
+- [Dexter Industries Forum Support] (http://forum.dexterindustries.com/c/grovepi)
 - [Kickstarter Campaign] (http://kck.st/Q6vVOP)
 - [Raspberry Pi] (http://www.raspberrypi.org/)
 
 ## License
 GoPiGo for the Raspberry Pi: an open source robotics platform for the Raspberry Pi.
-Copyright (C) 2015  Dexter Industries
+Copyright (C) 2017  Dexter Industries
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

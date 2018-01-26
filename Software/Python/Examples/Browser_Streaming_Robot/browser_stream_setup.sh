@@ -22,7 +22,7 @@ read
 echo " "
 echo "Check for internet connectivity..."
 echo "=================================="
-wget -q --tries=2 --timeout=20 http://google.com
+wget -q --tries=2 --timeout=20 --output-document=/dev/null http://raspberrypi.org
 if [ $? -eq 0 ];then
 	echo "Connected"
 else
@@ -73,9 +73,11 @@ cd ../../
 rm -R raspberry_pi_camera_streamer
 
 sudo pip install tornado
+sudo pip3 install tornado
 git clone https://github.com/DexterInd/sockjs-tornado
 cd sockjs-tornado
 sudo python setup.py install
+sudo python3 setup.py install
 cd ..
 rm -R sockjs-tornado
 

@@ -11,7 +11,7 @@
 # http://www.dexterindustries.com/
 '''
 ## License
- Copyright (C) 2015  Dexter Industries
+ Copyright (C) 2017  Dexter Industries
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

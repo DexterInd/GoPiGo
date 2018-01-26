@@ -1,27 +1,32 @@
 {
-    "name": "node-gopigo",
-    "version": "2.0.4",
-    "description": "GoPiGo library for Node.js",
-    "keywords": ["gopigo", "robot", "gpio", "i2c"],
-    "dependencies": {
-        "async": "0.9.0",
-        "buffertools": "2.1.*",
-        "i2c-bus": "0.11.*",
-        "npmlog": "1.2.*",
-        "sleep": "3.0.*"
-    },
-    "main": "index.js",
-    "scripts": {
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git://github.com/marcellobarile/GoPiGo.git"
-    },
-    "author": "Marcello Barile <marcello.barile@gmail.com> (http://www.barile.eu)",
-    "license": "MIT",
-    "bugs": {
-        "url": "https://github.com/marcellobarile/GoPiGo/issues"
-    },
-    "homepage": "https://github.com/marcellobarile/GoPiGo"
+  "name": "node-gopigo",
+  "version": "2.0.5",
+  "description": "GoPiGo library for Node.js",
+  "keywords": [
+    "gopigo",
+    "robot",
+    "gpio",
+    "i2c"
+  ],
+  "dependencies": {
+    "async": "1.*",
+    "buffertools": "2.1.*",
+    "i2c-bus": "1.*",
+    "npmlog": "2.*",
+    "sleep": "3.*"
+  },
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/marcellobarile/GoPiGo.git"
+  },
+  "author": "Marcello Barile <marcello.barile@gmail.com> (http://www.barile.eu)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/marcellobarile/GoPiGo/issues"
+  },
+  "homepage": "https://github.com/marcellobarile/GoPiGo"
 }

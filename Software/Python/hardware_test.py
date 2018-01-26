@@ -1,9 +1,12 @@
 #!/usr/bin/env python
+from __future__ import print_function
+from __future__ import division
+from builtins import input
 
 '''
 ## License
  GoPiGo for the Raspberry Pi: an open source robotics platform for the Raspberry Pi.
- Copyright (C) 2015  Dexter Industries
+ Copyright (C) 2017  Dexter Industries
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -26,22 +29,22 @@ import atexit
 atexit.register(stop)
 
 while True:
-	print "Both motors moving Forward with LED On"
+	print ("Both motors moving Forward with LED On")
 	led_on(0)
 	led_on(1)
 	fwd()
 	time.sleep(5)
-	print "Both motors stopped with LED Off"
+	print ("Both motors stopped with LED Off")
 	led_off(0)
 	led_off(1)
 	stop()
 	time.sleep(2)
-	print "Both motors moving back with LED On"
+	print ("Both motors moving back with LED On")
 	led_on(0)
 	led_on(1)
 	bwd()
 	time.sleep(5)
-	print "Both motors stopped with LED Off"
+	print ("Both motors stopped with LED Off")
 	led_off(0)
 	led_off(1)
 	stop()
