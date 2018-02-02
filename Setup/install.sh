@@ -86,6 +86,7 @@ install_dependencies() {
     pip3 install numpy
     pip3 install python-periphery==1.1.0
 
+
     feedback "Dependencies installed"
 }
 
