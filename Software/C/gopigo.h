@@ -1,6 +1,6 @@
-// ####################################################################################                                                                  
-// This library is used for communicating with the GoPiGo.                                
-// http://www.dexterindustries.com/GoPiGo/                                                                
+// ####################################################################################
+// This library is used for communicating with the GoPiGo.
+// http://www.dexterindustries.com/GoPiGo/
 // History
 // ------------------------------------------------
 // Date              Comments
@@ -43,10 +43,11 @@
 #include <stdbool.h>
 
 extern int fd;
-extern char *fileName;
-extern int  address;
+extern const char *fileName;
+extern const int address;
 extern unsigned char w_buf[5],r_buf[32];
-extern unsigned long reg_addr;
+extern const unsigned long reg_addr;
+const bool LED_L=1,LED_R=0;
 
 #define fwd_cmd              119        //Move forward with PID
 #define motor_fwd_cmd        105        //Move forward without PID
@@ -72,7 +73,7 @@ extern unsigned long reg_addr;
 #define en_enc_cmd           51            //Enable the encoders
 #define dis_enc_cmd          52            //Disable the encoders
 #define read_enc_status_cmd  53            //Read encoder status
-#define en_servo_cmd         61            //Enable the servo's    
+#define en_servo_cmd         61            //Enable the servo's
 #define dis_servo_cmd        60            //Disable the servo's
 #define set_left_speed_cmd   70            //Set the speed of the right motor
 #define set_right_speed_cmd  71            //Set the speed of the left motor
@@ -82,7 +83,7 @@ extern unsigned long reg_addr;
 #define enc_read_cmd         53            //Read encoder values
 #define trim_test_cmd        30            //Test the trim values
 #define trim_write_cmd       31            //Write the trim values
-#define trim_read_cmd        32        
+#define trim_read_cmd        32
 
 #define digital_write_cmd    12          //Digital write on a port
 #define digital_read_cmd     13          //Digital read on a port
@@ -103,7 +104,7 @@ char read_byte(void);
 //Get voltage
 float volt(void);
 
-//Sleep in ms 
+//Sleep in ms
 void pi_sleep(int t);
 
 //Control Motor 1
@@ -124,7 +125,7 @@ int bwd(void);
 //Move GoPiGo back without PID control
 int motor_bwd(void);
 
-//Turn GoPiGo Left slow (one motor off, better control)    
+//Turn GoPiGo Left slow (one motor off, better control)
 int left(void);
 
 //Rotate GoPiGo left in same position (both motors moving in the opposite direction)
@@ -183,6 +184,12 @@ int us_dist(int pin);
 //    arg:
 //        speed -> pointer to array of 2 bytes [motor1, motor2], allocated before
 void read_motor_speed(unsigned char* speed);
+
+//Turn led on or off
+//    arg:
+//        l_id: 1 for left LED and 0 for right LED
+//        onoff: 0 off, 1 on
+int led_toggle(int l_id, bool onoff);
 
 //Turn led on
 //    arg:
