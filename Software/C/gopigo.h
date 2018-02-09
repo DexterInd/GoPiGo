@@ -43,10 +43,11 @@
 #include <stdbool.h>
 
 extern int fd;
-extern char *fileName;
-extern int  address;
+extern const char *fileName;
+extern const int address;
 extern unsigned char w_buf[5],r_buf[32];
-extern unsigned long reg_addr;
+extern const unsigned long reg_addr;
+const bool LED_L=1,LED_R=0;
 
 #define fwd_cmd              119        //Move forward with PID
 #define motor_fwd_cmd        105        //Move forward without PID
