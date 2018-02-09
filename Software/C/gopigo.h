@@ -185,6 +185,12 @@ int us_dist(int pin);
 //        speed -> pointer to array of 2 bytes [motor1, motor2], allocated before
 void read_motor_speed(unsigned char* speed);
 
+//Turn led on or off
+//    arg:
+//        l_id: 1 for left LED and 0 for right LED
+//        onoff: 0 off, 1 on
+int led_toggle(int l_id, bool onoff);
+
 //Turn led on
 //    arg:
 //        l_id: 1 for left LED and 0 for right LED
