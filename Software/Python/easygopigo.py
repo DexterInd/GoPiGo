@@ -194,6 +194,50 @@ class EasyGoPiGo():
             pass
         _ifMutexRelease(self.use_mutex)
 
+    def init_light_sensor(self, port="A1"):
+        return LightSensor(port, gpg=self, use_mutex=self.use_mutex)
+
+    def init_sound_sensor(self, port="A1"):
+        return SoundSensor(port, gpg=self, use_mutex=self.use_mutex)
+
+    def init_loudness_sensor(self, port="AD1"):
+        return LoudnessSensor(port, gpg=self, use_mutex=self.use_mutex)
+
+    def init_ultrasonic_sensor(self, port="A1"):
+        return UltraSonicSensor(port, gpg=self, use_mutex=self.use_mutex)
+
+    def init_buzzer(self, port="D11"):
+        return Buzzer(port, gpg=self, use_mutex=self.use_mutex)
+
+    def init_led(self, port="D11"):
+        return Led(port, gpg=self, use_mutex=self.use_mutex)
+
+    def init_button_sensor(self, port="D11"):
+        return ButtonSensor(port, gpg=self, use_mutex=self.use_mutex)
+
+    def init_line_follower(self, port="I2C"):
+        return LineFollower(port, gpg=self, use_mutex=self.use_mutex )
+
+    def init_servo(self, port="SERVO"):
+        return Servo(port, gpg=self, use_mutex=self.use_mutex)
+
+    def init_distance_sensor(self, port="I2C"):
+        try:
+            from di_sensors import easy_distance_sensor
+            return DistanceSensor(port, gpg=self, use_mutex=self.use_mutex)
+        except:
+            print("DI Sensor library not found")
+            return None
+        
+    def init_dht_sensor(self, port="SERIAL", sensor_type = 0):
+        return DHTSensor(port, self, sensor_type, use_mutex=self.use_mutex)
+
+    def init_remote(self, port="SERIAL"):
+        return Remote(port="SERIAL", gpg=self, use_mutex=self.use_mutex)
+
+    def init_motion_sensor(self, port="D11"):
+        return MotionSensor(port, gpg=self, use_mutex=self.use_mutex)
+
 
 
 #############################################################
