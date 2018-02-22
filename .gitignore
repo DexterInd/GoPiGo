@@ -216,3 +216,5 @@ pip-log.txt
 
 #ATOM
 .ftpconfig
+.vscode/sftp.json
+
