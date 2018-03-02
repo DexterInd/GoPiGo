@@ -1,6 +1,6 @@
 # Scratch_Line.  This file adapts the line follower to Scratch.  
 
-import line_sensor
+from line_follower import line_sensor
 import time
 import pickle
 
