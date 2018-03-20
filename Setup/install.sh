@@ -76,7 +76,7 @@ install_dependencies() {
     echo " "
     feedback "Installing Dependencies"
     feedback "======================="
-    sudo apt-get install python-pip git libi2c-dev python-serial python-rpi.gpio i2c-tools python-smbus arduino minicom libnss-mdns python-dev build-essential libffi-dev -y
+    sudo apt-get install python-pip git libi2c-dev python-serial python-rpi.gpio i2c-tools python-smbus minicom libnss-mdns python-dev build-essential libffi-dev -y
     pip install -U RPi.GPIO
     pip install pyusb
     pip install numpy
@@ -281,7 +281,8 @@ python3 setup.py install
 install_DHT
 install_wiringpi
 install_spi_i2c
-install_avr
+# no longer installing avr for arduino
+# install_avr
 install_line_follower
 install_control_panel
 
