@@ -94,8 +94,8 @@ install_DHT() {
     # Install the DHT library
     feedback "Installing DHT library"
     pushd $ROBOT_DIR/Software/Python/sensor_examples/dht/Adafruit_Python_DHT > /dev/null
-    python setup.py install
-    python3 setup.py install
+    python setup.py install --force
+    python3 setup.py install --force
     popd > /dev/null
 }
 
@@ -275,8 +275,8 @@ sudo chmod +x gopigo
 sudo cp gopigo /usr/bin
 
 cd $ROBOT_DIR/Software/Python
-python setup.py install
-python3 setup.py install
+python setup.py install --force
+python3 setup.py install --force
 
 install_DHT
 install_wiringpi
