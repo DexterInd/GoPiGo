@@ -322,15 +322,15 @@ def compare_with_button(inp):
 
         # print 'sending "%s"' % str(i)
         if found_flag:
-            print keys[key]
+            print (keys[key])
             sock.sendall(keys[key])
             global saved_previous_key
             saved_previous_key = keys[key]
         else:
-            print "NO_MATCH"
+            print ("NO_MATCH")
             sock.sendall("NO_MATCH")
     except socket.error:
-        print "Unable to connect to the server"
+        print ("Unable to connect to the server")
     finally:
         # print 'Closing socket'
         sock.close()
@@ -339,7 +339,7 @@ def match_with_button(inp):
     list_to_parse=[]
     large_val_found=0
     if debug:
-        print inp,len(inp)
+        print (inp,len(inp))
 
 	#The ir signals are 65 bytes long with either a pulse length of ~500 us or ~1600us.
 	#Sometime because of noise which cannot be filtered out, we have smaller chunks of signal also present in the bytearray
@@ -408,6 +408,12 @@ def main(process_ir):
     # we also remove the trailing whitespace and newlines
     pulse_us_string = line[6:len(line)].rstrip()
 
+    # detect if pulse_us_string is a byte array - which implies python3
+    # transfer to str type if needed
+    if not isinstance(pulse_us_string, str):
+        pulse_us_string = pulse_us_string.decode('utf-8')
+    # print(type(pulse_us_string))
+
     # check if we got a positive integer number
     if str.isdigit(pulse_us_string):
         pulse_us= int(pulse_us_string) # signal length
@@ -424,7 +430,7 @@ def main(process_ir):
     # If noise was there in current pulse, just skip it
     if pulse_us < noise_thresh:
         if debug:
-            print "noise:",pulse_us
+            print ("noise:", pulse_us)
         return
 
     # There are 3 checks to detect the keypresses
@@ -442,7 +448,7 @@ def main(process_ir):
             header_detected_flag=0
             before_header_flag=0
             if debug:
-                print "de:",pulse_us
+                print ("de:", pulse_us)
             header_1_detected_flag=0
             #*********************************************
             match_with_button(detected_sig_buf)
@@ -452,21 +458,21 @@ def main(process_ir):
                 add_next_flag = 0
                 # remove last sig from buffer
                 if debug:
-                    print "adding last",pulse_us,
+                    print ("adding last", pulse_us)
                 try:
                     detected_sig_buf.pop()
                 except IndexError:
                     return
                 pulse_us+=last_pulse_us
                 if debug:
-                    print pulse_us
+                    print (pulse_us)
 
             if last_sig_type == sig_type: # if a similar signal type was detected then add it in the next pulse
                 add_next_flag=1
 
             if debug:
                 if add_next_flag ==0:
-                    print "d:",pulse_us
+                    print ("d:", pulse_us)
 
             detected_sig_buf.append(pulse_us)
     else:
@@ -483,22 +489,22 @@ def main(process_ir):
             sock.sendall(saved_previous_key)
 
         except socket.error:
-            print "Unable to connect to the server"
+            print ("Unable to connect to the server")
         finally:
             # print 'Closing socket'
             sock.close()
         if debug:
-            print "n:",pulse_us
+            print ("n:", pulse_us)
 
     #Third check for 4k pulse
     if header_detected_flag ==1 and header_1_detected_flag == 0:
         if debug:
-            print "checking before_header1_flag==1",pulse_us,header_1_thresh-header_1_margin,header_1_thresh+header_1_margin
+            print ("checking before_header1_flag==1",pulse_us,header_1_thresh-header_1_margin,header_1_thresh+header_1_margin)
 
         if add_next_flag:
             if debug:
-                print "adding 4k pulse"
-                print pulse_us,last_pulse_us
+                print ("adding 4k pulse")
+                print (pulse_us, last_pulse_us)
             pulse_us+=last_pulse_us
 
             add_next_flag=0
@@ -506,12 +512,12 @@ def main(process_ir):
         if pulse_us > header_1_thresh-header_1_margin and pulse_us < header_1_thresh+header_1_margin:
             # IR signal detected
             if debug:
-                print "header_1_detected_flag=1"
+                print ("header_1_detected_flag=1")
             header_1_detected_flag=1
         else:
             if last_sig_type == sig_type:
                 if debug:
-                    print "setting 4k pulse flag"
+                    print ("setting 4k pulse flag")
                 add_next_flag=1
                 last_pulse_us=pulse_us
                 return
@@ -522,19 +528,19 @@ def main(process_ir):
     #Second check for 9k pulse
     if before_header_flag==1 and header_detected_flag==0:
         if debug:
-            print "checking before_header_flag==1",pulse_us,header_thresh-header_margin,header_thresh+header_margin
+            print ("checking before_header_flag==1",pulse_us,header_thresh-header_margin,header_thresh+header_margin)
 
         if add_next_flag:
             pulse_us+=last_pulse_us
 
             add_next_flag=0
             if debug:
-                print "checking_again before_header_flag==1",pulse_us,header_thresh-header_margin,header_thresh+header_margin,last_pulse_us
+                print ("checking_again before_header_flag==1",pulse_us,header_thresh-header_margin,header_thresh+header_margin,last_pulse_us)
 
         if pulse_us > header_thresh-header_margin and pulse_us < header_thresh+header_margin:
             header_detected_flag=1
             if debug:
-                print "header_detected_flag=1"
+                print ("header_detected_flag=1")
         else:
             if last_sig_type == sig_type:
                 add_next_flag=1
@@ -545,7 +551,7 @@ def main(process_ir):
     if before_header_flag==0 and pulse_us>sig_thresh_len_before_header:
         before_header_flag=1
         if debug:
-            print "before_header_flag=1",pulse_us
+            print ("before_header_flag=1",pulse_us)
 
     last_pulse_us=pulse_us
     last_sig_type= sig_type
@@ -556,7 +562,7 @@ if __name__ == "__main__":
 
     process_ir = Popen('mode2 -d /dev/lirc0', stdout = PIPE, stderr = STDOUT, shell = True)
 
-    print "Press any key on the remote to start"
+    print ("Press any key on the remote to start")
 
     try:
         with GracefullExiter() as exiter:
