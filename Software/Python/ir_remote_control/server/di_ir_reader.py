@@ -8,7 +8,9 @@ import signal
 import os
 
 call("sudo /etc/init.d/lirc stop", shell=True)
-debug = 1
+call("sudo systemctl stop lircd.socket", shell=True)
+call("sudo systemctl stop lircd.service", shell=True)
+debug = True
 
 # class for exiting gracefully
 # use as "with GracefullExiter as exiter:" and then keep on checking [exit_now]
@@ -323,14 +325,22 @@ def compare_with_button(inp):
         # print 'sending "%s"' % str(i)
         if found_flag:
             print (keys[key])
-            sock.sendall(keys[key])
+            try:
+                sock.sendall(keys[key])  # works with Python 2
+            except:
+                sock.sendall(keys[key].encode()) # works with Python 3
             global saved_previous_key
             saved_previous_key = keys[key]
         else:
             print ("NO_MATCH")
-            sock.sendall("NO_MATCH")
+            try:
+                sock.sendall("NO_MATCH")
+            except TypeError:
+                sock.sendall("NO_MATCH".encode())
     except socket.error:
         print ("Unable to connect to the server")
+    except:
+        print("something happened")
     finally:
         # print 'Closing socket'
         sock.close()
@@ -404,6 +414,8 @@ def main(process_ir):
 
     # Read the raw value from the IR receiver
     line = process_ir.stdout.readline()
+    if not isinstance(line, str):
+        line = line.decode('utf-8')
 
     # we also remove the trailing whitespace and newlines
     pulse_us_string = line[6:len(line)].rstrip()
@@ -482,11 +494,15 @@ def main(process_ir):
             sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
             server_address = ('localhost', 21852)
-            # print 'connecting to %s port %s' % server_address
+            # print ('connecting to %s port %s' % server_address)
             sock.connect(server_address)
 
-            # print 'sending "%s"' % str(i)
-            sock.sendall(saved_previous_key)
+            # on python2, sendall requires a str 
+            # on python3, if sendall receives a str it will fail, so send bytes instead
+            try:
+                sock.sendall(saved_previous_key)
+            except TypeError:
+                sock.sendall(saved_previous_key.encode())
 
         except socket.error:
             print ("Unable to connect to the server")
