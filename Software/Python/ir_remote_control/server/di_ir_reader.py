@@ -8,8 +8,6 @@ import signal
 import os
 
 call("sudo /etc/init.d/lirc stop", shell=True)
-call("sudo systemctl stop lircd.socket", shell=True)
-call("sudo systemctl stop lircd.service", shell=True)
 debug = True
 
 # class for exiting gracefully
