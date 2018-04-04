@@ -12,10 +12,10 @@ GOPIGO_PATH=$DEXTER_PATH/GoPiGo
 
 #Install the ir_receiver library systemwide
 pushd $GOPIGO_PATH/Software/Python/ir_remote_control/server/
-sudo python setup.py install
-sudo rm -r build
-sudo rm -r dist
-sudo rm -r ir_receiver.egg-info
+python setup.py install
+rm -r build
+rm -r dist
+rm -r ir_receiver.egg-info
 
 sudo cp ir-server.service /etc/systemd/system/ir-server.service
 sudo systemctl daemon-reload
