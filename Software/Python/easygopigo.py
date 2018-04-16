@@ -319,6 +319,12 @@ class Sensor():
 
     def set_descriptor(self, descriptor):
         self.descriptor = descriptor
+
+    def reconfig_bus(self):
+        '''
+        Does nothing. Placeholder for compatibility with GoPiGo3
+        '''
+        pass
 ##########################
 
 
@@ -642,6 +648,12 @@ class Remote(Sensor):
             key = ir_receiver.nextcode(consume=False)
         else:
             key = ""
+        try:
+            # in python3, key will come in as a byte
+            key = key.decode("utf-8") 
+        except AttributeError:
+            # in python2, key will be a string, so no need to do anything
+            pass
 
         return key
 
