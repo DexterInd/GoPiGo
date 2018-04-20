@@ -602,7 +602,6 @@ def disable_com_timeout():
 #						l[1]-timeout_status
 def read_status():
 	st=bus.read_byte(address)
-	# Karan, can you double check this one?
 	st_reg=[st & (1 <<0),(st & (1 <<1))//2]
 	return st_reg
 
