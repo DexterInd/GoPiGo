@@ -181,6 +181,19 @@ def motor2(direction,speed):
 
 #Move the GoPiGo forward
 def fwd(dist=0): #distance is in cm
+	"""
+	Starts moving the GoPiGo forward at the currently set motor speeds.
+
+	Takes an optional parameter to indicate a specific distance to move
+	forward. If not given, negative, or zero then it will move forward until
+	another direction or stop function is called.
+
+	Returns -1 if the action fails.
+
+	:param int dist: The distance in cm to move forward.
+	:return: A value indicating if the action suceeded.
+	:rtype: int
+	"""
 	try:
 		if dist>0:
 			# this casting to int doesn't seem necessary
@@ -200,6 +213,19 @@ def motor_fwd():
 
 #Move GoPiGo back
 def bwd(dist=0):
+	"""
+	Starts moving the GoPiGo backward at the currently set motor speeds.
+
+	Takes an optional parameter to indicate a specific distance to move
+	backward. If not given, negative, or zero then it will move backward
+	until another direction or stop function is called.
+
+	Returns -1 if the action fails.
+
+	:param int dist: The distance in cm to move backward.
+	:return: A value indicating if the action suceeded.
+	:rtype: int
+	"""
 	try:
 		if dist>0:
 			# this casting to int doesn't seem necessary
@@ -268,6 +294,14 @@ def turn_left_wait_for_completion(degrees):
 
 #Stop the GoPiGo
 def stop():
+	"""
+	Brings the GoPiGo to a full stop.
+
+	Returns -1 if the action fails.
+
+	:return: A value indicating if the action suceeded.
+	:rtype: int
+	"""
 	return write_i2c_block(address,stop_cmd+[0,0,0])
 
 #Increase the speed
@@ -405,6 +439,28 @@ def brd_rev():
 #		pin -> 	Pin number on which the US sensor is connected
 #	return:		distance in cm
 def us_dist(pin):
+	"""
+	Reads the distance measured by the ultrasonic sensor.
+
+	The pin for the ultrasonic sensor should be pin 15 (Analog Port A1).
+
+	>>> us_dist(15)
+	42
+
+	If the reading from the ultrasonic sensor fails, then the function call
+	will return -1.
+
+	If this function does not seem to be working properly, then make sure that
+	your ultrasonic sensor is plugged into the Analog Port A1.
+
+	See the following link for more information on the GoPiGo ports:
+
+	https://www.dexterindustries.com/GoPiGo/learning/hardware-port-description/
+
+	:param int pin: The pin that the ultrasonic sensor is conected to.
+	:return: The distance in cm measured by the ultrasonic sensor.
+	:rtype: int
+	"""
 	write_i2c_block(address,us_cmd+[pin,0,0])
 	time.sleep(.08)
 	try:
@@ -557,6 +613,16 @@ def disable_servo():
 #	arg:
 #		speed-> 0-255
 def set_left_speed(speed):
+	"""
+	Sets the speed of the left motor. The speed should be in the range of
+	[0, 255].
+
+	Returns -1 if the motor speed change fails.
+
+	:param int speed: The speed to set the left motor to. [0, 255]
+	:return: A value indicating if the setting suceeded.
+	:rtype: int
+	"""
 	if speed >255:
 		speed =255
 	elif speed <0:
@@ -567,6 +633,16 @@ def set_left_speed(speed):
 #	arg:
 #		speed-> 0-255
 def set_right_speed(speed):
+	"""
+	Sets the speed of the right motor. The speed should be in the range of
+	[0, 255].
+
+	Returns -1 if the motor speed change fails.
+
+	:param int speed: The speed to set the right motor to. [0, 255]
+	:return: A value indicating if the setting suceeded.
+	:rtype: int
+	"""
 	if speed >255:
 		speed =255
 	elif speed <0:
@@ -577,6 +653,14 @@ def set_right_speed(speed):
 #	arg:
 #		speed-> 0-255
 def set_speed(speed):
+	"""
+	Sets the speed of the left and right motors to the given speed. The speed
+	should be in the range of [0, 255].
+
+	Sleeps for 0.1 seconds in between setting the left and right motor speeds.
+
+	:param int speed: The speed to set the motors to. [0, 255]
+	"""
 	if speed >255:
 		speed =255
 	elif speed <0:
