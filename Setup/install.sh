@@ -274,6 +274,11 @@ sudo cp -R $ROBOT_DIR/Firmware/SoftwareServo/ /usr/share/arduino/libraries/
 sudo chmod +x gopigo
 sudo cp gopigo /usr/bin
 
+
+# remove old libraries, as Mutex is being searched in here instead of 
+# the proper place
+sudo pip uninstall gopigo -y
+sudo pip3 uninstall gopigo -y
 cd $ROBOT_DIR/Software/Python
 python setup.py install --force
 python3 setup.py install --force
