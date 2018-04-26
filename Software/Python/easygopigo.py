@@ -37,12 +37,12 @@ def _ifMutexRelease(mutex_enabled = False):
         mutex.release()
 
 try:
-    from line_follower import line_sensor
-    from line_follower import scratch_line
+    from di_sensors.line_follower import line_sensor
+    from di_sensors.line_follower import scratch_line
     is_line_follower_accessible = True
 except:
     try:
-        sys.path.insert(0, '/home/pi/GoPiGo/Software/Python/line_follower')
+        sys.path.insert(0, '/home/pi/DI_Sensors/Software/Python/line_follower')
         import line_sensor
         import scratch_line
         is_line_follower_accessible = True
