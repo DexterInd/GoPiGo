@@ -42,7 +42,7 @@ try:
     is_line_follower_accessible = True
 except:
     try:
-        sys.path.insert(0, '/home/pi/DI_Sensors/Software/Python/line_follower')
+        sys.path.insert(0, '/home/pi/DI_Sensors/Software/Python/di_sensors/line_follower')
         import line_sensor
         import scratch_line
         is_line_follower_accessible = True

@@ -391,7 +391,7 @@ while True:
 		elif msg.lower()=="LINE".lower():
 			try:
 				import sys
-				sys.path.insert(0, '/home/pi/Dexter/DI_Sensors/Software/Python/line_follower')
+				sys.path.insert(0, '/home/pi/Dexter/DI_Sensors/Software/Python/di_sensors/line_follower')
 				# import line_sensor
 				import scratch_line
 			except ImportError:
