@@ -23,15 +23,17 @@ mutex = Mutex()
 def _ifMutexAcquire(mutex_enabled = False):
     """
     Acquires the I2C if the ``use_mutex`` parameter of the constructor was set to ``True``.
+    Always acquires if system-wide mutex has been set.
+    
     """
-    if mutex_enabled:
+    if mutex_enabled or mutex.overall_mutex()==True:
         mutex.acquire()
 
 def _ifMutexRelease(mutex_enabled = False):
     """
     Releases the I2C if the ``use_mutex`` parameter of the constructor was set to ``True``.
     """
-    if mutex_enabled:
+    if mutex_enabled or mutex.overall_mutex()==True:
         mutex.release()
 
 try:
@@ -194,6 +196,50 @@ class EasyGoPiGo():
             pass
         _ifMutexRelease(self.use_mutex)
 
+    def init_light_sensor(self, port="A1"):
+        return LightSensor(port, gpg=self, use_mutex=self.use_mutex)
+
+    def init_sound_sensor(self, port="A1"):
+        return SoundSensor(port, gpg=self, use_mutex=self.use_mutex)
+
+    def init_loudness_sensor(self, port="AD1"):
+        return LoudnessSensor(port, gpg=self, use_mutex=self.use_mutex)
+
+    def init_ultrasonic_sensor(self, port="A1"):
+        return UltraSonicSensor(port, gpg=self, use_mutex=self.use_mutex)
+
+    def init_buzzer(self, port="D11"):
+        return Buzzer(port, gpg=self, use_mutex=self.use_mutex)
+
+    def init_led(self, port="D11"):
+        return Led(port, gpg=self, use_mutex=self.use_mutex)
+
+    def init_button_sensor(self, port="D11"):
+        return ButtonSensor(port, gpg=self, use_mutex=self.use_mutex)
+
+    def init_line_follower(self, port="I2C"):
+        return LineFollower(port, gpg=self, use_mutex=self.use_mutex )
+
+    def init_servo(self, port="SERVO"):
+        return Servo(port, gpg=self, use_mutex=self.use_mutex)
+
+    def init_distance_sensor(self, port="I2C"):
+        try:
+            from di_sensors import easy_distance_sensor
+            return DistanceSensor(port, gpg=self, use_mutex=self.use_mutex)
+        except:
+            print("DI Sensor library not found")
+            return None
+        
+    def init_dht_sensor(self, port="SERIAL", sensor_type = 0):
+        return DHTSensor(port, self, sensor_type, use_mutex=self.use_mutex)
+
+    def init_remote(self, port="SERIAL"):
+        return Remote(port="SERIAL", gpg=self, use_mutex=self.use_mutex)
+
+    def init_motion_sensor(self, port="D11"):
+        return MotionSensor(port, gpg=self, use_mutex=self.use_mutex)
+
 
 
 #############################################################
@@ -273,6 +319,12 @@ class Sensor():
 
     def set_descriptor(self, descriptor):
         self.descriptor = descriptor
+
+    def reconfig_bus(self):
+        '''
+        Does nothing. Placeholder for compatibility with GoPiGo3
+        '''
+        pass
 ##########################
 
 
@@ -596,6 +648,12 @@ class Remote(Sensor):
             key = ir_receiver.nextcode(consume=False)
         else:
             key = ""
+        try:
+            # in python3, key will come in as a byte
+            key = key.decode("utf-8") 
+        except AttributeError:
+            # in python2, key will be a string, so no need to do anything
+            pass
 
         return key
 

@@ -4,24 +4,14 @@ import time
 import threading
 
 NO_PRESS = "NO_KEYPRESS"
-
-# Create a TCP/IP socket
-sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # reuse the port on future connections
-sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1) # enable naggle algorithm
-
-# Bind the socket to the port
-server_address = ('localhost', 21852)
-print ('starting up on %s port %s' % server_address)
-sock.bind(server_address)
-sock.listen(1)
-sock.settimeout(0.5) # socket timeout
-
 last_recv_or_code = NO_PRESS
 previous_keypress = NO_PRESS
 
-# This runs in a background thread and keeps on updating a global variable so that the only the latest value is returned when the scripts asks for data
+
 def run_server():
+    '''
+    # This runs in a background thread and keeps on updating a global variable so that the only the latest value is returned when the scripts asks for data
+    '''
     global last_recv_or_code
 
     # each loop handles one keypress at a time
@@ -46,10 +36,6 @@ def run_server():
         connection.close()
 
     sys.exit(0)
-
-th = threading.Thread(target=run_server)
-th.daemon = True
-th.start()
 
 def nextcode(consume=True):
     '''
@@ -76,3 +62,24 @@ def nextcode(consume=True):
     previous_keypress = send_back
 
     return send_back
+
+
+# Create a TCP/IP socket
+sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1) # reuse the port on future connections
+sock.setsockopt(socket.IPPROTO_TCP, socket.TCP_NODELAY, 1) # enable naggle algorithm
+
+# Bind the socket to the port
+server_address = ('localhost', 21852)
+print ('starting up on %s port %s' % server_address)
+try:
+    sock.bind(server_address)
+except OSError:  # Address already in use so we're fine. Means the module has been imported twice
+    print("Address already in use. Assuming it's another ir_receiver server and that all is fine.")
+sock.listen(1)
+sock.settimeout(0.5) # socket timeout
+
+th = threading.Thread(target=run_server)
+th.daemon = True
+th.start()
+

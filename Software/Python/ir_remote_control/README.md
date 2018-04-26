@@ -26,9 +26,10 @@ Connect the `IR receiver` to the Serial port on the GoPiGo. This will act as a p
 ## Setup the Software
 
 In your `Raspberry Pi`, open up a terminal and enter the following commands:
-1. `sudo bash lirc/install.sh`.
-2. `sudo bash lirc/setup_older_version.sh` - run this script too only if your version of IR receiver `<= v1.0`.
-3. `sudo bash server/install.sh`.
+1. `sudo apt-get update && sudo apt-get install lirc=0.9.0~pre1-1.2 -y` - to install `lirc` package. Don't use more recent versions as the newer ones are buggy.
+2. `sudo bash lirc/install.sh`.
+3. `sudo bash lirc/setup_older_version.sh` - run this script too only if your version of IR receiver `<= v1.0`.
+4. `sudo bash server/install.sh`.
 
 ## Enabling / Disabling Service
 

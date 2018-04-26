@@ -41,6 +41,8 @@ import time
 while True:
 	#Wait for the next IR code to arrive. The codes are queued in a buffer before printing
 	a= ir_receiver.nextcode()
+	if not isinstance(a, str):
+		a = a.decode('utf-8')
 	if len(a) !=0:
-		print a
+		print (a)
 	time.sleep(.1)
