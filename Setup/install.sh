@@ -170,28 +170,28 @@ install_spi_i2c() {
 install_avr() {
     #Adding ARDUINO setup files
     echo " "
-	######################################################################
-	# Remove after the image is created for BrickPi3
-	######################################################################
-    # feedback "Making changes to Arduino . . ."
-    # feedback "==============================="
-    # cd /tmp
-    # wget http://project-downloads.drogon.net/gertboard/avrdude_5.10-4_armhf.deb
-    # sudo dpkg -i avrdude_5.10-4_armhf.deb
-    # sudo chmod 4755 /usr/bin/avrdude
-    # cd /tmp
-    # if [ -f /tmp/setup.sh ]; then
-        # rm /tmp/setup.sh
-    # fi
-    # wget http://project-downloads.drogon.net/gertboard/setup.sh
-    # chmod +x setup.sh
-    # sudo ./setup.sh
-    # #Enabling serial port in Arduino IDE
-    # crontab -l > file; echo '@reboot ln -sf /dev/ttyAMA0 /dev/ttyS0' >> file; crontab file
-    # rm file
-	######################################################################
-	source /home/pi/Dexter/lib/Dexter/script_tools/install_avrdude.sh
-	create_avrdude_folder
+  	######################################################################
+  	# Remove after the image is created for BrickPi3
+  	######################################################################
+      # feedback "Making changes to Arduino . . ."
+      # feedback "==============================="
+      # cd /tmp
+      # wget http://project-downloads.drogon.net/gertboard/avrdude_5.10-4_armhf.deb
+      # sudo dpkg -i avrdude_5.10-4_armhf.deb
+      # sudo chmod 4755 /usr/bin/avrdude
+      # cd /tmp
+      # if [ -f /tmp/setup.sh ]; then
+          # rm /tmp/setup.sh
+      # fi
+      # wget http://project-downloads.drogon.net/gertboard/setup.sh
+      # chmod +x setup.sh
+      # sudo ./setup.sh
+      # #Enabling serial port in Arduino IDE
+      # crontab -l > file; echo '@reboot ln -sf /dev/ttyAMA0 /dev/ttyS0' >> file; crontab file
+      # rm file
+  	######################################################################
+  	source /home/pi/Dexter/lib/Dexter/script_tools/install_avrdude.sh
+  	create_avrdude_folder
     install_avrdude
     cd $ROBOT_DIR
     echo "done with AVRDUDE "
@@ -213,6 +213,10 @@ call_for_reboot() {
         feedback "Please restart to implement changes!"
         feedback "To Restart type sudo reboot"
     fi
+}
+
+install_control_panel() {
+    sudo cp "$ROBOT_DIR/Software/Python/control_panel/gopigo_control_panel.desktop" $PIHOME/Desktop
 }
 
 ############################################################################
@@ -244,6 +248,7 @@ install_wiringpi
 install_spi_i2c
 # no longer installing avr for arduino
 # install_avr
+install_control_panel
 
 #sudo rm -r /tmp/di_update
 

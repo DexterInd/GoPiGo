@@ -41,13 +41,7 @@ try:
     from line_follower import scratch_line
     is_line_follower_accessible = True
 except:
-    try:
-        sys.path.insert(0, '/home/pi/Dexter/DI_Sensors/Python/di_sensors/red_line_follower/line_follower')
-        import line_sensor
-        import scratch_line
-        is_line_follower_accessible = True
-    except:
-        is_line_follower_accessible = False
+    is_line_follower_accessible = False
 
 ##########################
 

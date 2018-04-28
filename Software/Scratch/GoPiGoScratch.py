@@ -391,9 +391,7 @@ while True:
 		elif msg.lower()=="LINE".lower():
 			try:
 				import sys
-				sys.path.insert(0, '/home/pi/Dexter/DI_Sensors/Python/di_sensors/red_line_follower/line_follower')
-				# import line_sensor
-				import scratch_line
+				from line_follower import scratch_line
 			except ImportError:
 				print "Line sensor libraries not found"
 				s.sensorupdate({'line':-3})
