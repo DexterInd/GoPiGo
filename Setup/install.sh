@@ -23,7 +23,7 @@ install_dependencies() {
     feedback "======================="
     sudo apt-get install git libi2c-dev  i2c-tools minicom libnss-mdns build-essential libffi-dev -y
     sudo apt-get install python-pip python-serial python-rpi.gpio python-smbus python-dev python-numpy -y
-    sudo apt-get install python3-pip python3-serial python3-rpi.gpio python3-smbus python3-dev python-numpy3 -y
+    sudo apt-get install python3-pip python3-serial python3-rpi.gpio python3-smbus python3-dev python3-numpy -y
 
     feedback "Dependencies installed"
 }
@@ -113,13 +113,15 @@ install_control_panel() {
 
 check_root_user
 install_dependencies
+
 # copy software servo
-sudo cp -R $ROBOT_DIR/Firmware/SoftwareServo/ /usr/share/arduino/libraries/
+# we might also want to delete $ROBOT_DIR/Firmware/SoftwareServo from the repo for good
+# sudo cp -R $ROBOT_DIR/Firmware/SoftwareServo/ /usr/share/arduino/libraries/
+
 # copy gopigo executable
 # the gopigo executable is for reporting data about the gopigo board
 sudo chmod +x gopigo
 sudo cp gopigo /usr/bin
-install_DHT
 install_wiringpi
 install_spi_i2c
 install_control_panel
