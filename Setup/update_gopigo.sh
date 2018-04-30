@@ -108,7 +108,12 @@ echo "Options used for script_tools script: \"${optionslist[@]}\""
 curl --silent -kL dexterindustries.com/update_tools > $PIHOME/tmp_script_tools.sh
 echo "Installing script_tools. This might take a while.."
 bash $PIHOME/tmp_script_tools.sh ${optionslist[@]} > /dev/null
+ret_val=$?
 rm $PIHOME/tmp_script_tools.sh
+if [[ $ret_val -ne 0 ]]; then
+  echo "script_tools failed installing with exit code $ret_val. Aborting."
+  exit 6
+fi
 
 # HAVE TO UNCOMMENT ONCE check_internet makes it to script_tools
 # check if there's internet access,
@@ -160,3 +165,5 @@ popd > /dev/null
 pushd $GOPIGO_DIR/Software/Python/sensor_examples/dht/Adafruit_Python_DHT > /dev/null
 install_python_packages
 popd > /dev/null
+
+exit 0
