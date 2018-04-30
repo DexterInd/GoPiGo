@@ -1,43 +1,10 @@
+#! /bin/bash
+
 PIHOME=/home/pi
 DEXTER=Dexter
 DEXTER_PATH=$PIHOME/$DEXTER
 RASPBIAN=$PIHOME/di_update/Raspbian_For_Robots
-curl --silent https://raw.githubusercontent.com/DexterInd/script_tools/master/install_script_tools.sh | bash
-
-# needs to be sourced from here when we call this as a standalone
-source $PIHOME/$DEXTER/lib/$DEXTER/script_tools/functions_library.sh
-
-# Check for a GoPiGo directory.  If it doesn't exist, create it.
 GOPIGO_DIR=$DEXTER_PATH/GoPiGo
-if folder_exists $GOPIGO_DIR; then
-    echo "GoPiGo Directory Exists"
-    cd $DEXTER_PATH/GoPiGo  # Go to directory
-    sudo git fetch origin       # Hard reset the git files
-    sudo git reset --hard
-    sudo git merge origin/master
-else
-    cd $DEXTER_PATH
-    git clone https://github.com/DexterInd/GoPiGo
-    cd $DEXTER_PATH/GoPiGo
-fi
-change_branch  $BRANCH # change to a branch we're working on.
-
-pushd $DEXTER_PATH/GoPiGo/Setup > /dev/null
-feedback "--> UPDATING LIBRARIES"
-feedback "------------------"
-bash ./install.sh
-popd > /dev/null
-
-#####################################################
-
-# This script updates the the code repos on Raspbian for Robots.
-
-# definitions needed for standalone call
-PIHOME=/home/pi
-DEXTER=Dexter
-DEXTER_PATH=$PIHOME/$DEXTER
-RASPBIAN=$PIHOME/di_update/Raspbian_For_Robots
-GROVEPI_DIR=$DEXTER_PATH/GrovePi
 DEXTERSCRIPT=$DEXTER_PATH/lib/Dexter/script_tools
 
 # whether to install the dependencies or not (avrdude, apt-get, wiringpi, and so on)
@@ -85,7 +52,7 @@ for i; do
   esac
 done
 
-# show some feedback for the GrovePi
+# show some feedback for the GoPiGo
 echo "  _____            _                                ";
 echo " |  __ \          | |                               ";
 echo " | |  | | _____  _| |_ ___ _ __                     ";
@@ -107,11 +74,11 @@ echo " "
 # show some feedback on the console
 if [ -f $DEXTERSCRIPT/functions_library.sh ]; then
   source $DEXTERSCRIPT/functions_library.sh
-  feedback "Welcome to GrovePi Installer."
+  feedback "Welcome to GoPiGo Installer."
 else
-  echo "Welcome to GrovePi Installer."
+  echo "Welcome to GoPiGo Installer."
 fi
-echo "Updating GrovePi for $selectedbranch branch with the following options:"
+echo "Updating GoPiGo for $selectedbranch branch with the following options:"
 ([[ $installdependencies = "true" ]] && echo "  --no-dependencies=false") || echo "  --no-dependencies=true"
 ([[ $updaterepo = "true" ]] && echo "  --no-update-aptget=false") || echo "  --no-update-aptget=true"
 ([[ $install_pkg_scriptools = "true" ]] && echo "  --bypass-pkg-scriptools=false") || echo "  --bypass-pkg-scriptools=true"
@@ -157,20 +124,20 @@ cd $DEXTER_PATH
 
 # it's simpler and more reliable (for now) to just delete the repo and clone a new one
 # otherwise, we'd have to deal with all the intricacies of git
-sudo rm -rf $GROVEPI_DIR
+sudo rm -rf $GOPIGO_DIR
 git clone --quiet --depth=1 -b $selectedbranch https://github.com/DexterInd/GrovePi.git
-cd $GROVEPI_DIR
+cd $GOPIGO_DIR
 
 echo "Installing GrovePi dependencies and package. This might take a while.."
 
 # installing dependencies
-pushd $GROVEPI_DIR/Script > /dev/null
+pushd $GOPIGO_DIR/Script > /dev/null
 sudo chmod +x install.sh
 [[ $installdependencies = "true" ]] && sudo bash ./install.sh
 popd > /dev/null
 
 # installing the package itself
-pushd $GROVEPI_DIR/Software/Python > /dev/null
+pushd $GOPIGO_DIR/Software/Python > /dev/null
 [[ $systemwide = "true" ]] && sudo python setup.py install --force \
             && [[ $usepython3exec = "true" ]] && sudo python3 setup.py install --force
 [[ $userlocal = "true" ]] && python setup.py install --force --user \
