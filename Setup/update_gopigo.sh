@@ -156,7 +156,7 @@ pushd $GOPIGO_DIR/Software/Python > /dev/null
 install_python_packages
 popd > /dev/null
 
-# installing the DHT packages
+# installing the DHT package
 pushd $ROBOT_DIR/Software/Python/sensor_examples/dht/Adafruit_Python_DHT > /dev/null
 install_python_packages
 popd > /dev/null
