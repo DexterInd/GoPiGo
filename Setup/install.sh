@@ -170,70 +170,31 @@ install_spi_i2c() {
 install_avr() {
     #Adding ARDUINO setup files
     echo " "
-	######################################################################
-	# Remove after the image is created for BrickPi3
-	######################################################################
-    # feedback "Making changes to Arduino . . ."
-    # feedback "==============================="
-    # cd /tmp
-    # wget http://project-downloads.drogon.net/gertboard/avrdude_5.10-4_armhf.deb
-    # sudo dpkg -i avrdude_5.10-4_armhf.deb
-    # sudo chmod 4755 /usr/bin/avrdude
-    # cd /tmp
-    # if [ -f /tmp/setup.sh ]; then
-        # rm /tmp/setup.sh
-    # fi
-    # wget http://project-downloads.drogon.net/gertboard/setup.sh
-    # chmod +x setup.sh
-    # sudo ./setup.sh
-    # #Enabling serial port in Arduino IDE
-    # crontab -l > file; echo '@reboot ln -sf /dev/ttyAMA0 /dev/ttyS0' >> file; crontab file
-    # rm file
-	######################################################################
-	source /home/pi/Dexter/lib/Dexter/script_tools/install_avrdude.sh
-	create_avrdude_folder
+  	######################################################################
+  	# Remove after the image is created for BrickPi3
+  	######################################################################
+      # feedback "Making changes to Arduino . . ."
+      # feedback "==============================="
+      # cd /tmp
+      # wget http://project-downloads.drogon.net/gertboard/avrdude_5.10-4_armhf.deb
+      # sudo dpkg -i avrdude_5.10-4_armhf.deb
+      # sudo chmod 4755 /usr/bin/avrdude
+      # cd /tmp
+      # if [ -f /tmp/setup.sh ]; then
+          # rm /tmp/setup.sh
+      # fi
+      # wget http://project-downloads.drogon.net/gertboard/setup.sh
+      # chmod +x setup.sh
+      # sudo ./setup.sh
+      # #Enabling serial port in Arduino IDE
+      # crontab -l > file; echo '@reboot ln -sf /dev/ttyAMA0 /dev/ttyS0' >> file; crontab file
+      # rm file
+  	######################################################################
+  	source /home/pi/Dexter/lib/Dexter/script_tools/install_avrdude.sh
+  	create_avrdude_folder
     install_avrdude
     cd $ROBOT_DIR
     echo "done with AVRDUDE "
-}
-
-install_line_follower(){
-    feedback "--> Installing Line Follower Calibration"
-    # Install GoPiGo Line Follower Calibration
-    delete_file /home/pi/Desktop/line_follow.desktop
-    sudo cp /home/pi/Dexter/GoPiGo/Software/Python/line_follower/line_follow.desktop /home/pi/Desktop/
-    sudo chmod +x /home/pi/Desktop/line_follow.desktop
-    sudo chmod +x /home/pi/Dexter/GoPiGo/Software/Python/line_follower/line_sensor_gui.py
-
-    # if the configuration files exist in the home directory
-    # then move them to their new place
-    # otherwise create new ones
-    if file_exists "$PIHOME/black_line.txt"
-    then
-        sudo mv $PIHOME/black_line.txt $PIHOME/Dexter/black_line.txt
-    else
-        sudo cp $PIHOME/Dexter/GoPiGo/Software/Python/line_follower/black_line.txt $PIHOME/Dexter/black_line.txt
-    fi
-
-    if file_exists "$PIHOME/white_line.txt"
-    then
-        sudo mv $PIHOME/white_line.txt $PIHOME/Dexter/white_line.txt
-    else
-        sudo cp $PIHOME/Dexter/GoPiGo/Software/Python/line_follower/white_line.txt $PIHOME/Dexter/white_line.txt
-    fi
-    if file_exists "$PIHOME/range_line.txt"
-    then
-        sudo mv $PIHOME/range_line.txt $PIHOME/Dexter/range_line.txt
-    else
-        sudo cp $PIHOME/Dexter/GoPiGo/Software/Python/line_follower/range_line.txt $PIHOME/Dexter/range_line.txt
-    fi
-
-    sudo chmod 666 $PIHOME/Dexter/*line.txt
-
-}
-
-install_control_panel(){
-    sudo cp "$ROBOT_DIR/Software/Python/control_panel/gopigo_control_panel.desktop" $PIHOME/Desktop
 }
 
 call_for_reboot() {
@@ -252,6 +213,10 @@ call_for_reboot() {
         feedback "Please restart to implement changes!"
         feedback "To Restart type sudo reboot"
     fi
+}
+
+install_control_panel() {
+    sudo cp "$ROBOT_DIR/Software/Python/control_panel/gopigo_control_panel.desktop" $PIHOME/Desktop
 }
 
 ############################################################################
@@ -288,7 +253,6 @@ install_wiringpi
 install_spi_i2c
 # no longer installing avr for arduino
 # install_avr
-install_line_follower
 install_control_panel
 
 #sudo rm -r /tmp/di_update
