@@ -125,10 +125,10 @@ cd $DEXTER_PATH
 # it's simpler and more reliable (for now) to just delete the repo and clone a new one
 # otherwise, we'd have to deal with all the intricacies of git
 sudo rm -rf $GOPIGO_DIR
-git clone --quiet --depth=1 -b $selectedbranch https://github.com/DexterInd/GrovePi.git
+git clone --quiet --depth=1 -b $selectedbranch https://github.com/DexterInd/GoPiGo.git
 cd $GOPIGO_DIR
 
-echo "Installing GrovePi dependencies and package. This might take a while.."
+echo "Installing GoPiGo dependencies and package. This might take a while.."
 
 # installing dependencies
 pushd $GOPIGO_DIR/Script > /dev/null
@@ -136,12 +136,27 @@ sudo chmod +x install.sh
 [[ $installdependencies = "true" ]] && sudo bash ./install.sh
 popd > /dev/null
 
+install_python_packages() {
+  [[ $systemwide = "true" ]] && sudo python setup.py install --force \
+              && [[ $usepython3exec = "true" ]] && sudo python3 setup.py install --force
+  [[ $userlocal = "true" ]] && python setup.py install --force --user \
+              && [[ $usepython3exec = "true" ]] && python3 setup.py install --force --user
+  [[ $envlocal = "true" ]] && python setup.py install --force \
+              && [[ $usepython3exec = "true" ]] && python3 setup.py install --force
+}
+
+# remove old libraries, as Mutex is being searched in here instead of
+# the proper place - this will only work with system-wide packages,
+# which was the original way of installing packages and still is
+sudo pip uninstall gopigo -y > /dev/null
+sudo pip3 uninstall gopigo -y > /dev/null
+
 # installing the package itself
 pushd $GOPIGO_DIR/Software/Python > /dev/null
-[[ $systemwide = "true" ]] && sudo python setup.py install --force \
-            && [[ $usepython3exec = "true" ]] && sudo python3 setup.py install --force
-[[ $userlocal = "true" ]] && python setup.py install --force --user \
-            && [[ $usepython3exec = "true" ]] && python3 setup.py install --force --user
-[[ $envlocal = "true" ]] && python setup.py install --force \
-            && [[ $usepython3exec = "true" ]] && python3 setup.py install --force
+install_python_packages
+popd > /dev/null
+
+# installing the DHT packages
+pushd $ROBOT_DIR/Software/Python/sensor_examples/dht/Adafruit_Python_DHT > /dev/null
+install_python_packages
 popd > /dev/null

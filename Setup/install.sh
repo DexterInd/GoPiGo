@@ -44,15 +44,6 @@ check_root_user() {
     echo " "
 }
 
-install_DHT() {
-    # Install the DHT library
-    feedback "Installing DHT library"
-    pushd $ROBOT_DIR/Software/Python/sensor_examples/dht/Adafruit_Python_DHT > /dev/null
-    python setup.py install --force
-    python3 setup.py install --force
-    popd > /dev/null
-}
-
 install_wiringpi() {
     # Check if WiringPi Installed
 
@@ -130,23 +121,12 @@ install_control_panel() {
 
 check_root_user
 install_dependencies
-
 # copy software servo
 sudo cp -R $ROBOT_DIR/Firmware/SoftwareServo/ /usr/share/arduino/libraries/
-
 # copy gopigo executable
 # the gopigo executable is for reporting data about the gopigo board
 sudo chmod +x gopigo
 sudo cp gopigo /usr/bin
-
-# remove old libraries, as Mutex is being searched in here instead of
-# the proper place
-sudo pip uninstall gopigo -y
-sudo pip3 uninstall gopigo -y
-cd $ROBOT_DIR/Software/Python
-python setup.py install --force
-python3 setup.py install --force
-
 install_DHT
 install_wiringpi
 install_spi_i2c
