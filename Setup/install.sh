@@ -22,16 +22,8 @@ install_dependencies() {
     feedback "Installing Dependencies"
     feedback "======================="
     sudo apt-get install git libi2c-dev  i2c-tools minicom libnss-mdns build-essential libffi-dev -y
-    sudo apt-get install python-pip python-serial python-rpi.gpio python-smbus python-dev -y
-    sudo apt-get install python3-pip python3-serial python3-rpi.gpio python3-smbus python3-dev -y
-    sudo pip install -U RPi.GPIO
-    sudo pip install pyusb
-    sudo pip install numpy
-    sudo pip install python-periphery==1.1.0
-    sudo pip3 install -U RPi.GPIO
-    sudo pip3 install pyusb
-    sudo pip3 install numpy
-    sudo pip3 install python-periphery==1.1.0
+    sudo apt-get install python-pip python-serial python-rpi.gpio python-smbus python-dev python-numpy -y
+    sudo apt-get install python3-pip python3-serial python3-rpi.gpio python3-smbus python3-dev python-numpy3 -y
 
     feedback "Dependencies installed"
 }
