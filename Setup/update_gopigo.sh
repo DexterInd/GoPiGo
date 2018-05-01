@@ -187,7 +187,7 @@ remove_python_packages() {
   # but pip seems to know how to handle missing packages, which is okay
   while read path;
   do
-    if [[ ! -z "${path}" -a "${path}" != " " ]]; then
+    if [ ! -z "${path}" -a "${path}" != " " ]; then
       echo "Removing ${path} egg"
       sudo rm -f "${path}"
     fi
