@@ -118,11 +118,11 @@ echo "Options used for script_tools script: \"${optionslist[@]}\""
 ################################################
 
 # update script_tools first
-curl --silent -kL dexterindustries.com/update_tools > $PIHOME/tmp_script_tools.sh
+curl --silent -kL dexterindustries.com/update_tools > $PIHOME/.tmp_script_tools.sh
 echo "Installing script_tools. This might take a while.."
-bash $PIHOME/tmp_script_tools.sh ${optionslist[@]} > /dev/null
+bash $PIHOME/.tmp_script_tools.sh ${optionslist[@]} > /dev/null
 ret_val=$?
-rm $PIHOME/tmp_script_tools.sh
+rm $PIHOME/.tmp_script_tools.sh
 if [[ $ret_val -ne 0 ]]; then
   echo "script_tools failed installing with exit code $ret_val. Aborting."
   exit 6

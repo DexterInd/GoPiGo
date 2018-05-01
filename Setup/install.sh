@@ -104,6 +104,15 @@ install_spi_i2c() {
     echo " "
 }
 
+install_avr() {
+  feedback "Installing avrdude"
+  feedback "=================="
+  create_avrdude_folder
+  install_avrdude
+  cd $ROBOT_DIR
+  echo "done with AVRDUDE "
+}
+
 install_control_panel() {
     sudo cp "$ROBOT_DIR/Software/Python/control_panel/gopigo_control_panel.desktop" $PIHOME/Desktop
 }
@@ -124,6 +133,7 @@ sudo chmod +x gopigo
 sudo cp gopigo /usr/bin
 install_wiringpi
 install_spi_i2c
+install_avr
 install_control_panel
 
 sudo chmod +x $ROBOT_DIR/Software/Scratch/GoPiGo_Scratch_Scripts/*.sh
