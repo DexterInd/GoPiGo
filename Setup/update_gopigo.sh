@@ -168,18 +168,18 @@ remove_python_packages() {
   # does this for both root and the current user because packages can be either system-wide or local
   # later on the strings used with the python command can be put in just one string that gets used repeatedly
   python -c "import pkgutil; import os; \
-              eggs_loader = pkgutil.find_loader('$REPO_PACKAGE'); found = eggs_loader is not None; \
-              output = os.path.dirname(os.path.realpath(eggs_loader.get_filename('$REPO_PACKAGE'))) if found else ''; print(output);" >> $PIHOME/.pypaths
+              eggs_loader = pkgutil.find_loader('$1'); found = eggs_loader is not None; \
+              output = os.path.dirname(os.path.realpath(eggs_loader.get_filename('$1'))) if found else ''; print(output);" >> $PIHOME/.pypaths
   sudo python -c "import pkgutil; import os; \
-              eggs_loader = pkgutil.find_loader('$REPO_PACKAGE'); found = eggs_loader is not None; \
-              output = os.path.dirname(os.path.realpath(eggs_loader.get_filename('$REPO_PACKAGE'))) if found else ''; print(output);" >> $PIHOME/.pypaths
+              eggs_loader = pkgutil.find_loader('$1'); found = eggs_loader is not None; \
+              output = os.path.dirname(os.path.realpath(eggs_loader.get_filename('$1'))) if found else ''; print(output);" >> $PIHOME/.pypaths
   if [[ $usepython3exec = "true" ]]; then
     python3 -c "import pkgutil; import os; \
-                eggs_loader = pkgutil.find_loader('$REPO_PACKAGE'); found = eggs_loader is not None; \
-                output = os.path.dirname(os.path.realpath(eggs_loader.get_filename('$REPO_PACKAGE'))) if found else ''; print(output);" >> $PIHOME/.pypaths
+                eggs_loader = pkgutil.find_loader('$1'); found = eggs_loader is not None; \
+                output = os.path.dirname(os.path.realpath(eggs_loader.get_filename('$1'))) if found else ''; print(output);" >> $PIHOME/.pypaths
     sudo python3 -c "import pkgutil; import os; \
-                eggs_loader = pkgutil.find_loader('$REPO_PACKAGE'); found = eggs_loader is not None; \
-                output = os.path.dirname(os.path.realpath(eggs_loader.get_filename('$REPO_PACKAGE'))) if found else ''; print(output);" >> $PIHOME/.pypaths
+                eggs_loader = pkgutil.find_loader('$1'); found = eggs_loader is not None; \
+                output = os.path.dirname(os.path.realpath(eggs_loader.get_filename('$1'))) if found else ''; print(output);" >> $PIHOME/.pypaths
   fi
 
   # removing eggs for $1 python package
@@ -203,9 +203,10 @@ install_python_packages() {
               && [[ $usepython3exec = "true" ]] && python3 setup.py install
 }
 
-feedback "Removing \"$REPO_PACKAGE\" and \"$DHT_PACKAGE\" to make space for new ones"
+# feedback "Removing \"$REPO_PACKAGE\" and \"$DHT_PACKAGE\" to make space for new ones"
+feedback "Removing \"$REPO_PACKAGE\" to make space for the new one"
 remove_python_packages "$REPO_PACKAGE"
-remove_python_packages "$DHT_PACKAGE"
+# remove_python_packages "$DHT_PACKAGE"
 
 # installing the package itself
 pushd $GOPIGO_DIR/Software/Python > /dev/null
@@ -213,8 +214,8 @@ install_python_packages
 popd > /dev/null
 
 # installing the DHT package
-pushd $GOPIGO_DIR/Software/Python/sensor_examples/dht/Adafruit_Python_DHT > /dev/null
-install_python_packages
-popd > /dev/null
+# pushd $GOPIGO_DIR/Software/Python/sensor_examples/dht/Adafruit_Python_DHT > /dev/null
+# install_python_packages
+# popd > /dev/null
 
 exit 0
