@@ -1,11 +1,20 @@
 #! /bin/bash
 
+################################################
+######## Parsing Command Line Arguments ########
+################################################
+
 PIHOME=/home/pi
 DEXTER=Dexter
 DEXTER_PATH=$PIHOME/$DEXTER
 RASPBIAN=$PIHOME/di_update/Raspbian_For_Robots
 GOPIGO_DIR=$DEXTER_PATH/GoPiGo
 DEXTERSCRIPT=$DEXTER_PATH/lib/Dexter/script_tools
+
+# the top-level module name of each package
+# used for identifying present packages
+REPO_PACKAGE=gopigo
+DHT_PACKAGE=Adafruit_DHT
 
 # whether to install the dependencies or not (avrdude, apt-get, wiringpi, and so on)
 installdependencies=true
@@ -104,6 +113,10 @@ optionslist+=("$selectedbranch")
 
 echo "Options used for script_tools script: \"${optionslist[@]}\""
 
+################################################
+######## Cloning GoPiGo & Script_Tools  ########
+################################################
+
 # update script_tools first
 curl --silent -kL dexterindustries.com/update_tools > $PIHOME/tmp_script_tools.sh
 echo "Installing script_tools. This might take a while.."
@@ -133,6 +146,10 @@ sudo rm -rf $GOPIGO_DIR
 git clone --quiet --depth=1 -b $selectedbranch https://github.com/DexterInd/GoPiGo.git
 cd $GOPIGO_DIR
 
+################################################
+######## Install Python Packages & Deps ########
+################################################
+
 echo "Installing GoPiGo dependencies and package. This might take a while.."
 
 # installing dependencies
@@ -141,20 +158,54 @@ sudo chmod +x install.sh
 [[ $installdependencies = "true" ]] && sudo bash ./install.sh
 popd > /dev/null
 
-install_python_packages() {
-  [[ $systemwide = "true" ]] && sudo python setup.py install --force \
-              && [[ $usepython3exec = "true" ]] && sudo python3 setup.py install --force
-  [[ $userlocal = "true" ]] && python setup.py install --force --user \
-              && [[ $usepython3exec = "true" ]] && python3 setup.py install --force --user
-  [[ $envlocal = "true" ]] && python setup.py install --force \
-              && [[ $usepython3exec = "true" ]] && python3 setup.py install --force
+remove_python_packages() {
+  # the 1st and only argument
+  # takes the name of the package that needs to removed
+  rm -f $PIHOME/.pypaths
+
+  # get absolute path to python package
+  # saves output to file because we want to have the syntax highlight working
+  # does this for both root and the current user because packages can be either system-wide or local
+  # later on the strings used with the python command can be put in just one string that gets used repeatedly
+  python -c "import pkgutil; import os; \
+              eggs_loader = pkgutil.find_loader('$REPO_PACKAGE'); found = eggs_loader is not None; \
+              output = os.path.dirname(os.path.realpath(eggs_loader.get_filename('$REPO_PACKAGE'))) if found else ''; print(output);" >> $PIHOME/.pypaths
+  sudo python -c "import pkgutil; import os; \
+              eggs_loader = pkgutil.find_loader('$REPO_PACKAGE'); found = eggs_loader is not None; \
+              output = os.path.dirname(os.path.realpath(eggs_loader.get_filename('$REPO_PACKAGE'))) if found else ''; print(output);" >> $PIHOME/.pypaths
+  if [[ $usepython3exec = "true" ]]; then
+    python3 -c "import pkgutil; import os; \
+                eggs_loader = pkgutil.find_loader('$REPO_PACKAGE'); found = eggs_loader is not None; \
+                output = os.path.dirname(os.path.realpath(eggs_loader.get_filename('$REPO_PACKAGE'))) if found else ''; print(output);" >> $PIHOME/.pypaths
+    sudo python3 -c "import pkgutil; import os; \
+                eggs_loader = pkgutil.find_loader('$REPO_PACKAGE'); found = eggs_loader is not None; \
+                output = os.path.dirname(os.path.realpath(eggs_loader.get_filename('$REPO_PACKAGE'))) if found else ''; print(output);" >> $PIHOME/.pypaths
+  fi
+
+  # removing eggs for $1 python package
+  # ideally, easy-install.pth needs to be adjusted too
+  # but pip seems to know how to handle missing packages, which is okay
+  while read path;
+  do
+    if [[ ! -z "${path}" -a "${path}" != " " ]]; then
+      echo "Removing ${path} egg"
+      sudo rm -f "${path}"
+    fi
+  done < $PIHOME/.pypaths
 }
 
-# remove old libraries, as Mutex is being searched in here instead of
-# the proper place - this will only work with system-wide packages,
-# which was the original way of installing packages and still is
-sudo pip uninstall gopigo -y > /dev/null
-sudo pip3 uninstall gopigo -y > /dev/null
+install_python_packages() {
+  [[ $systemwide = "true" ]] && sudo python setup.py install \
+              && [[ $usepython3exec = "true" ]] && sudo python3 setup.py install
+  [[ $userlocal = "true" ]] && python setup.py install --user \
+              && [[ $usepython3exec = "true" ]] && python3 setup.py install --user
+  [[ $envlocal = "true" ]] && python setup.py install \
+              && [[ $usepython3exec = "true" ]] && python3 setup.py install
+}
+
+feedback "Removing \"$REPO_PACKAGE\" and \"$DHT_PACKAGE\" to make space for new ones"
+remove_python_packages "$REPO_PACKAGE"
+remove_python_packages "$DHT_PACKAGE"
 
 # installing the package itself
 pushd $GOPIGO_DIR/Software/Python > /dev/null
