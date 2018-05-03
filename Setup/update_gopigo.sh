@@ -121,7 +121,7 @@ parse_cmdline_arguments() {
 }
 
 ################################################
-######## Cloning GrovePi & Script_Tools  #######
+######## Cloning GoPiGo & Script_Tools  ########
 ################################################
 
 # called way down below
@@ -153,7 +153,7 @@ clone_gopigo_and_scriptools() {
   # it's simpler and more reliable (for now) to just delete the repo and clone a new one
   # otherwise, we'd have to deal with all the intricacies of git
   sudo rm -rf $GOPIGO_DIR
-  git clone --quiet --depth=1 -b $selectedbranch https://github.com/DexterInd/GrovePi.git
+  git clone --quiet --depth=1 -b $selectedbranch https://github.com/DexterInd/GoPiGo.git
   cd $GOPIGO_DIR
 }
 
@@ -213,7 +213,7 @@ install_python_pkgs_and_dependencies() {
   # installing dependencies if required
   if [[ $installdependencies = "true" ]]; then
     feedback "Installing GoPiGo dependencies. This might take a while.."
-    pushd $GROVEPI_DIR/Script > /dev/null
+    pushd $GOPIGO_DIR/Script > /dev/null
     sudo bash ./install.sh
     popd > /dev/null
   fi
