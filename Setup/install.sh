@@ -29,7 +29,6 @@ check_root_user() {
         feedback "FAIL!  This script must be run as such: sudo ./install.sh"
         exit 1
     fi
-    echo " "
 }
 
 install_spi_i2c() {
@@ -48,7 +47,6 @@ install_spi_i2c() {
     fi
 
     #Adding in /etc/modules
-    echo " "
     feedback "Adding I2C-dev and SPI-dev in /etc/modules . . ."
     if grep -q "i2c-dev" /etc/modules; then
         echo "I2C-dev already there"
@@ -68,14 +66,12 @@ install_spi_i2c() {
         echo spi-dev >> /etc/modules
         echo "spi-dev added"
     fi
-    echo " "
     feedback "Making I2C changes in /boot/config.txt . . ."
 
     sudo sh -c "echo dtparam=i2c1=on >> /boot/config.txt"
     sudo sh -c "echo dtparam=i2c_arm=on >> /boot/config.txt"
 
     sudo adduser pi i2c
-    echo " "
 }
 
 install_avr() {
