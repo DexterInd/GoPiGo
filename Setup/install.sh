@@ -76,6 +76,7 @@ install_spi_i2c() {
 
 install_avr() {
   feedback "Installing avrdude for the GoPiGo"
+	source $DEXTERSCRIPT/install_avrdude.sh
   create_avrdude_folder
   install_avrdude
   cd $ROBOT_DIR
