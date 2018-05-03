@@ -7,9 +7,7 @@ DEXTERSCRIPT=$PIHOME/Dexter/lib/Dexter/script_tools
 source $DEXTERSCRIPT/functions_library.sh
 
 display_welcome_msg() {
-  echo " "
 	echo "Special thanks to Joe Sanford at Tufts University. This script was derived from his work. Thank you Joe!"
-  echo " "
 }
 
 install_dependencies() {
@@ -18,14 +16,12 @@ install_dependencies() {
     # done by the script_tools installer in
     # update_gopigo.sh
 
-    echo " "
-    feedback "Installing Dependencies"
-    feedback "======================="
+    feedback "Installing dependencies for the GoPiGo"
     sudo apt-get install git libi2c-dev  i2c-tools minicom libnss-mdns build-essential libffi-dev -y
     sudo apt-get install python-pip python-serial python-rpi.gpio python-smbus python-dev python-numpy -y
     sudo apt-get install python3-pip python3-serial python3-rpi.gpio python3-smbus python3-dev python3-numpy -y
 
-    feedback "Dependencies installed"
+    feedback "Dependencies installed for the GoPiGo"
 }
 
 check_root_user() {
@@ -36,28 +32,8 @@ check_root_user() {
     echo " "
 }
 
-install_wiringpi() {
-    # Check if WiringPi Installed
-
-    # using curl piped to bash does not leave a file behind. no need to remove it
-    # we can do either the curl - it works just fine
-    # sudo curl https://raw.githubusercontent.com/DexterInd/script_tools/master/update_wiringpi.sh | bash
-    # or call the version that's already on the SD card
-    sudo bash $DEXTERSCRIPT/update_wiringpi.sh
-    # done with WiringPi
-
-    # remove wiringPi directory if present
-    if [ -d wiringPi ]
-    then
-        sudo rm -r wiringPi
-    fi
-    # End check if WiringPi installed
-    echo " "
-}
-
 install_spi_i2c() {
     feedback "Removing blacklist from /etc/modprobe.d/raspi-blacklist.conf . . ."
-    feedback "=================================================================="
     if grep -q "#blacklist i2c-bcm2708" /etc/modprobe.d/raspi-blacklist.conf; then
         echo "I2C already removed from blacklist"
     else
@@ -74,7 +50,6 @@ install_spi_i2c() {
     #Adding in /etc/modules
     echo " "
     feedback "Adding I2C-dev and SPI-dev in /etc/modules . . ."
-    feedback "================================================"
     if grep -q "i2c-dev" /etc/modules; then
         echo "I2C-dev already there"
     else
@@ -95,7 +70,6 @@ install_spi_i2c() {
     fi
     echo " "
     feedback "Making I2C changes in /boot/config.txt . . ."
-    feedback "================================================"
 
     sudo sh -c "echo dtparam=i2c1=on >> /boot/config.txt"
     sudo sh -c "echo dtparam=i2c_arm=on >> /boot/config.txt"
@@ -105,8 +79,7 @@ install_spi_i2c() {
 }
 
 install_avr() {
-  feedback "Installing avrdude"
-  feedback "=================="
+  feedback "Installing avrdude for the GoPiGo"
   create_avrdude_folder
   install_avrdude
   cd $ROBOT_DIR
@@ -131,7 +104,6 @@ install_dependencies
 # the gopigo executable is for reporting data about the gopigo board
 sudo chmod +x gopigo
 sudo cp gopigo /usr/bin
-install_wiringpi
 install_spi_i2c
 install_avr
 install_control_panel
