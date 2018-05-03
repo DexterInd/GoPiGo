@@ -17,7 +17,7 @@ install_dependencies() {
     # update_gopigo.sh
 
     feedback "Installing dependencies for the GoPiGo"
-    sudo apt-get install git libi2c-dev  i2c-tools minicom libnss-mdns build-essential libffi-dev -y
+    sudo apt-get install git libi2c-dev i2c-tools minicom libnss-mdns build-essential libffi-dev -y
     sudo apt-get install python-pip python-serial python-rpi.gpio python-smbus python-dev python-numpy -y
     sudo apt-get install python3-pip python3-serial python3-rpi.gpio python3-smbus python3-dev python3-numpy -y
 
