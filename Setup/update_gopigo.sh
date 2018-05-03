@@ -213,7 +213,7 @@ install_python_pkgs_and_dependencies() {
   # installing dependencies if required
   if [[ $installdependencies = "true" ]]; then
     feedback "Installing GoPiGo dependencies. This might take a while.."
-    pushd $GOPIGO_DIR/Script > /dev/null
+    pushd $GOPIGO_DIR/Setup > /dev/null
     sudo bash ./install.sh
     popd > /dev/null
   fi
