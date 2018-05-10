@@ -9,7 +9,7 @@ curl -kL dexterindustries.com/update_gopigo | bash
 
 By default, the GoPiGo package is installed system-wide and [script_tools](https://github.com/DexterInd/script_tools) and [RFR_Tools](https://github.com/DexterInd/RFR_Tools) are updated each time the script is ran.
 
-There's also the classic way of installing the robot where the repository first gets cloned and after that `update_gopigo.sh` is ran the following way:
+There's also the classic way of installing the robot where the repository first gets cloned and after that `update_gopigo.sh` is run the following way:
 ```
 bash update_gopigo.sh
 ```
