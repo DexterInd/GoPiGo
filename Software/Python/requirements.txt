@@ -1,3 +1,5 @@
 future
 smbus-cffi
 tornado
+pyusb
+python-periphery==1.1.0

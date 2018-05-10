@@ -1,6 +1,4 @@
 #! /bin/bash
-curl --silent https://raw.githubusercontent.com/DexterInd/script_tools/master/install_script_tools.sh | bash
-
 SCRIPT_DIR="$(readlink -f $(dirname $0))"
 ROBOT_DIR="${SCRIPT_DIR%/*}"
 PIHOME=/home/pi
@@ -8,119 +6,33 @@ DEXTERSCRIPT=$PIHOME/Dexter/lib/Dexter/script_tools
 
 source $DEXTERSCRIPT/functions_library.sh
 
-identify_cie() {
-    if ! quiet_mode
-    then
-        echo "  _____            _                                ";
-        echo " |  __ \          | |                               ";
-        echo " | |  | | _____  _| |_ ___ _ __                     ";
-        echo " | |  | |/ _ \ \/ / __/ _ \ '__|                    ";
-        echo " | |__| |  __/>  <| ||  __/ |                       ";
-        echo " |_____/ \___/_/\_\\\__\___|_|          _            ";
-        echo " |_   _|         | |         | |      (_)           ";
-        echo "   | |  _ __   __| |_   _ ___| |_ _ __ _  ___  ___  ";
-        echo "   | | | '_ \ / _\ | | | / __| __| '__| |/ _ \/ __| ";
-        echo "  _| |_| | | | (_| | |_| \__ \ |_| |  | |  __/\__ \ ";
-        echo " |_____|_| |_|\__,_|\__,_|___/\__|_|  |_|\___||___/ ";
-        echo "                                                    ";
-        echo "                                                    ";
-        echo " "
-    fi
+display_welcome_msg() {
+	echo "Special thanks to Joe Sanford at Tufts University. This script was derived from his work. Thank you Joe!"
 }
 
-identify_robot() {
-echo "  ______  _____   _____  _____  ______  _____ "
-echo " |  ____ |     | |_____]   |   |  ____ |     |"
-echo " |_____| |_____| |       __|__ |_____| |_____|"
-echo " "
-feedback "Welcome to GoPiGo Installer."
-echo " "
+install_dependencies() {
+
+    # the sudo apt-get update is already
+    # done by the script_tools installer in
+    # update_gopigo.sh
+
+    feedback "Installing dependencies for the GoPiGo"
+    sudo apt-get install git libi2c-dev i2c-tools minicom libnss-mdns build-essential libffi-dev -y
+    sudo apt-get install python-pip python-serial python-rpi.gpio python-smbus python-dev python-numpy -y
+    sudo apt-get install python3-pip python3-serial python3-rpi.gpio python3-smbus python3-dev python3-numpy -y
+
+    feedback "Dependencies installed for the GoPiGo"
 }
 
 check_root_user() {
     if [[ $EUID -ne 0 ]]; then
-        feedback "No root permissions: the update script will not install python libraries."
+        feedback "FAIL!  This script must be run as such: sudo ./install.sh"
+        exit 1
     fi
-    echo " "
-}
-
-check_internet() {
-    if ! quiet_mode ; then
-        feedback "Check for internet connectivity..."
-        feedback "=================================="
-        wget -q --tries=2 --timeout=20 --output-document=/dev/null http://raspberrypi.org
-        if [ $? -eq 0 ];then
-            echo "Connected to the Internet"
-        else
-            echo "Unable to Connect, try again !!!"
-            exit 0
-        fi
-    fi
-}
-
-display_welcome_msg() {
-    feedback "Please ensure internet connectivity before running this script."
-    if ! quiet_mode
-    then
-        feedback "NOTE: Raspberry Pi will need to be rebooted after completion."
-    fi
-
-    feedback "Special thanks to Joe Sanford at Tufts University.  This script was derived from his work.  Thank you Joe!"
-    echo " "
-}
-
-install_dependencies() {
-    if ! quiet_mode ; then
-        sudo apt-get update
-    fi
-    echo " "
-    feedback "Installing Dependencies"
-    feedback "======================="
-    sudo apt-get install python-pip git libi2c-dev python-serial python-rpi.gpio i2c-tools python-smbus minicom libnss-mdns python-dev build-essential libffi-dev -y
-    pip install -U RPi.GPIO
-    pip install pyusb
-    pip install numpy
-    pip install python-periphery==1.1.0
-    pip3 install -U RPi.GPIO
-    pip3 install pyusb
-    pip3 install numpy
-    pip3 install python-periphery==1.1.0
-
-
-    feedback "Dependencies installed"
-}
-
-install_DHT() {
-    # Install the DHT library
-    feedback "Installing DHT library"
-    pushd $ROBOT_DIR/Software/Python/sensor_examples/dht/Adafruit_Python_DHT > /dev/null
-    python setup.py install --force
-    python3 setup.py install --force
-    popd > /dev/null
-}
-
-install_wiringpi() {
-    # Check if WiringPi Installed
-
-    # using curl piped to bash does not leave a file behind. no need to remove it
-    # we can do either the curl - it works just fine
-    # sudo curl https://raw.githubusercontent.com/DexterInd/script_tools/master/update_wiringpi.sh | bash
-    # or call the version that's already on the SD card
-    sudo bash $DEXTERSCRIPT/update_wiringpi.sh
-    # done with WiringPi
-
-    # remove wiringPi directory if present
-    if [ -d wiringPi ]
-    then
-        sudo rm -r wiringPi
-    fi
-    # End check if WiringPi installed
-    echo " "
 }
 
 install_spi_i2c() {
     feedback "Removing blacklist from /etc/modprobe.d/raspi-blacklist.conf . . ."
-    feedback "=================================================================="
     if grep -q "#blacklist i2c-bcm2708" /etc/modprobe.d/raspi-blacklist.conf; then
         echo "I2C already removed from blacklist"
     else
@@ -135,9 +47,7 @@ install_spi_i2c() {
     fi
 
     #Adding in /etc/modules
-    echo " "
     feedback "Adding I2C-dev and SPI-dev in /etc/modules . . ."
-    feedback "================================================"
     if grep -q "i2c-dev" /etc/modules; then
         echo "I2C-dev already there"
     else
@@ -156,63 +66,21 @@ install_spi_i2c() {
         echo spi-dev >> /etc/modules
         echo "spi-dev added"
     fi
-    echo " "
     feedback "Making I2C changes in /boot/config.txt . . ."
-    feedback "================================================"
 
     sudo sh -c "echo dtparam=i2c1=on >> /boot/config.txt"
     sudo sh -c "echo dtparam=i2c_arm=on >> /boot/config.txt"
 
     sudo adduser pi i2c
-    echo " "
 }
 
 install_avr() {
-    #Adding ARDUINO setup files
-    echo " "
-  	######################################################################
-  	# Remove after the image is created for BrickPi3
-  	######################################################################
-      # feedback "Making changes to Arduino . . ."
-      # feedback "==============================="
-      # cd /tmp
-      # wget http://project-downloads.drogon.net/gertboard/avrdude_5.10-4_armhf.deb
-      # sudo dpkg -i avrdude_5.10-4_armhf.deb
-      # sudo chmod 4755 /usr/bin/avrdude
-      # cd /tmp
-      # if [ -f /tmp/setup.sh ]; then
-          # rm /tmp/setup.sh
-      # fi
-      # wget http://project-downloads.drogon.net/gertboard/setup.sh
-      # chmod +x setup.sh
-      # sudo ./setup.sh
-      # #Enabling serial port in Arduino IDE
-      # crontab -l > file; echo '@reboot ln -sf /dev/ttyAMA0 /dev/ttyS0' >> file; crontab file
-      # rm file
-  	######################################################################
-  	source /home/pi/Dexter/lib/Dexter/script_tools/install_avrdude.sh
-  	create_avrdude_folder
-    install_avrdude
-    cd $ROBOT_DIR
-    echo "done with AVRDUDE "
-}
-
-call_for_reboot() {
-    if ! quiet_mode ; then
-        feedback " "
-        feedback "Please restart the Raspberry Pi for the changes to take effect"
-        feedback " "
-        feedback "Please restart to implement changes!"
-        feedback "  _____  ______  _____ _______       _____ _______ "
-        feedback " |  __ \|  ____|/ ____|__   __|/\   |  __ \__   __|"
-        feedback " | |__) | |__  | (___    | |  /  \  | |__) | | |   "
-        feedback " |  _  /|  __|  \___ \   | | / /\ \ |  _  /  | |   "
-        feedback " | | \ \| |____ ____) |  | |/ ____ \| | \ \  | |   "
-        feedback " |_|  \_\______|_____/   |_/_/    \_\_|  \_\ |_|   "
-        feedback " "
-        feedback "Please restart to implement changes!"
-        feedback "To Restart type sudo reboot"
-    fi
+  feedback "Installing avrdude for the GoPiGo"
+	source $DEXTERSCRIPT/install_avrdude.sh
+  create_avrdude_folder
+  install_avrdude
+  cd $ROBOT_DIR
+  echo "done with AVRDUDE "
 }
 
 install_control_panel() {
@@ -221,42 +89,20 @@ install_control_panel() {
 
 ############################################################################
 ############################################################################
-identify_cie
-identify_robot
+
 check_root_user
-display_welcome_msg
-check_internet
-
-echo "Installing GoPiGo software in ${ROBOT_DIR}"
-echo " "
-
 install_dependencies
 
+# copy software servo
+# we might also want to delete $ROBOT_DIR/Firmware/SoftwareServo from the repo for good
+# sudo cp -R $ROBOT_DIR/Firmware/SoftwareServo/ /usr/share/arduino/libraries/
 
-#Copy Software Servo
-sudo cp -R $ROBOT_DIR/Firmware/SoftwareServo/ /usr/share/arduino/libraries/
-
+# copy gopigo executable
+# the gopigo executable is for reporting data about the gopigo board
 sudo chmod +x gopigo
 sudo cp gopigo /usr/bin
-
-
-# remove old libraries, as Mutex is being searched in here instead of 
-# the proper place
-sudo pip uninstall gopigo -y
-sudo pip3 uninstall gopigo -y
-cd $ROBOT_DIR/Software/Python
-python setup.py install --force
-python3 setup.py install --force
-
-install_DHT
-install_wiringpi
 install_spi_i2c
-# no longer installing avr for arduino
-# install_avr
+install_avr
 install_control_panel
 
-#sudo rm -r /tmp/di_update
-
 sudo chmod +x $ROBOT_DIR/Software/Scratch/GoPiGo_Scratch_Scripts/*.sh
-
-call_for_reboot
