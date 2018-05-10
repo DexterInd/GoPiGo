@@ -12,15 +12,17 @@ This repository contains source code, firmware and design materials for the GoPi
 
 # Quick Install
 
-For installing the python package(s) of the GoPiGo with root privileges (except for anything else that comes with it), use one of the following command:
-```
-sudo sh -c "curl -kL dexterindustries.com/update_gopigo | bash"
-```
-
-In order to quick install the GoPiGo package(s) without root privileges (except for anything else that comes with it), use the following command:
+For installing the python package(s) of the GoPiGo, use the following command:
 ```
 curl -kL dexterindustries.com/update_gopigo | bash
 ```
+
+Or if you're still accustomed to the old ways, you can clone the repo, head over to the `Setup` folder and run the install script like this:
+```
+bash update_gopigo3.sh
+```
+
+These 2 methods of installing the robot are identical - the difference is that the former takes the script from an online source and in the latter case, you run it from the repository itself.
 
 # See Also
 
