@@ -84,7 +84,7 @@ install_avr() {
 }
 
 install_control_panel() {
-    sudo cp "$ROBOT_DIR/Software/Python/control_panel/gopigo_control_panel.desktop" $PIHOME/Desktop
+    cp "$ROBOT_DIR/Software/Python/control_panel/gopigo_control_panel.desktop" $PIHOME/Desktop
 }
 
 ############################################################################
