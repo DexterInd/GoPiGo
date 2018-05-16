@@ -14,7 +14,7 @@ except ImportError:
     raise ImportError,"The wxPython module is required to run this program"
 
 import atexit
-atexit.register(gopigo.stop)    
+atexit.register(gopigo.stop)
 
 left_led = 0
 right_led = 0
@@ -108,30 +108,28 @@ class MainPanel(wx.Panel):
         firmwareSizer.Add( self.firmware_label, 0, wx.ALIGN_CENTER|wx.EXPAND )
 
         trimbuttons_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        trim_sizer = wx.BoxSizer(wx.HORIZONTAL)
-        
-        self.trim_label = wx.StaticText(self, -1, label=str(trim_val))
         trim_read_button = wx.Button(self, label="  Trim Read ")
         self.Bind(wx.EVT_BUTTON, self.trim_read_button_OnButtonClick, trim_read_button)
         trim_test_button = wx.Button(self, label="Trim Test ")
         self.Bind(wx.EVT_BUTTON, self.trim_test_button_OnButtonClick, trim_test_button)
         trim_write_button = wx.Button(self, label="Trim Write")
         self.Bind(wx.EVT_BUTTON, self.trim_write_button_OnButtonClick, trim_write_button)
+
+        # trimbuttons_sizer.AddSpacer(30)
+        trimbuttons_sizer.Add( trim_read_button, 0, wx.ALIGN_CENTER )
+        trimbuttons_sizer.AddSpacer(30)
+        trimbuttons_sizer.Add( trim_test_button, 0,  wx.ALIGN_CENTER)
+        trimbuttons_sizer.AddSpacer(30)
+        trimbuttons_sizer.Add( trim_write_button, 0,  wx.ALIGN_CENTER )
+
+        trim_sizer = wx.BoxSizer(wx.HORIZONTAL)
+        self.trim_label = wx.StaticText(self, -1, label="Trim: "+str(trim_val))
         self.slider = wx.Slider(self, value=0, minValue=-100, maxValue=100, size=(250, -1), style=wx.SL_HORIZONTAL)
         self.slider.Bind(wx.EVT_SCROLL, self.OnSliderScroll)
 
-
-        trimbuttons_sizer.AddSpacer(30)
-        trimbuttons_sizer.Add( trim_read_button, 0, wx.EXPAND )
-        trimbuttons_sizer.AddSpacer(30)
-        trimbuttons_sizer.Add( trim_test_button, 0, wx.EXPAND )
-        trimbuttons_sizer.AddSpacer(30)
-        trimbuttons_sizer.Add( trim_write_button, 0, wx.EXPAND )
+        trim_sizer.Add( self.trim_label, 0, wx.ALIGN_CENTER )
         trim_sizer.AddSpacer(30)
-        trim_sizer.Add( self.trim_label, 0 )
-        trim_sizer.AddSpacer(30)
-        trim_sizer.Add( self.slider, 0, wx.EXPAND )
-
+        trim_sizer.Add( self.slider, 0, wx.ALIGN_CENTER )
 
         # Exit
         exit_sizer = wx.BoxSizer(wx.HORIZONTAL)
@@ -149,11 +147,12 @@ class MainPanel(wx.Panel):
         main_sizer.AddSpacer(10)
         main_sizer.Add(bwdSizer, 0,  wx.ALIGN_CENTER)
         main_sizer.AddSpacer(40)
+        main_sizer.Add(trimbuttons_sizer, 0, wx.ALIGN_CENTER)
+        main_sizer.AddSpacer(5)
+        main_sizer.Add(trim_sizer, 0, wx.ALIGN_CENTER)
+        main_sizer.AddSpacer(30)
         main_sizer.Add(batterySizer, 0)
         main_sizer.Add(firmwareSizer, 0)
-        main_sizer.AddSpacer(30)
-        main_sizer.Add(trimbuttons_sizer, 0)
-        main_sizer.Add(trim_sizer, 0)
         main_sizer.AddSpacer(20)
         main_sizer.Add(exit_sizer, 0, wx.ALIGN_RIGHT)
         
@@ -210,7 +209,7 @@ class MainPanel(wx.Panel):
         else:
             trim_val = trim_val-100
         self.slider.SetValue(trim_val)
-        self.trim_label.SetLabel(str(trim_val))
+        self.trim_label.SetLabel("Trim: "+str(trim_val))
         
     def trim_test_button_OnButtonClick(self,event):
         global slider_val
@@ -224,7 +223,7 @@ class MainPanel(wx.Panel):
         global slider_val
         obj = event.GetEventObject()
         slider_val = obj.GetValue()
-        self.trim_label.SetLabel(str(slider_val))
+        self.trim_label.SetLabel("Trim: "+str(slider_val))
         
     def onClose(self, event):	# Close the entire program.
         self.frame.Close()
@@ -232,7 +231,7 @@ class MainPanel(wx.Panel):
 class MainFrame(wx.Frame):
     def __init__(self):
         wx.Log.SetVerbose(False)
-        wx.Frame.__init__(self, None, title='GoPiGo Control Panel', size=(475,510))
+        wx.Frame.__init__(self, None, title='GoPiGo Control Panel', size=(475,550))
         panel = MainPanel(self)
         self.Center()
 
