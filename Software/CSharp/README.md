@@ -6,7 +6,7 @@ The GoPiGo is a delightful and complete robot for the Raspberry Pi that turns yo
 
 This repository contains source code, firmware and design materials for the GoPiGo.
 
-![ GoPiGo ](/GoPiGo_Front_Facing_Camera300.jpg)
+![ GoPiGo ](https://raw.githubusercontent.com/DexterInd/GoPiGo/master/GoPiGo_Front_Facing_Camera300.jpg)
 
 # See Also
 
