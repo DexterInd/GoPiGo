@@ -373,27 +373,25 @@ while True:
 				import ir_receiver
 				en_ir_sensor=1
 			try:
-				a= ir_receiver.nextcode()  # press a button on the remote 
-				if len(a) !=0: 
+				a= ir_receiver.nextcode()  # press a button on the remote
+				if len(a) !=0:
 					print a
 				else:
-					a=[0]	#eturn 0 if no keypress found 
+					a=[0]	#eturn 0 if no keypress found
 			except:
 				if en_debug:
 					e = sys.exc_info()[1]
 					print "Error reading IR sensor: " + str(a)
 			if en_debug:
 				print "IR Reading: " + str(a)
-			if en_gpg: 
+			if en_gpg:
 				s.sensorupdate({'ir':a})
-				
+
 		# Get the value from the Dexter Industries line sensor
 		elif msg.lower()=="LINE".lower():
 			try:
 				import sys
-				sys.path.insert(0, '/home/pi/Dexter/GoPiGo/Software/Python/line_follower')
-				# import line_sensor
-				import scratch_line
+				from line_follower import scratch_line
 			except ImportError:
 				print "Line sensor libraries not found"
 				s.sensorupdate({'line':-3})
