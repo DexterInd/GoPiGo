@@ -1,6 +1,6 @@
 ## Python Library
 
-[See our guided tutorials on getting started with Python and the GoPiGo here.] (http://www.dexterindustries.com/GoPiGo/programming/python-programming-for-the-raspberry-pi-gopigo/)
+[See our guided tutorials on getting started with Python and the GoPiGo here.](http://www.dexterindustries.com/GoPiGo/programming/python-programming-for-the-raspberry-pi-gopigo/)
 
 [Video Playlist on Getting Started with the GoPiGo and Python](https://www.youtube.com/watch?v=ip0mYTLlldw&list=PLQVvvaa0QuDcG4wbhhCv_XTnexvWfjlBy&index=1)
 
@@ -25,9 +25,9 @@ This repository contains source code, firmware and design materials for the GoPi
 
 # See Also
 
-- [Dexter Industries] (http://www.dexterindustries.com/GoPiGo)
-- [Kickstarter Campaign] (http://kck.st/Q6vVOP)
-- [Raspberry Pi] (http://www.raspberrypi.org/)
+- [Dexter Industries](http://www.dexterindustries.com/GoPiGo)
+- [Kickstarter Campaign](http://kck.st/Q6vVOP)
+- [Raspberry Pi](http://www.raspberrypi.org/)
 
 ## License
 GoPiGo for the Raspberry Pi: an open source robotics platform for the Raspberry Pi.

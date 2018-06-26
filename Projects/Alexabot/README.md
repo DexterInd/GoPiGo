@@ -1,4 +1,4 @@
-#[ Alexabot ](https://www.dexterindustries.com/projects/alexabot-amazon-alexa-controlled-robot/)
+# [ Alexabot ](https://www.dexterindustries.com/projects/alexabot-amazon-alexa-controlled-robot/)
 
 In this tutorial we build [Alexabot, the Amazon Alexa Controlled Robot, using the Raspberry Pi](https://www.dexterindustries.com/projects/alexabot-amazon-alexa-controlled-robot/).  We will walk through the steps of building a voice controlled robot with the Raspberry Pi and GoPiGo.  With Alexabot, you can command the Raspberry Pi Robot around with commands like “Alexa Forward!” or “Alexa Coffee!”.  GoPiGo is a mobile robotic platform for the Raspberry Pi developed by [Dexter Industries.](http://www.dexterindustries.com/GoPiGo)  
 
