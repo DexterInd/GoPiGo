@@ -170,6 +170,11 @@ install_rfrtools_repo() {
     fi
     echo "Done installing RFR_Tools"
   fi
+
+  # check if all deb packages have been installed with RFR_Tools to proceed with the next
+  check_dependencies
+
+  source $DEXTERSCRIPT/functions_library.sh
 }
 
 # called way down bellow
