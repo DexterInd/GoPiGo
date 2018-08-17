@@ -23,7 +23,7 @@ check_if_run_with_pi() {
   ## if not running with the pi user then exit
   if [ $(id -ur) -ne $(id -ur pi) ]; then
     echo "GoPiGo installer script must be run with \"pi\" user. Exiting."
-    exit 7
+    exit 6
   fi
 }
 
@@ -149,7 +149,7 @@ check_dependencies() {
 
   if [[ ! -f $DEXTERSCRIPT/functions_library.sh ]]; then
     echo "script_tools didn\'t get installed. Enable the installation of dependencies with RFR_Tools.'"
-    exit 7
+    exit 8
   fi
 }
 
