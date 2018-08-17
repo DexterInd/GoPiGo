@@ -188,7 +188,7 @@ clone_gopigo() {
   # otherwise, we'd have to deal with all the intricacies of git
   sudo rm -rf $GOPIGO_DIR
   # git clone --quiet --depth=1 -b $selectedbranch https://github.com/DexterInd/GoPiGo.git
-  git clone --quiet --depth=1 -b hotfix/add-minimal-install https://github.com/RobertLucian/GoPiGo.git
+  git clone --quiet --depth=1 -b hotfix/add-gui-installation https://github.com/RobertLucian/GoPiGo.git
   cd $GOPIGO_DIR
 }
 
