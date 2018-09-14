@@ -1,12 +1,12 @@
 ## Streaming Video
 
-###Running the streaming script:
+### Running the streaming script:
 - Run the start screaming scripts
 "sudo start_streaming.sh" .
 - Start VLC Media Player on another computer
 - If you're on the same network, open the network stream "http://raspberrypi.local:9000/?action=stream"
 
-###Streaming the Video:
+### Streaming the Video:
 - Attach the camera to the GOPIGO.
 - Follow these instructions for setup of the server and camera:  http://www.miguelmota.com/blog/raspberry-pi-camera-board-video-streaming/
 - Make both the scripts as executable and run them. 
@@ -21,9 +21,9 @@ This repository contains source code, firmware and design materials for the GoPi
 
 # See Also
 
-- [Dexter Industries] (http://www.dexterindustries.com/GoPiGo)
-- [Kickstarter Campaign] (http://kck.st/Q6vVOP)
-- [Raspberry Pi] (http://www.raspberrypi.org/)
+- [Dexter Industries](http://www.dexterindustries.com/GoPiGo)
+- [Kickstarter Campaign](http://kck.st/Q6vVOP)
+- [Raspberry Pi](http://www.raspberrypi.org/)
 
 
 ## License

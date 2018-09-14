@@ -1,4 +1,4 @@
-#Find Hole Example
+# Find Hole Example
 
 This example will search for a "hole" for the [GoPiGo](http://www.dexterindustries.com/shop/gopigo-starter-kit-2/) to roll through.  It will stop if it does not find a suitable hole in the objects around it to go through.  The example uses the [GoPiGo Servo](http://www.dexterindustries.com/shop/servo-package/) and [GoPiGo Ultrasonic](http://www.dexterindustries.com/shop/ultrasonic-sensor/) sensor to find the holes.
 

@@ -1,7 +1,7 @@
 ## Basic Robot Control GUI
 ### Basic example for controlling the GoPiGo using the Keyboard and a GUI on VNC
 
-![Basic Robot Control GUI](https://raw.githubusercontent.com/karan259/GoPiGo-1/master/Software/Python/Examples/Basic_Robot_Control_GUI/Basic_Raspberry_Pi_Robot_Control_GUI.jpg "GoPiGo Rasberry Pi Robot Controlled with a GUI")
+![Basic Robot Control GUI](https://raw.githubusercontent.com/DexterInd/GoPiGo/master/Software/Python/Examples/Basic_Robot_Control_GUI/Basic_Raspberry_Pi_Robot_Control_GUI.jpg "GoPiGo Rasberry Pi Robot Controlled with a GUI")
 
 Contributed by casten on Gitub https://github.com/DexterInd/GoPiGo/pull/112
 
@@ -35,9 +35,9 @@ This repository contains source code, firmware and design materials for the GoPi
 
 # See Also
 
-- [Dexter Industries] (http://www.dexterindustries.com/GoPiGo)
-- [Kickstarter Campaign] (http://kck.st/Q6vVOP)
-- [Raspberry Pi] (http://www.raspberrypi.org/)
+- [Dexter Industries](http://www.dexterindustries.com/GoPiGo)
+- [Kickstarter Campaign](http://kck.st/Q6vVOP)
+- [Raspberry Pi](http://www.raspberrypi.org/)
 
 
 ## License
