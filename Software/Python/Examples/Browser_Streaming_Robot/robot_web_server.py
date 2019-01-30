@@ -67,7 +67,7 @@ from builtins import input
 import logging
 
 LOG_FILENAME = "/tmp/robot_web_server_log.txt"
-file_location = "/home/pi/Desktop/GoPiGo/Software/Python/Examples/Browser_Streaming_Robot/www/"
+file_location = "/home/pi/Dexter/GoPiGo/Software/Python/Examples/Browser_Streaming_Robot/www/"
 logging.basicConfig( filename=LOG_FILENAME, level=logging.DEBUG )
 
 # Also log to stdout
@@ -254,11 +254,11 @@ if __name__ == "__main__":
     http_server.listen( 98 )
     
     robotPeriodicCallback = tornado.ioloop.PeriodicCallback( 
-        robotUpdate, 100, io_loop=tornado.ioloop.IOLoop.instance() )
+        robotUpdate, 100)
     robotPeriodicCallback.start()
     
     cameraStreamerPeriodicCallback = tornado.ioloop.PeriodicCallback( 
-        cameraStreamer.update, 1000, io_loop=tornado.ioloop.IOLoop.instance() )
+        cameraStreamer.update, 1000)
     cameraStreamerPeriodicCallback.start()
     
     tornado.ioloop.IOLoop.instance().start()
