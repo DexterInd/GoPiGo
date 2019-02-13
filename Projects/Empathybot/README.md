@@ -13,13 +13,13 @@ This folder contains the code you need to build Empathybot!  [You can see the fu
 
 The GoPiGo is a delightful and complete robot for the Raspberry Pi that turns your Pi into a fully operating robot.  GoPiGo is a mobile robotic platform for the Raspberry Pi developed by [Dexter Industries.](http://www.dexterindustries.com/GoPiGo)  
 
-- [Dexter Industries] (http://www.dexterindustries.com/GoPiGo)
-- [Kickstarter Campaign] (http://kck.st/Q6vVOP)
-- [Raspberry Pi] (http://www.raspberrypi.org/)
+- [Dexter Industries](http://www.dexterindustries.com/GoPiGo)
+- [Kickstarter Campaign](http://kck.st/Q6vVOP)
+- [Raspberry Pi](http://www.raspberrypi.org/)
 
 ## License
 GoPiGo for the Raspberry Pi: an open source robotics platform for the Raspberry Pi.
-Copyright (C) 2016  Dexter Industries
+Copyright (C) 2019  Dexter Industries
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
