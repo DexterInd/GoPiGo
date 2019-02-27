@@ -41,29 +41,19 @@ import sys
 import time
 import math
 import struct
-import subprocess
+import di_i2c
 
 WHEEL_RAD=3.25
 WHEEL_CIRC=2*math.pi*WHEEL_RAD
 PPR = 18 # encoder Pulses Per Revolution
 
-if sys.platform == 'uwp':
-	import winrt_smbus as smbus
-	bus = smbus.SMBus(1)
-else:
-	import RPi.GPIO as GPIO
-	import smbus
+def set_bus(bus):
+	global i2c
+	i2c = di_i2c.DI_I2C(bus = bus, address = address)
 
-	# for RPI version 1, use "bus = smbus.SMBus(0)"
-	rev = GPIO.RPI_REVISION
-	if rev == 2 or rev == 3:
-		bus = smbus.SMBus(1)
-	else:
-		bus = smbus.SMBus(0)
-
-# This is the address for the GoPiGo
 address = 0x08
-debug=0
+set_bus("RPI_1SW")
+
 #GoPiGo Commands
 fwd_cmd				=[119]		#Move forward with PID
 motor_fwd_cmd		=[105]		#Move forward without PID
@@ -129,18 +119,12 @@ unused = 0
 
 v16_thresh=790
 version = 0
-
-'''
-#Enable slow i2c (for better stability)
-def en_slow_i2c():
-	#subprocess.call('sudo rmmod i2c_bcm2708',shell=True)
-	subprocess.call('sudo modprobe i2c_bcm2708 baudrate=70000',shell=True)
-'''
+debug=0
 
 #Write I2C block
-def write_i2c_block(address,block):
+def write_i2c_block(command, block):
 	try:
-		op=bus.write_i2c_block_data(address,1,block)
+		op = i2c.write_reg_list(command, block)
 		time.sleep(.005)
 		return op
 	except IOError:
@@ -152,7 +136,7 @@ def write_i2c_block(address,block):
 #Write a byte to the GoPiGo
 def writeNumber(value):
 	try:
-		bus.write_byte(address, value)
+		i2c.write_8(value)
 		time.sleep(.005)
 	except IOError:
 		if debug:
@@ -163,7 +147,7 @@ def writeNumber(value):
 #Read a byte from the GoPiGo
 def readByte():
 	try:
-		number = bus.read_byte(address)
+		number = i2c.read_8()
 		time.sleep(.005)
 	except IOError:
 		if debug:
@@ -173,11 +157,11 @@ def readByte():
 
 #Control Motor 1
 def motor1(direction,speed):
-	return write_i2c_block(address,m1_cmd+[direction,speed,0])
+	return write_i2c_block(m1_cmd, [direction,speed,0])
 
 #Control Motor 2
 def motor2(direction,speed):
-	return write_i2c_block(address,m2_cmd+[direction,speed,0])
+	return write_i2c_block(m2_cmd, [direction,speed,0])
 
 #Move the GoPiGo forward
 def fwd(dist=0): #distance is in cm
@@ -202,14 +186,14 @@ def fwd(dist=0): #distance is in cm
 	except Exception as e:
 		print ("gopigo fwd: {}".format(e))
 		pass
-	return write_i2c_block(address,motor_fwd_cmd+[0,0,0])
+	return write_i2c_block(motor_fwd_cmd, [0,0,0])
 
 # support more explicit spelling for forward function
 forward=fwd
 
 #Move the GoPiGo forward without PID
 def motor_fwd():
-	return write_i2c_block(address,motor_fwd_cmd+[0,0,0])
+	return write_i2c_block(motor_fwd_cmd, [0,0,0])
 
 #Move GoPiGo back
 def bwd(dist=0):
@@ -234,30 +218,30 @@ def bwd(dist=0):
 	except Exception as e:
 		print ("gopigo bwd: {}".format(e))
 		pass
-	return write_i2c_block(address,motor_bwd_cmd+[0,0,0])
+	return write_i2c_block(motor_bwd_cmd, [0,0,0])
 
 # support more explicit spelling for backward function
 backward=bwd
 
 #Move GoPiGo back without PID control
 def motor_bwd():
-	return write_i2c_block(address,motor_bwd_cmd+[0,0,0])
+	return write_i2c_block(motor_bwd_cmd, [0,0,0])
 
 #Turn GoPiGo Left slow (one motor off, better control)
 def left():
-	return write_i2c_block(address,left_cmd+[0,0,0])
+	return write_i2c_block(left_cmd, [0,0,0])
 
 #Rotate GoPiGo left in same position (both motors moving in the opposite direction)
 def left_rot():
-	return write_i2c_block(address,left_rot_cmd+[0,0,0])
+	return write_i2c_block(left_rot_cmd, [0,0,0])
 
 #Turn GoPiGo right slow (one motor off, better control)
 def right():
-	return write_i2c_block(address,right_cmd+[0,0,0])
+	return write_i2c_block(right_cmd, [0,0,0])
 
 #Rotate GoPiGo right in same position both motors moving in the opposite direction)
 def right_rot():
-	return write_i2c_block(address,right_rot_cmd+[0,0,0])
+	return write_i2c_block(right_rot_cmd, [0,0,0])
 
 DPR = 360.0/64
 # turn x degrees to the right
@@ -302,15 +286,15 @@ def stop():
 	:return: A value indicating if the action suceeded.
 	:rtype: int
 	"""
-	return write_i2c_block(address,stop_cmd+[0,0,0])
+	return write_i2c_block(stop_cmd, [0,0,0])
 
 #Increase the speed
 def increase_speed():
-	return write_i2c_block(address,ispd_cmd+[0,0,0])
+	return write_i2c_block(ispd_cmd, [0,0,0])
 
 #Decrease the speed
 def decrease_speed():
-	return write_i2c_block(address,dspd_cmd+[0,0,0])
+	return write_i2c_block(dspd_cmd, [0,0,0])
 
 #Trim test with the value specified
 def trim_test(value):
@@ -319,15 +303,15 @@ def trim_test(value):
 	elif value<-100:
 		value=-100
 	value+=100
-	write_i2c_block(address,trim_test_cmd+[value,0,0])
+	write_i2c_block(trim_test_cmd, [value,0,0])
 
 #Read the trim value in	EEPROM if present else return -3
 def trim_read():
-	write_i2c_block(address,trim_read_cmd+[0,0,0])
+	write_i2c_block(trim_read_cmd, [0,0,0])
 	time.sleep(.08)
 	try:
-		b1=bus.read_byte(address)
-		b2=bus.read_byte(address)
+		b1=i2c.read_8()
+		b2=i2c.read_8()
 	except IOError:
 		return -1
 
@@ -346,16 +330,16 @@ def trim_write(value):
 	elif value<-100:
 		value=-100
 	value+=100
-	write_i2c_block(address,trim_write_cmd+[value,0,0])
+	write_i2c_block(trim_write_cmd, [value,0,0])
 
 
 # Arduino Digital Read
 def digitalRead(pin):
 	if pin ==10 or pin ==15 or pin ==0 or pin ==1:
-		write_i2c_block(address, digital_read_cmd + [pin, unused, unused])
+		write_i2c_block(digital_read_cmd, [pin, unused, unused])
 		time.sleep(.1)
-		n=bus.read_byte(address)
-		bus.read_byte(address)		#Empty the buffer
+		n=i2c.read_8()
+		i2c.read_8()		#Empty the buffer
 		return n
 	else:
 		return -2
@@ -364,7 +348,7 @@ def digitalRead(pin):
 def digitalWrite(pin, value):
 	#if pin ==10 or pin ==0 or pin ==1 or pin==5 or pin ==16 or pin==17 :
 	if value==0 or value ==1:
-		write_i2c_block(address, digital_write_cmd + [pin, value, unused])
+		write_i2c_block(digital_write_cmd, [pin, value, unused])
 		# time.sleep(.005)	#Wait for 5 ms for the commands to complete
 		return 1
 	#else:
@@ -374,9 +358,9 @@ def digitalWrite(pin, value):
 def pinMode(pin, mode):
 	# if pin ==10 or pin ==15 or pin ==0 or pin ==1:
 	if mode == "OUTPUT":
-		write_i2c_block(address, pin_mode_cmd + [pin, 1, unused])
+		write_i2c_block(pin_mode_cmd, [pin, 1, unused])
 	elif mode == "INPUT":
-		write_i2c_block(address, pin_mode_cmd + [pin, 0, unused])
+		write_i2c_block(pin_mode_cmd, [pin, 0, unused])
 	#time.sleep(.005)	#Wait for 5 ms for the commands to complete
 	return 1
 	# else:
@@ -385,11 +369,11 @@ def pinMode(pin, mode):
 # Read analog value from Pin
 def analogRead(pin):
 	#if pin == 1 :
-	write_i2c_block(address, analog_read_cmd + [pin, unused, unused])
+	write_i2c_block(analog_read_cmd, [pin, unused, unused])
 	time.sleep(.007)
 	try:
-		b1=bus.read_byte(address)
-		b2=bus.read_byte(address)
+		b1=i2c.read_8()
+		b2=i2c.read_8()
 	except IOError:
 		return -1
 	return b1* 256 + b2
@@ -399,7 +383,7 @@ def analogRead(pin):
 # Write PWM
 def analogWrite(pin, value):
 	if pin == 10 :
-		write_i2c_block(address, analog_write_cmd + [pin, value, unused])
+		write_i2c_block(analog_write_cmd, [pin, value, unused])
 		return 1
 	else:
 		return -2
@@ -407,11 +391,11 @@ def analogWrite(pin, value):
 #Read voltage
 #	return:	voltage in V
 def volt():
-	write_i2c_block(address,volt_cmd+[0,0,0])
+	write_i2c_block(volt_cmd, [0,0,0])
 	time.sleep(.1)
 	try:
-		b1=bus.read_byte(address)
-		b2=bus.read_byte(address)
+		b1=i2c.read_8()
+		b2=i2c.read_8()
 	except IOError:
 		return -1
 
@@ -425,11 +409,11 @@ def volt():
 #Read board revision
 #	return:	voltage in V
 def brd_rev():
-	write_i2c_block(address, analog_read_cmd + [7, unused, unused])
+	write_i2c_block(analog_read_cmd, [7, unused, unused])
 	time.sleep(.1)
 	try:
-		b1=bus.read_byte(address)
-		b2=bus.read_byte(address)
+		b1=i2c.read_8()
+		b2=i2c.read_8()
 	except IOError:
 		return -1
 	return b1* 256 + b2
@@ -461,11 +445,11 @@ def us_dist(pin):
 	:return: The distance in cm measured by the ultrasonic sensor.
 	:rtype: int
 	"""
-	write_i2c_block(address,us_cmd+[pin,0,0])
+	write_i2c_block(us_cmd, [pin,0,0])
 	time.sleep(.08)
 	try:
-		b1=bus.read_byte(address)
-		b2=bus.read_byte(address)
+		b1=i2c.read_8()
+		b2=i2c.read_8()
 	except IOError:
 		return -1
 	if b1!=-1 and b2!=-1:
@@ -491,10 +475,10 @@ def corrected_us_dist(pin):
 	return int(corrected_data)
 
 def read_motor_speed():
-	write_i2c_block(address,read_motor_speed_cmd+[unused,unused,unused])
+	write_i2c_block(read_motor_speed_cmd, [unused,unused,unused])
 	try:
-		s1=bus.read_byte(address)
-		s2=bus.read_byte(address)
+		s1=i2c.read_8()
+		s2=i2c.read_8()
 	except IOError:
 		return [-1,-1]
 	return [s1,s2]
@@ -548,7 +532,7 @@ def led_off(l_id):
 #	arg:
 #		position: angle in degrees to set the servo at
 def servo(position):
-	write_i2c_block(address,servo_cmd+[position,0,0])
+	write_i2c_block(servo_cmd, [position,0,0])
 	#time.sleep(.05)
 
 #Set encoder targeting on
@@ -561,7 +545,7 @@ def enc_tgt(m1,m2,target):
 	if m1>1 or m1<0 or m2>1 or m2<0:
 		return -1
 	m_sel=m1*2+m2
-	write_i2c_block(address,enc_tgt_cmd+[m_sel,target//256,target%256])
+	write_i2c_block(enc_tgt_cmd, [m_sel,target//256,target%256])
 	return 1
 
 #Read encoder value
@@ -569,11 +553,11 @@ def enc_tgt(m1,m2,target):
 #		motor -> 	0 for motor1 and 1 for motor2
 #	return:		distance in cm
 def enc_read(motor):
-	write_i2c_block(address,enc_read_cmd+[motor,0,0])
+	write_i2c_block(enc_read_cmd, [motor,0,0])
 	time.sleep(.08)
 	try:
-		b1=bus.read_byte(address)
-		b2=bus.read_byte(address)
+		b1=i2c.read_8()
+		b2=i2c.read_8()
 	except IOError:
 		return -1
 	if b1!=-1 and b2!=-1:
@@ -584,30 +568,30 @@ def enc_read(motor):
 
 #Returns the firmware version
 def fw_ver():
-	write_i2c_block(address,fw_ver_cmd+[0,0,0])
+	write_i2c_block(fw_ver_cmd, [0,0,0])
 	time.sleep(.1)
 	try:
-		ver=bus.read_byte(address)
-		bus.read_byte(address)		#Empty the buffer
+		ver=i2c.read_8()
+		i2c.read_8()		#Empty the buffer
 	except IOError:
 		return -1
 	return float(ver)/10
 
 #Enable the encoders (enabled by default)
 def enable_encoders():
-	return write_i2c_block(address,en_enc_cmd+[0,0,0])
+	return write_i2c_block(en_enc_cmd, [0,0,0])
 
 #Disable the encoders (use this if you don't want to use the encoders)
 def disable_encoders():
-	return write_i2c_block(address,dis_enc_cmd+[0,0,0])
+	return write_i2c_block(dis_enc_cmd, [0,0,0])
 
 #Enables the servo
 def enable_servo():
-	return write_i2c_block(address,en_servo_cmd+[0,0,0])
+	return write_i2c_block(en_servo_cmd, [0,0,0])
 
 #Disable the servo
 def disable_servo():
-	return write_i2c_block(address,dis_servo_cmd+[0,0,0])
+	return write_i2c_block(dis_servo_cmd, [0,0,0])
 
 #Set speed of the left motor
 #	arg:
@@ -627,7 +611,7 @@ def set_left_speed(speed):
 		speed =255
 	elif speed <0:
 		speed =0
-	return write_i2c_block(address,set_left_speed_cmd+[speed,0,0])
+	return write_i2c_block(set_left_speed_cmd, [speed,0,0])
 
 #Set speed of the right motor
 #	arg:
@@ -647,7 +631,7 @@ def set_right_speed(speed):
 		speed =255
 	elif speed <0:
 		speed =0
-	return write_i2c_block(address,set_right_speed_cmd+[speed,0,0])
+	return write_i2c_block(set_right_speed_cmd, [speed,0,0])
 
 #Set speed of the both motors
 #	arg:
@@ -673,11 +657,11 @@ def set_speed(speed):
 #	arg:
 #		timeout-> 0-65535 (timeout in ms)
 def enable_com_timeout(timeout):
-	return write_i2c_block(address,en_com_timeout_cmd+[timeout//256,timeout%256,0])
+	return write_i2c_block(en_com_timeout_cmd, [timeout//256,timeout%256,0])
 
 #Disable communication time-out
 def disable_com_timeout():
-	return write_i2c_block(address,dis_com_timeout_cmd+[0,0,0])
+	return write_i2c_block(dis_com_timeout_cmd, [0,0,0])
 
 #Read the status register on the GoPiGo
 #	Gets a byte, 	b0-enc_status
@@ -685,7 +669,7 @@ def disable_com_timeout():
 #	Return:	list with 	l[0]-enc_status
 #						l[1]-timeout_status
 def read_status():
-	st=bus.read_byte(address)
+	st=i2c.read_8()
 	st_reg=[st & (1 <<0),(st & (1 <<1))//2]
 	return st_reg
 
@@ -705,9 +689,9 @@ def read_timeout_status():
 # Grove - Infrared Receiver- get the commands received from the Grove IR sensor
 def ir_read_signal():
 	try:
-		write_i2c_block(address,ir_read_cmd+[unused,unused,unused])
+		write_i2c_block(ir_read_cmd, [unused,unused,unused])
 		time.sleep(.1)
-		data_back= bus.read_i2c_block_data(address, 1)[0:21]
+		data_back = i2c.read_list(reg = None, len = 22)
 		if data_back[1]!=255:
 			return data_back
 		return [-1]*21
@@ -716,14 +700,14 @@ def ir_read_signal():
 
 # Grove - Infrared Receiver- set the pin on which the Grove IR sensor is connected
 def ir_recv_pin(pin):
-	write_i2c_block(address,ir_recv_pin_cmd+[pin,unused,unused])
+	write_i2c_block(ir_recv_pin_cmd, [pin,unused,unused])
 
 def cpu_speed():
-	write_i2c_block(address,cpu_speed_cmd+[0,0,0])
+	write_i2c_block(cpu_speed_cmd, [0,0,0])
 	time.sleep(.1)
 	try:
-		b1=bus.read_byte(address)
-		b2=bus.read_byte(address)
+		b1=i2c.read_8()
+		b2=i2c.read_8()
 	except IOError:
 		return -1
 	return b1
