@@ -124,7 +124,7 @@ debug=0
 #Write I2C block
 def write_i2c_block(command, block):
 	try:
-		op = i2c.write_reg_list(command, block)
+		op = i2c.write_reg_list(command[0], block)
 		time.sleep(.005)
 		return op
 	except IOError:
