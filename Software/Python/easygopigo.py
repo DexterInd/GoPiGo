@@ -821,6 +821,15 @@ class LineFollower(Sensor):
         out_str = "".join(["b" if sensor_val == 1 else "w" for sensor_val in five_vals])
         return out_str
 
+    def position_bw(self):
+        self.read_position_str()  # do a double read 
+        return self.read_position_str()[::-1]
+
+    def position_01(self):
+        self.read() # double read
+        return self.read()[::-1]
+
+    position = read_position
 
 #######################################################################
 #
