@@ -834,21 +834,30 @@ class LineFollower(Sensor):
         This method is only here to support Bloxter and 
         fake di_sensors.easy_line_follower
         """
-        return self._lf.position_bw()
+        try:
+            return self._lf.position_bw()
+        except:
+            return ""
 
     def position_01(self):
         """
         This method is only here to support Bloxter and 
         fake di_sensors.easy_line_follower
         """
-        return self._lf.position_01()
+        try:
+            return self._lf.position_01()
+        except:
+            return ""
 
     def position(self):
         """
         This method is only here to support Bloxter and 
         fake di_sensors.easy_line_follower
         """
-        return self._lf.position()
+        try:
+            return self._lf.position()
+        except:
+            return ""
 
 #######################################################################
 #
