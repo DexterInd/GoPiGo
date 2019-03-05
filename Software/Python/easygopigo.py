@@ -686,6 +686,13 @@ class LineFollower(Sensor):
         except:
             raise ValueError("Line Follower Library not found")
 
+        # Needed for Bloxter
+        try:
+            from di_sensors import easy_line_follower
+            self._lf = easy_line_follower.EasyLineFollower()
+        except:
+            self._lf = None
+
         self.use_mutex = use_mutex
 
     def read_raw_sensors(self):
@@ -821,15 +828,27 @@ class LineFollower(Sensor):
         out_str = "".join(["b" if sensor_val == 1 else "w" for sensor_val in five_vals])
         return out_str
 
+# Bloxter Support
     def position_bw(self):
-        self.read_position_str()  # do a double read 
-        return self.read_position_str()[::-1]
+        """
+        This method is only here to support Bloxter and 
+        fake di_sensors.easy_line_follower
+        """
+        return self._lf.position_bw()
 
     def position_01(self):
-        self.read() # double read
-        return self.read()[::-1]
+        """
+        This method is only here to support Bloxter and 
+        fake di_sensors.easy_line_follower
+        """
+        return self._lf.position_01()
 
-    position = read_position
+    def position(self):
+        """
+        This method is only here to support Bloxter and 
+        fake di_sensors.easy_line_follower
+        """
+        return self._lf.position()
 
 #######################################################################
 #
