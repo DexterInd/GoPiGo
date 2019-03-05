@@ -689,7 +689,7 @@ class LineFollower(Sensor):
         # Needed for Bloxter
         try:
             from di_sensors import easy_line_follower
-            self._lf = easy_line_follower.EasyLineFollower()
+            self._lf = easy_line_follower.EasyLineFollower(port=port)
         except:
             self._lf = None
 
