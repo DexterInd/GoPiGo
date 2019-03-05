@@ -837,7 +837,7 @@ class LineFollower(Sensor):
         try:
             return self._lf.position_bw()
         except:
-            return ""
+            return -1
 
     def position_01(self):
         """
@@ -847,7 +847,7 @@ class LineFollower(Sensor):
         try:
             return self._lf.position_01()
         except:
-            return ""
+            return -1
 
     def position(self):
         """
@@ -857,7 +857,7 @@ class LineFollower(Sensor):
         try:
             return self._lf.position()
         except:
-            return ""
+            return -1
 
 #######################################################################
 #
