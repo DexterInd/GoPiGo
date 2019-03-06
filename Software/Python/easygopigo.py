@@ -836,7 +836,11 @@ class LineFollower(Sensor):
         """
         try:
             return self._lf.position_bw()
-        except:
+        except ValueError as e:
+            print(e)
+            raise
+        except Exception as e:
+            print(e)
             return -1
 
     def position_01(self):
@@ -866,7 +870,10 @@ class LineFollower(Sensor):
         """
         try:
             return self._lf.set_calibration(color)
-        except:
+        except ValueError as e:
+            print(e)
+        except Exception as e:
+            print(e)
             line_val = []
 
     def get_calibration(self, color):
@@ -876,7 +883,10 @@ class LineFollower(Sensor):
         """
         try:
             return self._lf.get_calibration(color)
-        except:
+        except ValueError as e:
+            print(e)
+        except Exception as e:
+            print(e)
             line_val = [] 
 
 #######################################################################
