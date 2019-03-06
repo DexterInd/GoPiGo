@@ -859,6 +859,26 @@ class LineFollower(Sensor):
         except:
             return -1
 
+    def set_calibration(color):
+        """
+        This method is only here to support Bloxter and 
+        fake di_sensors.easy_line_follower
+        """
+        try:
+            return self._lf.set_calibration(color)
+        except:
+            line_val = []
+
+    def get_calibration(color):
+        """
+        This method is only here to support Bloxter and 
+        fake di_sensors.easy_line_follower
+        """
+        try:
+            return self._lf.get_calibration(color)
+        except:
+            line_val = [] 
+
 #######################################################################
 #
 # SERVO
