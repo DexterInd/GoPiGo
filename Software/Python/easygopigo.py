@@ -859,7 +859,7 @@ class LineFollower(Sensor):
         except:
             return -1
 
-    def set_calibration(color):
+    def set_calibration(self, color):
         """
         This method is only here to support Bloxter and 
         fake di_sensors.easy_line_follower
@@ -869,7 +869,7 @@ class LineFollower(Sensor):
         except:
             line_val = []
 
-    def get_calibration(color):
+    def get_calibration(self, color):
         """
         This method is only here to support Bloxter and 
         fake di_sensors.easy_line_follower
