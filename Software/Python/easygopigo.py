@@ -686,6 +686,13 @@ class LineFollower(Sensor):
         except:
             raise ValueError("Line Follower Library not found")
 
+        # Needed for Bloxter
+        try:
+            from di_sensors import easy_line_follower
+            self._lf = easy_line_follower.EasyLineFollower(port=port)
+        except:
+            self._lf = None
+
         self.use_mutex = use_mutex
 
     def read_raw_sensors(self):
@@ -821,6 +828,66 @@ class LineFollower(Sensor):
         out_str = "".join(["b" if sensor_val == 1 else "w" for sensor_val in five_vals])
         return out_str
 
+# Bloxter Support
+    def position_bw(self):
+        """
+        This method is only here to support Bloxter and 
+        fake di_sensors.easy_line_follower
+        """
+        try:
+            return self._lf.position_bw()
+        except ValueError as e:
+            print(e)
+            raise
+        except Exception as e:
+            print(e)
+            return -1
+
+    def position_01(self):
+        """
+        This method is only here to support Bloxter and 
+        fake di_sensors.easy_line_follower
+        """
+        try:
+            return self._lf.position_01()
+        except:
+            return -1
+
+    def position(self):
+        """
+        This method is only here to support Bloxter and 
+        fake di_sensors.easy_line_follower
+        """
+        try:
+            return self._lf.position()
+        except:
+            return -1
+
+    def set_calibration(self, color):
+        """
+        This method is only here to support Bloxter and 
+        fake di_sensors.easy_line_follower
+        """
+        try:
+            return self._lf.set_calibration(color)
+        except ValueError as e:
+            print(e)
+        except Exception as e:
+            print(e)
+            line_val = []
+
+    def get_calibration(self, color):
+        """
+        This method is only here to support Bloxter and 
+        fake di_sensors.easy_line_follower
+        """
+        try:
+            return self._lf.get_calibration(color)
+        except ValueError as e:
+            print(e)
+        except Exception as e:
+            print(e)
+            line_val = [] 
 
 #######################################################################
 #
