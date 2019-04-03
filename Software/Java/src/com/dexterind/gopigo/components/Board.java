@@ -88,7 +88,14 @@ public class Board {
       busId = I2CBus.BUS_1;
     }
 
-    final I2CBus bus = I2CFactory.getInstance(busId);
+    I2CBus bus = null;
+
+    try {
+      bus = I2CFactory.getInstance(busId);
+    } catch (Exception e) {
+      throw new IOException(e.getMessage());
+    }
+
     device = bus.getDevice(ADDRESS);
   }
 
